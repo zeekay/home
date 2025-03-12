@@ -6,16 +6,23 @@ import { Terminal, Folder, Mail, Globe, Image, Music, Video, Settings, Calendar 
 interface MacDockProps {
   className?: string;
   onTerminalClick: () => void;
+  onSafariClick: () => void;
+  onITunesClick: () => void;
 }
 
-const MacDock: React.FC<MacDockProps> = ({ className, onTerminalClick }) => {
+const MacDock: React.FC<MacDockProps> = ({ 
+  className, 
+  onTerminalClick, 
+  onSafariClick, 
+  onITunesClick 
+}) => {
   const dockItems = [
-    { icon: Terminal, label: 'Terminal', onClick: onTerminalClick },
     { icon: Folder, label: 'Finder' },
+    { icon: Globe, label: 'Safari', onClick: onSafariClick },
+    { icon: Terminal, label: 'Terminal', onClick: onTerminalClick },
+    { icon: Music, label: 'iTunes', onClick: onITunesClick },
     { icon: Mail, label: 'Mail' },
-    { icon: Globe, label: 'Safari' },
     { icon: Image, label: 'Photos' },
-    { icon: Music, label: 'Music' },
     { icon: Video, label: 'Videos' },
     { icon: Calendar, label: 'Calendar' },
     { icon: Settings, label: 'System Preferences' },

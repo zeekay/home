@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, Minus, Square } from 'lucide-react';
-import Terminal from './Terminal';
+import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MacTerminalWindowProps {
@@ -79,8 +78,12 @@ const MacTerminalWindow: React.FC<MacTerminalWindowProps> = ({ onClose }) => {
       </div>
 
       {/* Terminal Content */}
-      <div className="w-full h-[calc(100%-32px)]">
-        <Terminal className="w-full h-full rounded-none" />
+      <div className="w-full h-[calc(100%-32px)] bg-[#f6f8fa] dark:bg-[#262a33]">
+        <iframe 
+          src="/terminal-content" 
+          className="w-full h-full border-0"
+          title="Terminal Content"
+        />
       </div>
     </div>
   );
