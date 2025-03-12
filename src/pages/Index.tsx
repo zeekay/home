@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import Layout from '@/components/Layout';
 import ProfileSection from '@/components/sections/ProfileSection';
 import TerminalSection from '@/components/sections/TerminalSection';
 import GitHubSection from '@/components/sections/GitHubSection';
@@ -24,10 +23,7 @@ const Index = () => {
   }, [activeSection]);
 
   return (
-    <Layout
-      activeSection={activeSection}
-      setActiveSection={setActiveSection}
-    >
+    <div className="h-full w-full p-6 overflow-auto">
       <ProfileSection 
         activeSection={activeSection} 
         setActiveSection={setActiveSection} 
@@ -38,7 +34,7 @@ const Index = () => {
         <GitHubSection activeSection={activeSection} />
         <TwitterSection activeSection={activeSection} />
       </div>
-    </Layout>
+    </div>
   );
 };
 
