@@ -26,7 +26,7 @@ const Index = () => {
       
       <Header activeSection={activeSection} setActiveSection={setActiveSection} />
       
-      <main className="flex-1 w-full flex flex-col items-center justify-start pt-24">
+      <main className="flex-1 w-full flex flex-col items-center justify-start pt-16">
         <div className="w-full max-w-6xl mx-auto px-4 pb-24">
           <ProfileSection activeSection={activeSection} setActiveSection={setActiveSection} />
           <TerminalSection activeSection={activeSection} />
