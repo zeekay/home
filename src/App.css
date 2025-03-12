@@ -26,7 +26,7 @@ body, html {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-/* Main layout container with proper min-height */
+/* Main layout container */
 .layout-container {
   display: flex;
   flex-direction: column;
@@ -34,16 +34,18 @@ body, html {
   width: 100%;
 }
 
-/* Main content area that will flex-grow to push footer down */
+/* Main content area that grows to push footer down */
 .main-content {
-  flex: 1 0 auto; /* flex-grow: 1, flex-shrink: 0, flex-basis: auto */
+  flex: 1 0 auto;
   width: 100%;
   padding-top: 4rem; /* Space for fixed header */
 }
 
-/* Footer that won't flex */
+/* Footer that stays at the bottom */
 footer {
   flex-shrink: 0;
+  width: 100%;
+  margin-top: auto; /* This helps push it to the bottom when content is short */
 }
 
 /* Scroll animations */
