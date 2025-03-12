@@ -1,11 +1,16 @@
 
 /* Reset some defaults */
-#root {
-  width: 100%;
+body, html {
   margin: 0;
   padding: 0;
+  height: 100%;
+}
+
+#root {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  width: 100%;
 }
 
 .logo {
@@ -21,7 +26,7 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-/* Main layout container */
+/* Main layout container with proper min-height */
 .layout-container {
   display: flex;
   flex-direction: column;
@@ -29,11 +34,16 @@
   width: 100%;
 }
 
-/* Main content area */
+/* Main content area that will flex-grow to push footer down */
 .main-content {
-  flex: 1;
-  padding-top: 4rem; /* Space for fixed header */
+  flex: 1 0 auto; /* flex-grow: 1, flex-shrink: 0, flex-basis: auto */
   width: 100%;
+  padding-top: 4rem; /* Space for fixed header */
+}
+
+/* Footer that won't flex */
+footer {
+  flex-shrink: 0;
 }
 
 /* Scroll animations */
