@@ -25,23 +25,25 @@ const Index = () => {
     window.scrollTo(0, 0);
   }, [activeSection]);
 
-  // Prevent overscrolling by locking the view at the bottom of the page
+  // Prevent overscrolling by ensuring content doesn't scroll past footer
   useEffect(() => {
-    const handleScroll = () => {
-      const documentHeight = document.documentElement.scrollHeight;
-      const windowHeight = window.innerHeight;
-      const scrollTop = window.scrollY;
-      
-      if (scrollTop + windowHeight > documentHeight) {
-        window.scrollTo(0, documentHeight - windowHeight);
-      }
-    };
-
-    // Set initial position
-    handleScroll();
+    const pageContainer = document.querySelector('.page-container');
     
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    if (pageContainer) {
+      const handleScroll = () => {
+        const scrollHeight = pageContainer.scrollHeight;
+        const scrollTop = pageContainer.scrollTop;
+        const clientHeight = pageContainer.clientHeight;
+        
+        // If scrolled to the bottom, prevent further scrolling
+        if (scrollTop + clientHeight >= scrollHeight) {
+          pageContainer.scrollTop = scrollHeight - clientHeight;
+        }
+      };
+      
+      pageContainer.addEventListener('scroll', handleScroll);
+      return () => pageContainer.removeEventListener('scroll', handleScroll);
+    }
   }, []);
 
   return (
