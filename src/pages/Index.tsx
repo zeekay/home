@@ -5,7 +5,7 @@ import Terminal from '@/components/Terminal';
 import GithubProjects from '@/components/GithubProjects';
 import TwitterFeed from '@/components/TwitterFeed';
 import AnimatedBackground from '@/components/AnimatedBackground';
-import { Github, Twitter, Code, User } from 'lucide-react';
+import { Github, Twitter, Code, User, Terminal as TerminalIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Index = () => {
@@ -27,45 +27,57 @@ const Index = () => {
       <Header activeSection={activeSection} setActiveSection={setActiveSection} />
       
       <main className="container pt-24 pb-16 px-4 mx-auto">
-        {/* Profile Section */}
+        {/* Profile Section - Enhanced Hero */}
         <section 
           className={cn(
-            'transition-all duration-500 ease-in-out max-w-4xl mx-auto',
+            'transition-all duration-500 ease-in-out max-w-5xl mx-auto',
             activeSection === 'profile' ? 'opacity-100 translate-y-0' : 'opacity-0 absolute -z-10 translate-y-8'
           )}
         >
-          <div className="flex flex-col items-center text-center mb-8 animate-slide-in">
-            <div className="w-32 h-32 bg-gradient-to-br from-primary/10 to-primary/30 rounded-full flex items-center justify-center mb-6 overflow-hidden animate-float">
-              <User size={64} className="text-primary/70" />
-            </div>
+          <div className="relative glass-card rounded-xl p-8 mb-10 animate-slide-in overflow-hidden">
+            {/* Background subtle pattern */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 z-0"></div>
             
-            <div className="space-y-3">
-              <h1 className="text-4xl md:text-5xl font-bold animate-slide-up" style={{ animationDelay: '100ms' }}>
-                Zach Kelling
-              </h1>
-              <p className="text-xl text-muted-foreground animate-slide-up" style={{ animationDelay: '200ms' }}>
-                Software Engineer & Open Source Contributor
-              </p>
+            <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-10">
+              <div className="w-36 h-36 bg-gradient-to-br from-primary/20 to-primary/40 rounded-full flex items-center justify-center overflow-hidden animate-float border-2 border-primary/20 shadow-lg">
+                <User size={72} className="text-primary/70" />
+              </div>
               
-              <div className="flex items-center justify-center gap-4 mt-6 animate-slide-up" style={{ animationDelay: '300ms' }}>
-                <a
-                  href="https://github.com/zeekay"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-                >
-                  <Github size={16} />
-                  <span>GitHub</span>
-                </a>
-                <a
-                  href="https://twitter.com/zeekay"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 rounded-md bg-[#1DA1F2] text-white hover:bg-[#1DA1F2]/90 transition-colors"
-                >
-                  <Twitter size={16} />
-                  <span>Twitter</span>
-                </a>
+              <div className="space-y-4 text-center md:text-left">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold animate-slide-up bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70" style={{ animationDelay: '100ms' }}>
+                  Zach Kelling
+                </h1>
+                <p className="text-xl md:text-2xl text-muted-foreground animate-slide-up max-w-2xl" style={{ animationDelay: '200ms' }}>
+                  Software Engineer & Open Source Contributor
+                </p>
+                
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-6 animate-slide-up" style={{ animationDelay: '300ms' }}>
+                  <a
+                    href="https://github.com/zeekay"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-md bg-foreground text-background hover:bg-foreground/90 transition-colors"
+                  >
+                    <Github size={18} />
+                    <span>GitHub</span>
+                  </a>
+                  <a
+                    href="https://twitter.com/zeekay"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-md bg-[#1DA1F2] text-white hover:bg-[#1DA1F2]/90 transition-colors"
+                  >
+                    <Twitter size={18} />
+                    <span>Twitter</span>
+                  </a>
+                  <button
+                    onClick={() => setActiveSection('terminal')}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                  >
+                    <TerminalIcon size={18} />
+                    <span>Terminal</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -152,7 +164,7 @@ const Index = () => {
         {/* GitHub Projects Section */}
         <section 
           className={cn(
-            'transition-all duration-500 ease-in-out max-w-4xl mx-auto',
+            'transition-all duration-500 ease-in-out max-w-6xl mx-auto',
             activeSection === 'github' ? 'opacity-100 translate-y-0' : 'opacity-0 absolute -z-10 translate-y-8'
           )}
         >
