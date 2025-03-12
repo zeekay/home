@@ -25,18 +25,21 @@ const Index = () => {
     window.scrollTo(0, 0);
   }, [activeSection]);
 
-  // Prevent overscrolling
+  // Prevent overscrolling by locking the view at the bottom of the page
   useEffect(() => {
     const handleScroll = () => {
       const documentHeight = document.documentElement.scrollHeight;
       const windowHeight = window.innerHeight;
       const scrollTop = window.scrollY;
       
-      if (scrollTop + windowHeight >= documentHeight) {
+      if (scrollTop + windowHeight > documentHeight) {
         window.scrollTo(0, documentHeight - windowHeight);
       }
     };
 
+    // Set initial position
+    handleScroll();
+    
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
