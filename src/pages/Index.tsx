@@ -25,35 +25,14 @@ const Index = () => {
     window.scrollTo(0, 0);
   }, [activeSection]);
 
-  // Prevent overscrolling by ensuring content doesn't scroll past footer
-  useEffect(() => {
-    const pageContainer = document.querySelector('.page-container');
-    
-    if (pageContainer) {
-      const handleScroll = () => {
-        const scrollHeight = pageContainer.scrollHeight;
-        const scrollTop = pageContainer.scrollTop;
-        const clientHeight = pageContainer.clientHeight;
-        
-        // If scrolled to the bottom, prevent further scrolling
-        if (scrollTop + clientHeight >= scrollHeight) {
-          pageContainer.scrollTop = scrollHeight - clientHeight;
-        }
-      };
-      
-      pageContainer.addEventListener('scroll', handleScroll);
-      return () => pageContainer.removeEventListener('scroll', handleScroll);
-    }
-  }, []);
-
   return (
     <div className="page-container">
       <AnimatedBackground />
       
       <Header activeSection={activeSection} setActiveSection={setActiveSection} />
       
-      <div className="content-container">
-        <div className="container mx-auto px-4 py-16">
+      <main className="content-container">
+        <div className="container mx-auto px-4 py-8">
           <ProfileSection activeSection={activeSection} setActiveSection={setActiveSection} />
           
           <div className={activeSection !== 'profile' ? 'mt-24' : ''}>
@@ -62,7 +41,7 @@ const Index = () => {
             <TwitterSection activeSection={activeSection} />
           </div>
         </div>
-      </div>
+      </main>
       
       <Footer />
     </div>
