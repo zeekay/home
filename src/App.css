@@ -11,6 +11,8 @@ body, html {
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .logo {
@@ -36,16 +38,17 @@ body, html {
 
 /* Main content area that grows to push footer down */
 .main-content {
-  flex: 1 0 auto;
+  flex: 1;
   width: 100%;
   padding-top: 4rem; /* Space for fixed header */
+  padding-bottom: 0; /* Remove any bottom padding */
 }
 
 /* Footer that stays at the bottom */
 footer {
   flex-shrink: 0;
   width: 100%;
-  margin-top: auto; /* This helps push it to the bottom when content is short */
+  margin-top: auto;
 }
 
 /* Scroll animations */

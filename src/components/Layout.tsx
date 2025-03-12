@@ -25,7 +25,7 @@ const Layout: React.FC<LayoutProps> = ({
       />
       
       <main className="main-content">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 pb-0">
           {children}
         </div>
       </main>
