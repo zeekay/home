@@ -1,12 +1,11 @@
 
-/* Reset some defaults that might be causing centering issues */
+/* Reset some defaults */
 #root {
   width: 100%;
   margin: 0;
   padding: 0;
-  min-height: 100vh;
   display: flex;
-  flex-direction: column;
+  min-height: 100vh;
 }
 
 .logo {
@@ -22,23 +21,18 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-/* Layout utilities */
-.page-container {
+/* Main layout container */
+.layout-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
-  position: relative;
 }
 
-.content-container {
+/* Main content area */
+.main-content {
   flex: 1;
-  width: 100%;
-  padding-bottom: 2rem;
-  padding-top: 4rem; /* Add top padding to account for fixed header */
-}
-
-.footer {
+  padding-top: 4rem; /* Space for fixed header */
   width: 100%;
 }
 
@@ -54,9 +48,7 @@
   transform: translateY(0);
 }
 
-/* 
-  The rest of the animations and styles can stay the same
-*/
+/* The rest of the animations and styles */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);

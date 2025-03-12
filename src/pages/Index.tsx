@@ -1,12 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import Header from '@/components/Header';
-import AnimatedBackground from '@/components/AnimatedBackground';
+import Layout from '@/components/Layout';
 import ProfileSection from '@/components/sections/ProfileSection';
 import TerminalSection from '@/components/sections/TerminalSection';
 import GitHubSection from '@/components/sections/GitHubSection';
 import TwitterSection from '@/components/sections/TwitterSection';
-import Footer from '@/components/Footer';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('profile');
@@ -26,25 +24,21 @@ const Index = () => {
   }, [activeSection]);
 
   return (
-    <div className="page-container">
-      <AnimatedBackground />
+    <Layout
+      activeSection={activeSection}
+      setActiveSection={setActiveSection}
+    >
+      <ProfileSection 
+        activeSection={activeSection} 
+        setActiveSection={setActiveSection} 
+      />
       
-      <Header activeSection={activeSection} setActiveSection={setActiveSection} />
-      
-      <main className="content-container">
-        <div className="container mx-auto px-4 py-8">
-          <ProfileSection activeSection={activeSection} setActiveSection={setActiveSection} />
-          
-          <div className={activeSection !== 'profile' ? 'mt-24' : ''}>
-            <TerminalSection activeSection={activeSection} />
-            <GitHubSection activeSection={activeSection} />
-            <TwitterSection activeSection={activeSection} />
-          </div>
-        </div>
-      </main>
-      
-      <Footer />
-    </div>
+      <div className={activeSection !== 'profile' ? 'mt-24' : ''}>
+        <TerminalSection activeSection={activeSection} />
+        <GitHubSection activeSection={activeSection} />
+        <TwitterSection activeSection={activeSection} />
+      </div>
+    </Layout>
   );
 };
 
