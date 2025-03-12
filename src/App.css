@@ -1,4 +1,3 @@
-
 /* Reset some defaults */
 body, html {
   margin: 0;
@@ -6,13 +5,11 @@ body, html {
   height: 100%;
 }
 
-#root {
+body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   width: 100%;
-  margin: 0;
-  padding: 0;
 }
 
 .logo {
@@ -40,8 +37,8 @@ body, html {
 .main-content {
   flex: 1;
   width: 100%;
-  padding-top: 4rem; /* Space for fixed header */
-  padding-bottom: 0; /* Remove any bottom padding */
+  padding-top: 4rem;
+  padding-bottom: 0;
 }
 
 /* Footer that stays at the bottom */
