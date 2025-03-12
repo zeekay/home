@@ -21,17 +21,21 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-background text-foreground relative overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-background text-foreground relative">
       <AnimatedBackground />
       
       <Header activeSection={activeSection} setActiveSection={setActiveSection} />
       
-      <main className="flex-1 w-full flex flex-col items-center justify-start pt-16">
-        <div className="w-full max-w-6xl mx-auto px-4 pb-24">
+      {/* Main content container with proper padding */}
+      <main className="flex-grow w-full">
+        <div className="container mx-auto px-4 py-16 mb-16">
           <ProfileSection activeSection={activeSection} setActiveSection={setActiveSection} />
-          <TerminalSection activeSection={activeSection} />
-          <GitHubSection activeSection={activeSection} />
-          <TwitterSection activeSection={activeSection} />
+          
+          <div className={activeSection !== 'profile' ? 'mt-24' : ''}>
+            <TerminalSection activeSection={activeSection} />
+            <GitHubSection activeSection={activeSection} />
+            <TwitterSection activeSection={activeSection} />
+          </div>
         </div>
       </main>
       
