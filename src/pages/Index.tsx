@@ -7,7 +7,6 @@ import TerminalSection from '@/components/sections/TerminalSection';
 import GitHubSection from '@/components/sections/GitHubSection';
 import TwitterSection from '@/components/sections/TwitterSection';
 import Footer from '@/components/Footer';
-import { User, Code } from 'lucide-react';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('profile');
@@ -22,16 +21,18 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground relative overflow-hidden">
+    <div className="flex flex-col min-h-screen w-full bg-background text-foreground relative overflow-hidden">
       <AnimatedBackground />
       
       <Header activeSection={activeSection} setActiveSection={setActiveSection} />
       
-      <main className="container pt-24 pb-16 px-4 mx-auto">
-        <ProfileSection activeSection={activeSection} setActiveSection={setActiveSection} />
-        <TerminalSection activeSection={activeSection} />
-        <GitHubSection activeSection={activeSection} />
-        <TwitterSection activeSection={activeSection} />
+      <main className="flex-1 w-full flex flex-col items-center justify-center pt-24 pb-24">
+        <div className="w-full max-w-6xl mx-auto px-4">
+          <ProfileSection activeSection={activeSection} setActiveSection={setActiveSection} />
+          <TerminalSection activeSection={activeSection} />
+          <GitHubSection activeSection={activeSection} />
+          <TwitterSection activeSection={activeSection} />
+        </div>
       </main>
       
       <Footer />
