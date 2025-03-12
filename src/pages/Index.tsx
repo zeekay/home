@@ -25,6 +25,22 @@ const Index = () => {
     window.scrollTo(0, 0);
   }, [activeSection]);
 
+  // Prevent overscrolling
+  useEffect(() => {
+    const handleScroll = () => {
+      const documentHeight = document.documentElement.scrollHeight;
+      const windowHeight = window.innerHeight;
+      const scrollTop = window.scrollY;
+      
+      if (scrollTop + windowHeight >= documentHeight) {
+        window.scrollTo(0, documentHeight - windowHeight);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <div className="page-container">
       <AnimatedBackground />
