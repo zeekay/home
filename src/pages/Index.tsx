@@ -20,6 +20,11 @@ const Index = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Scroll to top when active section changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeSection]);
+
   return (
     <div className="page-container">
       <AnimatedBackground />

@@ -32,12 +32,7 @@ const Header: React.FC<HeaderProps> = ({ activeSection, setActiveSection }) => {
       )}
     >
       <div className="flex items-center gap-2">
-        <div className="flex items-center gap-2 select-none cursor-default">
-          <div className="w-3 h-3 rounded-full bg-destructive" />
-          <div className="w-3 h-3 rounded-full bg-yellow-400" />
-          <div className="w-3 h-3 rounded-full bg-green-500" />
-        </div>
-        <div className="ml-2 font-medium">Zach Kelling</div>
+        <div className="font-medium">Zach Kelling - Open Sourceror</div>
       </div>
       <nav className="flex items-center gap-6">
         <button

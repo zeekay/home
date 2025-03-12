@@ -37,11 +37,15 @@
   display: flex;
   flex-direction: column;
   padding-bottom: 2rem;
+  margin-top: 4rem; /* Add top margin to account for fixed header */
 }
 
 .footer {
   flex-shrink: 0;
   width: 100%;
+  position: relative;
+  z-index: 10;
+  margin-top: auto;
 }
 
 /* Scroll animations */
