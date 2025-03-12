@@ -21,14 +21,13 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground relative">
+    <div className="page-container">
       <AnimatedBackground />
       
       <Header activeSection={activeSection} setActiveSection={setActiveSection} />
       
-      {/* Main content container with proper padding */}
-      <main className="flex-grow w-full">
-        <div className="container mx-auto px-4 py-16 mb-16">
+      <div className="content-container">
+        <div className="container mx-auto px-4 py-16">
           <ProfileSection activeSection={activeSection} setActiveSection={setActiveSection} />
           
           <div className={activeSection !== 'profile' ? 'mt-24' : ''}>
@@ -37,7 +36,7 @@ const Index = () => {
             <TwitterSection activeSection={activeSection} />
           </div>
         </div>
-      </main>
+      </div>
       
       <Footer />
     </div>
