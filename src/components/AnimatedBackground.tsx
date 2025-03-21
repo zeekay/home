@@ -62,23 +62,34 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     };
   }, [theme, customImageUrl]);
   
-  // Enhanced sound waves animation (like the iconic t-shirt design)
+  // Enhanced sound waves animation with more waves and musical ratios
   const animateSoundWaves = (
     ctx: CanvasRenderingContext2D, 
     canvas: HTMLCanvasElement,
     options = { color: 'rgba(255,255,255,0.12)' }
   ) => {
-    // Number of wave lines - use more for a denser look
-    const waves = 8;
-    const waveAmplitudes = Array(waves).fill(0).map(() => Math.random() * 40 + 20);
-    const waveFrequencies = Array(waves).fill(0).map(() => Math.random() * 0.01 + 0.005);
+    // Increased number of waves - much more dense
+    const waves = 100;
+    
+    // Music-inspired frequency ratios (based on harmonic series)
+    const musicalRatios = [1, 1.5, 2, 2.5, 3, 4, 6, 8, 12];
+    
+    // Create arrays for wave properties
+    const waveAmplitudes = Array(waves).fill(0).map(() => Math.random() * 120 + 40); // Taller waves
+    const waveFrequencies = Array(waves).fill(0).map(() => {
+      // Apply musical ratios to frequencies
+      const baseFreq = 0.005;
+      const ratio = musicalRatios[Math.floor(Math.random() * musicalRatios.length)];
+      return baseFreq * ratio * (0.5 + Math.random() * 0.5); // Add some randomness
+    });
     const waveSpeeds = Array(waves).fill(0).map(() => Math.random() * 0.02 + 0.005);
     const waveOffsets = Array(waves).fill(0);
+    const wavePhases = Array(waves).fill(0).map(() => Math.random() * Math.PI * 2); // Random starting phases
     
     // Use a consistent color theme with different opacity levels
     const baseColor = options.color;
     const waveColors = Array(waves).fill(0).map((_, i) => {
-      const opacity = 0.15 - (i * 0.015); // Decreasing opacity
+      const opacity = 0.15 - (i % 5 * 0.02); // Varied opacity with 5 levels
       return baseColor.replace(/[\d.]+\)$/, `${opacity})`);
     });
     
@@ -88,10 +99,6 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       // Clear canvas with a complete clear for cleaner lines
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Focus waves in the middle two-thirds of the screen
-      const centerY = canvas.height / 2;
-      const horizontalMargin = canvas.width / 6; // 1/6 margin on each side
-      
       // Draw each wave line
       waveOffsets.forEach((offset, index) => {
         // Update offset for animation
@@ -100,18 +107,21 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         // Draw the wave line with a smooth vector-like appearance
         ctx.beginPath();
         ctx.strokeStyle = waveColors[index % waveColors.length];
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1.5;
         
         // Use bezier curves for smoother, more vector-like waves
         let points: {x: number, y: number}[] = [];
         
-        // Generate points for the wave
-        for (let x = horizontalMargin; x <= canvas.width - horizontalMargin; x += 5) {
-          const normalizedX = (x - horizontalMargin) / (canvas.width - 2 * horizontalMargin);
-          const amplitude = waveAmplitudes[index] * Math.sin(normalizedX * Math.PI); // Amplitude reduces at edges
+        // Generate points for the wave - Use full viewport width
+        for (let x = 0; x <= canvas.width; x += 5) {
+          const normalizedX = x / canvas.width;
+          // Shape amplitude so it's max in the middle, lower at edges - using a sine wave
+          const amplitudeModifier = Math.sin(normalizedX * Math.PI);
+          const amplitude = waveAmplitudes[index] * amplitudeModifier;
           
-          const y = centerY + 
-                  Math.sin((x * waveFrequencies[index]) + waveOffsets[index]) * 
+          // Calculate vertical position with phase offset for more varied waves
+          const y = canvas.height / 2 + 
+                  Math.sin((x * waveFrequencies[index]) + waveOffsets[index] + wavePhases[index]) * 
                   amplitude;
           
           points.push({x, y});
