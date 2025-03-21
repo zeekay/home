@@ -23,6 +23,9 @@ echo "text" > file - Write text to file
 clear              - Clear terminal
 pwd                - Print working directory
 history            - Show command history
+theme [name]       - Change terminal theme (dark, light, blue, green, purple, 
+                     neon, retro, sunset, ocean, midnight, matrix, monokai, 
+                     dracula, nord, pastel)
 help               - Show this help message`,
     id: Date.now()
   });
@@ -40,6 +43,46 @@ export const executeHistoryCommand = (
   addEntry({
     command,
     output: historyOutput,
+    id: Date.now()
+  });
+};
+
+export const executeThemeCommand = (
+  args: string[],
+  addEntry: (entry: Omit<TerminalEntry, 'id'> & { id?: number }) => void,
+  command: string
+): void => {
+  const validThemes = [
+    'dark', 'light', 'blue', 'green', 'purple', 'neon', 'retro', 
+    'sunset', 'ocean', 'midnight', 'matrix', 'monokai', 'dracula', 'nord', 'pastel'
+  ];
+  
+  const theme = args[0];
+  
+  if (!theme) {
+    addEntry({
+      command,
+      output: `Current available themes: ${validThemes.join(', ')}`,
+      id: Date.now()
+    });
+    return;
+  }
+  
+  if (!validThemes.includes(theme)) {
+    addEntry({
+      command,
+      output: `Error: Unknown theme '${theme}'. Available themes: ${validThemes.join(', ')}`,
+      isError: true,
+      id: Date.now()
+    });
+    return;
+  }
+  
+  // In a real implementation, this would set the theme
+  // For now we'll just show a message
+  addEntry({
+    command,
+    output: `Theme changed to '${theme}'. Note: This is just a simulation. Use the settings gear in the window title bar to actually change the theme.`,
     id: Date.now()
   });
 };
@@ -72,6 +115,13 @@ export const processCommand = async (
 
   if (command.trim() === 'history') {
     executeHistoryCommand(commandHistory, addEntry, command);
+    return;
+  }
+  
+  // Handle theme command
+  if (command.trim().startsWith('theme')) {
+    const args = command.trim().split(' ').slice(1);
+    executeThemeCommand(args, addEntry, command);
     return;
   }
 

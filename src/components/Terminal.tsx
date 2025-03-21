@@ -4,6 +4,25 @@ import { cn } from '@/lib/utils';
 import { TerminalProps } from '@/types/terminal';
 import { useTerminal } from '@/contexts/TerminalContext';
 
+const terminalThemes = {
+  dark: { bg: 'bg-[#262a33]', text: 'text-white' },
+  light: { bg: 'bg-[#f6f8fa]', text: 'text-gray-800' },
+  blue: { bg: 'bg-[#0d2538]', text: 'text-cyan-100' },
+  green: { bg: 'bg-[#0f2d1b]', text: 'text-green-100' },
+  purple: { bg: 'bg-[#2b213a]', text: 'text-purple-100' },
+  // New themes
+  neon: { bg: 'bg-[#0c0b1f]', text: 'text-[#00ff9f]' },
+  retro: { bg: 'bg-[#2d2b55]', text: 'text-[#fad000]' },
+  sunset: { bg: 'bg-gradient-to-r from-[#1a1c2c] to-[#2d1b31]', text: 'text-orange-100' },
+  ocean: { bg: 'bg-gradient-to-r from-[#0f2027] to-[#203a43]', text: 'text-blue-100' },
+  midnight: { bg: 'bg-[#121212]', text: 'text-[#e2e2e2]' },
+  matrix: { bg: 'bg-black', text: 'text-[#00ff00]' },
+  monokai: { bg: 'bg-[#272822]', text: 'text-[#f8f8f2]' },
+  dracula: { bg: 'bg-[#282a36]', text: 'text-[#f8f8f2]' },
+  nord: { bg: 'bg-[#2e3440]', text: 'text-[#d8dee9]' },
+  pastel: { bg: 'bg-[#fdf6e3]', text: 'text-[#657b83]' }
+};
+
 const Terminal: React.FC<TerminalProps> = ({ 
   className,
   customFontSize = 14,
@@ -88,19 +107,10 @@ const Terminal: React.FC<TerminalProps> = ({
   };
 
   const getTerminalTheme = () => {
-    switch (customTheme) {
-      case 'light':
-        return 'bg-[#f6f8fa] text-gray-800';
-      case 'blue':
-        return 'bg-[#0d2538] text-cyan-100';
-      case 'green':
-        return 'bg-[#0f2d1b] text-green-100';
-      case 'purple':
-        return 'bg-[#2b213a] text-purple-100';
-      default: // dark
-        return 'bg-[#262a33] text-white';
-    }
+    return terminalThemes[customTheme as keyof typeof terminalThemes] || terminalThemes.dark;
   };
+
+  const theme = getTerminalTheme();
 
   return (
     <div 
@@ -112,7 +122,8 @@ const Terminal: React.FC<TerminalProps> = ({
     >
       <div className={cn(
         'flex-1 overflow-y-auto terminal scrollbar-thin',
-        getTerminalTheme()
+        theme.bg,
+        theme.text
       )}
         style={{ padding: `${customPadding}px` }}
       >
