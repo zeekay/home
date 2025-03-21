@@ -84,14 +84,14 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-20 right-6 z-50">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <button 
-            className="bg-black/60 p-3 rounded-xl shadow-lg hover:bg-gray-900/80 transition-colors border border-white/10 group"
+            className="w-12 h-12 flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-125 shadow-lg border border-white/10 group"
             title="Edit Background"
           >
-            <Palette className="w-5 h-5 text-purple-400 group-hover:animate-pulse transition-all duration-300" />
+            <Palette className="w-6 h-6 text-gray-400 group-hover:animate-pulse transition-all duration-300" />
           </button>
         </PopoverTrigger>
         <PopoverContent 
@@ -100,7 +100,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
         >
           <div className="space-y-4">
             <h3 className="text-lg font-medium flex items-center text-white">
-              <Palette className="w-4 h-4 mr-2 text-purple-400" />
+              <Palette className="w-4 h-4 mr-2 text-gray-400" />
               Background Settings
             </h3>
             
