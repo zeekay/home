@@ -79,12 +79,21 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
     root.render(safariWindow);
   };
 
+  // Calculate size reduction for recursive windows
+  const calculateSizeReduction = (baseSize: number, depth: number) => {
+    // Reduce by 10% for each level of recursion
+    return baseSize * Math.pow(0.9, depth);
+  };
+
   return (
     <MacWindow
       title={`Safari${depth > 0 ? ` (${depth})` : ''}`}
       onClose={onClose}
       initialPosition={{ x: 100 + (depth * 30), y: 100 + (depth * 20) }}
-      initialSize={{ width: 800 - (depth * 40), height: 600 - (depth * 30) }}
+      initialSize={{ 
+        width: calculateSizeReduction(800, depth), 
+        height: calculateSizeReduction(600, depth) 
+      }}
       windowType="safari"
       className="z-40"
     >
@@ -145,12 +154,14 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
           <button 
             className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
             onClick={openRecursiveSafari}
+            title="Open Safari in Safari"
           >
             <Star className="w-4 h-4 text-gray-600 dark:text-gray-300" />
           </button>
           <button 
             className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
             onClick={openRecursiveSafari}
+            title="Open Safari in Safari (another way)"
           >
             <BookOpen className="w-4 h-4 text-gray-600 dark:text-gray-300" />
           </button>
