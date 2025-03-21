@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, ReactNode } from 'react';
 import { X, Minus, Square } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -12,6 +11,7 @@ export interface MacWindowProps {
   children: ReactNode;
   windowType?: 'default' | 'terminal' | 'safari' | 'itunes';
   resizable?: boolean;
+  customControls?: ReactNode;
 }
 
 const MacWindow: React.FC<MacWindowProps> = ({
@@ -23,6 +23,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
   children,
   windowType = 'default',
   resizable = true,
+  customControls,
 }) => {
   const [position, setPosition] = useState(initialPosition);
   const [size, setSize] = useState(initialSize);
@@ -33,7 +34,6 @@ const MacWindow: React.FC<MacWindowProps> = ({
   const [startSize, setStartSize] = useState({ width: 0, height: 0 });
   const [isMinimized, setIsMinimized] = useState(false);
   
-  // Get background colors based on window type
   const getWindowStyle = () => {
     switch (windowType) {
       case 'terminal':
@@ -47,7 +47,6 @@ const MacWindow: React.FC<MacWindowProps> = ({
     }
   };
   
-  // Get title bar color based on window type
   const getTitleBarStyle = () => {
     switch (windowType) {
       case 'terminal':
@@ -126,7 +125,6 @@ const MacWindow: React.FC<MacWindowProps> = ({
         transition: isMinimized ? 'height 0.2s ease-in-out' : 'none',
       }}
     >
-      {/* Title Bar */}
       <div
         className={cn(
           'h-8 flex items-center px-3',
@@ -156,16 +154,15 @@ const MacWindow: React.FC<MacWindowProps> = ({
         <div className="text-center flex-1 text-xs font-medium">
           {title}
         </div>
+        {customControls}
       </div>
 
-      {/* Content */}
       {!isMinimized && (
         <>
           <div className="h-[calc(100%-32px)]">
             {children}
           </div>
           
-          {/* Resize Handle */}
           {resizable && (
             <div 
               className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"

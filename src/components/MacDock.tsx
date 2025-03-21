@@ -8,13 +8,15 @@ interface MacDockProps {
   onTerminalClick: () => void;
   onSafariClick: () => void;
   onITunesClick: () => void;
+  onSystemPreferencesClick?: () => void;
 }
 
 const MacDock: React.FC<MacDockProps> = ({ 
   className, 
   onTerminalClick, 
   onSafariClick, 
-  onITunesClick 
+  onITunesClick,
+  onSystemPreferencesClick
 }) => {
   const dockItems = [
     { icon: Folder, label: 'Finder' },
@@ -25,7 +27,7 @@ const MacDock: React.FC<MacDockProps> = ({
     { icon: Image, label: 'Photos' },
     { icon: Video, label: 'Videos' },
     { icon: Calendar, label: 'Calendar' },
-    { icon: Settings, label: 'System Preferences' },
+    { icon: Settings, label: 'System Preferences', onClick: onSystemPreferencesClick },
   ];
 
   return (
