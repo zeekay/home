@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import MacDock from './MacDock';
 import MacTerminalWindow from './MacTerminalWindow';

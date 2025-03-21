@@ -1,24 +1,15 @@
 
 import React, { useState } from 'react';
-import { PaintBucket, Image, Sliders, Palette, RefreshCw, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Slider } from '@/components/ui/slider';
+import { PaintBucket, RefreshCw } from 'lucide-react';
 import { 
   Popover,
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover';
-import {
-  RadioGroup,
-  RadioGroupItem
-} from '@/components/ui/radio-group';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog';
+
+import SettingsSliders from './desktop-settings/SettingsSliders';
+import ThemeSelector from './desktop-settings/ThemeSelector';
+import BackgroundUploader from './desktop-settings/BackgroundUploader';
 
 interface DesktopSettingsProps {
   onPaddingChange: (padding: number) => void;
@@ -30,15 +21,6 @@ interface DesktopSettingsProps {
   currentTheme: string;
   currentBgUrl: string;
 }
-
-const themes = [
-  { id: 'default', name: 'Default', color: 'bg-gradient-to-br from-blue-500 to-purple-600' },
-  { id: 'ocean', name: 'Ocean', color: 'bg-gradient-to-br from-blue-400 to-cyan-500' },
-  { id: 'sunset', name: 'Sunset', color: 'bg-gradient-to-br from-orange-400 to-pink-600' },
-  { id: 'forest', name: 'Forest', color: 'bg-gradient-to-br from-green-400 to-emerald-600' },
-  { id: 'lavender', name: 'Lavender', color: 'bg-gradient-to-br from-purple-400 to-indigo-600' },
-  { id: 'custom', name: 'Custom', color: 'bg-gray-200 dark:bg-gray-700' },
-];
 
 const DesktopSettings: React.FC<DesktopSettingsProps> = ({
   onPaddingChange,
@@ -123,119 +105,26 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
             </h3>
             
             <div className="space-y-3">
-              <div className="space-y-1">
-                <div className="flex justify-between">
-                  <label className="text-sm flex items-center">
-                    <Sliders className="w-4 h-4 mr-2" />
-                    Window Padding
-                  </label>
-                  <span className="text-xs">{localPadding.toFixed(1)}x</span>
-                </div>
-                <Slider 
-                  value={[localPadding]} 
-                  min={0.5} 
-                  max={3} 
-                  step={0.1} 
-                  onValueChange={handlePaddingChange}
-                />
-              </div>
+              {/* Sliders for padding and opacity */}
+              <SettingsSliders
+                localPadding={localPadding}
+                localOpacity={localOpacity}
+                onPaddingChange={handlePaddingChange}
+                onOpacityChange={handleOpacityChange}
+              />
               
-              <div className="space-y-1">
-                <div className="flex justify-between">
-                  <label className="text-sm flex items-center">
-                    <Palette className="w-4 h-4 mr-2" />
-                    Window Opacity
-                  </label>
-                  <span className="text-xs">{Math.round(localOpacity * 100)}%</span>
-                </div>
-                <Slider 
-                  value={[localOpacity]} 
-                  min={0.3} 
-                  max={1} 
-                  step={0.05} 
-                  onValueChange={handleOpacityChange}
-                />
-              </div>
+              {/* Theme selector */}
+              <ThemeSelector
+                localTheme={localTheme}
+                onThemeChange={handleThemeChange}
+              />
               
-              <div className="space-y-2">
-                <label className="text-sm flex items-center">
-                  <Palette className="w-4 h-4 mr-2" />
-                  Background Theme
-                </label>
-                <RadioGroup 
-                  value={localTheme}
-                  onValueChange={handleThemeChange}
-                  className="grid grid-cols-3 gap-2"
-                >
-                  {themes.map((theme) => (
-                    <div 
-                      key={theme.id}
-                      className="relative flex flex-col items-center"
-                    >
-                      <RadioGroupItem 
-                        value={theme.id} 
-                        id={theme.id}
-                        className="sr-only"
-                      />
-                      <label 
-                        htmlFor={theme.id}
-                        className={cn(
-                          "w-full aspect-square rounded-md cursor-pointer border-2 hover:opacity-90",
-                          theme.color,
-                          localTheme === theme.id ? "border-white shadow-lg" : "border-transparent"
-                        )}
-                      ></label>
-                      <span className="text-xs mt-1">{theme.name}</span>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </div>
-              
-              <Dialog>
-                <DialogTrigger asChild>
-                  <button 
-                    className="w-full py-2 px-4 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-md text-sm flex items-center justify-center"
-                  >
-                    <Image className="w-4 h-4 mr-2" />
-                    Upload Custom Background
-                  </button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Upload Custom Background</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
-                      {uploadedImagePreview ? (
-                        <div className="relative">
-                          <img 
-                            src={uploadedImagePreview} 
-                            alt="Preview" 
-                            className="max-h-48 mx-auto rounded-md object-cover"
-                          />
-                          <button 
-                            onClick={() => setUploadedImagePreview(null)}
-                            className="absolute top-2 right-2 bg-black/50 p-1 rounded-full"
-                          >
-                            <X className="w-4 h-4 text-white" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="space-y-2">
-                          <Image className="w-10 h-10 text-gray-400 mx-auto" />
-                          <p className="text-sm text-gray-500">Drag and drop or click to upload</p>
-                        </div>
-                      )}
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        onChange={handleFileUpload}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      />
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              {/* Background uploader */}
+              <BackgroundUploader
+                uploadedImagePreview={uploadedImagePreview}
+                setUploadedImagePreview={setUploadedImagePreview}
+                handleFileUpload={handleFileUpload}
+              />
               
               <button 
                 onClick={resetSettings}
