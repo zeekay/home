@@ -30,18 +30,7 @@ body {
   padding-bottom: 0;
 }
 
-/* Mac dock styles */
-.mac-dock {
-  display: flex;
-  justify-content: center;
-  padding: 4px 0;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  width: fit-content; /* Changed from auto to fit-content */
-  margin: 0 auto;
-}
-
+/* Dock item styles */
 .dock-item {
   transition: all 0.2s ease;
 }
