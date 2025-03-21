@@ -12,7 +12,7 @@ export interface MacWindowProps {
   initialPosition?: { x: number; y: number };
   initialSize?: { width: number; height: number };
   children: ReactNode;
-  windowType?: 'default' | 'terminal' | 'safari' | 'itunes';
+  windowType?: 'default' | 'terminal' | 'safari' | 'itunes' | 'textpad';
   resizable?: boolean;
   customControls?: ReactNode;
 }

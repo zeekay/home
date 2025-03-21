@@ -5,7 +5,7 @@ import WindowControls from './WindowControls';
 
 interface WindowTitleBarProps {
   title: string;
-  windowType: 'default' | 'terminal' | 'safari' | 'itunes';
+  windowType: 'default' | 'terminal' | 'safari' | 'itunes' | 'textpad';
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   onClose: () => void;
   onMinimize: () => void;
@@ -28,6 +28,8 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
         return 'bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300';
       case 'itunes':
         return 'bg-gradient-to-b from-gray-700 to-gray-800 text-white';
+      case 'textpad':
+        return 'bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300';
       default:
         return 'bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300';
     }
