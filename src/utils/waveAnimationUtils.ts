@@ -1,3 +1,4 @@
+
 import { calculateDynamicPeaks } from '@/utils/animationUtils';
 
 export const getWaveAnimationInitialState = () => ({
@@ -54,8 +55,8 @@ export const animateEnhancedWaves = (ctx: CanvasRenderingContext2D, canvas: HTML
     // Update noise
     state.noiseOffset += state.noiseSpeed * deltaTime * 0.001;
     
-    // Calculate dynamic peaks
-    state.peaks = calculateDynamicPeaks(canvas.width, state.peakCount, state.peakSpacing, state.peakOffset);
+    // Calculate dynamic peaks - fixing the argument issue
+    state.peaks = calculateDynamicPeaks(now, 0, [0.01, 0.02, 0.015], [0, 0.5, 1.0], 0);
     
     // Update peak offset for horizontal movement
     state.peakOffset += 0.5;
@@ -64,8 +65,11 @@ export const animateEnhancedWaves = (ctx: CanvasRenderingContext2D, canvas: HTML
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     // Draw waves
-    for (let i = 0; i < state.peaks.length; i++) {
-      const peak = state.peaks[i];
+    for (let i = 0; i < state.peakCount; i++) {
+      const peak = {
+        xOffset: i * state.peakSpacing + state.peakOffset,
+        yFactor: 0.5 + (i % 2 === 0 ? 0.5 : -0.5) * 0.5
+      };
       
       ctx.beginPath();
       

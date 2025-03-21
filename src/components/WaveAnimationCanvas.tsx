@@ -37,10 +37,10 @@ const WaveAnimationCanvas: React.FC<WaveAnimationCanvasProps> = ({ theme }) => {
     updateSize();
     
     // Get theme-specific color
-    const color = getThemeColor(theme);
+    const themeColor = getThemeColor(theme);
     
     // Start animation based on theme
-    const cleanupFn = animateEnhancedWaves(ctx, canvas, { color });
+    const cleanupFn = animateEnhancedWaves(ctx, canvas, themeColor);
     
     return () => {
       cleanupFn();
