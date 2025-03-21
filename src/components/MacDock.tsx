@@ -51,15 +51,19 @@ const MacDock: React.FC<MacDockProps> = ({
     <TooltipProvider>
       <div 
         className={cn(
-          'fixed bottom-6 left-1/2 -translate-x-1/2', 
+          'fixed bottom-6 left-1/2 -translate-x-1/2',
           'flex items-center justify-center',
-          'p-3 mx-auto',
-          'bg-black/40 backdrop-blur-sm border border-white/5',
-          'rounded-2xl h-20 w-auto', 
+          'p-3',
+          'bg-black/40 backdrop-blur-sm',
+          'rounded-2xl h-20',
           'shadow-xl',
           className
         )}
-        style={{ maxWidth: '90vw', overflow: 'auto' }}
+        style={{ 
+          maxWidth: '90vw', 
+          overflow: 'auto',
+          border: '1px solid rgba(255, 255, 255, 0.05)'
+        }}
       >
         <div className="flex items-end space-x-2 py-1">
           {dockItems.map((item, index) => (
