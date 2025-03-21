@@ -44,7 +44,8 @@ const Terminal: React.FC<TerminalProps> = ({
   useEffect(() => {
     const initWebContainer = async () => {
       try {
-        if(!WebContainer.shouldBoot()) {
+        // Check if WebContainer is supported
+        if (typeof WebContainer === 'undefined') {
           addEntry({
             command: '',
             output: "WebContainer is not supported in this environment. Falling back to simulated terminal.",
@@ -185,21 +186,28 @@ help               - Show this help message`,
 
       // Handle other commands
       const shellProcess = await webContainerInstance.spawn('sh', []);
-      shellProcess.output.pipeTo(
-        new WritableStream({
-          write(data) {
-            addEntry({
-              command: '',
-              output: data,
-              id: Date.now()
-            });
-          }
-        })
-      );
+      
+      // Create a custom writer to handle the output
+      const outputWriter = new WritableStream({
+        write(chunk) {
+          addEntry({
+            command: '',
+            output: chunk,
+            id: Date.now()
+          });
+        }
+      });
+      
+      // Pipe the shell output to our custom writer
+      shellProcess.output.pipeTo(outputWriter);
 
-      const exitCode = await shellProcess.input.write(`${command}\n`);
+      // Write the command to the shell
+      await shellProcess.input.write(`${command}\n`);
+      
+      // Get the exit code
+      const exitCode = await shellProcess.exit;
 
-      if (exitCode !== 0) {
+      if (exitCode !== 0 && exitCode !== undefined) {
         addEntry({
           command: '',
           output: `Command exited with code ${exitCode}`,
