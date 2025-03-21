@@ -1,11 +1,9 @@
 
 import React, { useState, useEffect, ReactNode } from 'react';
-import { X, Minus, Square } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-// Create a global z-index manager
-let globalZIndex = 40;
-const getNextZIndex = () => ++globalZIndex;
+import WindowTitleBar from './window/WindowTitleBar';
+import WindowResizeHandle from './window/WindowResizeHandle';
+import { getWindowStyle, getNextZIndex } from './window/windowUtils';
 
 export interface MacWindowProps {
   title: string;
@@ -38,34 +36,8 @@ const MacWindow: React.FC<MacWindowProps> = ({
   const [resizeStartPos, setResizeStartPos] = useState({ x: 0, y: 0 });
   const [startSize, setStartSize] = useState({ width: 0, height: 0 });
   const [isMinimized, setIsMinimized] = useState(false);
-  const [zIndex, setZIndex] = useState(globalZIndex);
+  const [zIndex, setZIndex] = useState(getNextZIndex());
   
-  const getWindowStyle = () => {
-    switch (windowType) {
-      case 'terminal':
-        return 'bg-[#262a33] text-white';
-      case 'safari':
-        return 'bg-white/90 dark:bg-gray-800/90';
-      case 'itunes':
-        return 'bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800';
-      default:
-        return 'bg-white/90 dark:bg-gray-800/90';
-    }
-  };
-  
-  const getTitleBarStyle = () => {
-    switch (windowType) {
-      case 'terminal':
-        return 'bg-gradient-to-b from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300';
-      case 'safari':
-        return 'bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300';
-      case 'itunes':
-        return 'bg-gradient-to-b from-gray-700 to-gray-800 text-white';
-      default:
-        return 'bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300';
-    }
-  };
-
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     setIsDragging(true);
     setDragOffset({
@@ -88,7 +60,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
     setIsMinimized(!isMinimized);
   };
   
-  // New method to bring window to front
+  // Method to bring window to front
   const bringToFront = () => {
     const newZIndex = getNextZIndex();
     setZIndex(newZIndex);
@@ -128,7 +100,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
     <div
       className={cn(
         'fixed overflow-hidden shadow-2xl border border-gray-500/20 backdrop-blur-md rounded-lg',
-        getWindowStyle(),
+        getWindowStyle(windowType),
         className
       )}
       style={{
@@ -141,37 +113,14 @@ const MacWindow: React.FC<MacWindowProps> = ({
       }}
       onClick={bringToFront}
     >
-      <div
-        className={cn(
-          'h-8 flex items-center px-3',
-          getTitleBarStyle()
-        )}
+      <WindowTitleBar
+        title={title}
+        windowType={windowType}
         onMouseDown={handleMouseDown}
-      >
-        <div className="flex space-x-2 items-center">
-          <button 
-            onClick={onClose}
-            className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition-colors flex items-center justify-center"
-            title="Close"
-          >
-            <X className="w-2 h-2 text-red-800 opacity-0 hover:opacity-100" />
-          </button>
-          <button 
-            onClick={toggleMinimize}
-            className="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors flex items-center justify-center"
-            title="Minimize"
-          >
-            <Minus className="w-2 h-2 text-yellow-800 opacity-0 hover:opacity-100" />
-          </button>
-          <div className="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600 transition-colors flex items-center justify-center">
-            <Square className="w-2 h-2 text-green-800 opacity-0 hover:opacity-100" />
-          </div>
-        </div>
-        <div className="text-center flex-1 text-xs font-medium">
-          {title}
-        </div>
-        {customControls}
-      </div>
+        onClose={onClose}
+        onMinimize={toggleMinimize}
+        customControls={customControls}
+      />
 
       {!isMinimized && (
         <>
@@ -179,14 +128,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
             {children}
           </div>
           
-          {resizable && (
-            <div 
-              className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
-              onMouseDown={handleResizeStart}
-            >
-              <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[6px] border-l-transparent border-b-[6px] border-b-gray-400 border-r-[6px] border-r-gray-400 absolute bottom-1 right-1" />
-            </div>
-          )}
+          {resizable && <WindowResizeHandle onResizeStart={handleResizeStart} />}
         </>
       )}
     </div>
