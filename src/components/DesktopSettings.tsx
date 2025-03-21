@@ -84,18 +84,18 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
   };
 
   return (
-    <div className="fixed bottom-20 right-6 z-50">
+    <div className="fixed bottom-12 right-6 z-50">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <button 
-            className="w-12 h-12 flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-125 shadow-lg border border-white/10 group"
+            className="w-12 h-12 flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-125 shadow-lg group"
             title="Edit Background"
           >
             <Palette className="w-6 h-6 text-gray-400 group-hover:animate-pulse transition-all duration-300" />
           </button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-80 backdrop-blur-xl bg-black/80 border border-white/20 p-4 rounded-xl shadow-2xl"
+          className="w-80 backdrop-blur-xl bg-black/80 border-0 p-4 rounded-xl shadow-2xl"
           side="top"
         >
           <div className="space-y-4">
