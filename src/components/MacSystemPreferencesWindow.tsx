@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import MacWindow from './MacWindow';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,7 +9,7 @@ import {
   Database, 
   Shield, 
   Cpu, 
-  Robot, 
+  Bot, 
   Music, 
   Palette, 
   Library
@@ -36,7 +35,7 @@ const MacSystemPreferencesWindow: React.FC<MacSystemPreferencesWindowProps> = ({
     },
     { 
       category: "AI & Robotics",
-      icon: <Robot className="w-6 h-6 text-green-500" />,
+      icon: <Bot className="w-6 h-6 text-green-500" />,
       items: ["Artificial Intelligence", "Machine Learning", "Robotics", "Neural Networks"]
     },
     { 
