@@ -5,6 +5,7 @@ import MacTerminalWindow from './MacTerminalWindow';
 import MacSafariWindow from './MacSafariWindow';
 import MacITunesWindow from './MacITunesWindow';
 import AnimatedBackground from './AnimatedBackground';
+import DesktopSettings from './DesktopSettings';
 
 interface MacDesktopProps {
   children: React.ReactNode;
@@ -14,6 +15,12 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   const [showTerminal, setShowTerminal] = useState(false);
   const [showSafari, setShowSafari] = useState(false);
   const [showITunes, setShowITunes] = useState(false);
+  
+  // Desktop customization settings
+  const [padding, setPadding] = useState(1);
+  const [opacity, setOpacity] = useState(0.7);
+  const [theme, setTheme] = useState('default');
+  const [customBgUrl, setCustomBgUrl] = useState('');
 
   const handleToggleTerminal = () => {
     setShowTerminal(!showTerminal);
@@ -27,10 +34,16 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
     setShowITunes(!showITunes);
   };
 
+  // Apply custom document styles for padding
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--window-padding', `${padding * 16}px`);
+    document.documentElement.style.setProperty('--window-opacity', opacity.toString());
+  }, [padding, opacity]);
+
   return (
     <div className="relative w-full h-screen overflow-hidden">
       {/* Animated Background */}
-      <AnimatedBackground />
+      <AnimatedBackground theme={theme} customImageUrl={customBgUrl} />
       
       {/* Content Area */}
       <div className="relative z-10 w-full h-full pb-20 overflow-auto">
@@ -39,26 +52,28 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
       
       {/* Application Windows */}
       {showTerminal && (
-        <div className="absolute inset-0 z-30 pointer-events-none">
-          <div className="relative w-full h-full pointer-events-auto">
-            <MacTerminalWindow 
-              onClose={() => setShowTerminal(false)}
-            />
-          </div>
-        </div>
+        <MacTerminalWindow onClose={() => setShowTerminal(false)} />
       )}
       
       {showSafari && (
-        <MacSafariWindow 
-          onClose={() => setShowSafari(false)}
-        />
+        <MacSafariWindow onClose={() => setShowSafari(false)} />
       )}
       
       {showITunes && (
-        <MacITunesWindow 
-          onClose={() => setShowITunes(false)}
-        />
+        <MacITunesWindow onClose={() => setShowITunes(false)} />
       )}
+      
+      {/* Desktop Settings */}
+      <DesktopSettings 
+        onPaddingChange={setPadding}
+        onOpacityChange={setOpacity}
+        onThemeChange={setTheme}
+        onCustomBgChange={setCustomBgUrl}
+        currentPadding={padding}
+        currentOpacity={opacity}
+        currentTheme={theme}
+        currentBgUrl={customBgUrl}
+      />
       
       {/* Mac Dock */}
       <MacDock 

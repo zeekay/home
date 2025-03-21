@@ -5,6 +5,9 @@ import { cn } from '@/lib/utils';
 
 interface TerminalProps {
   className?: string;
+  customFontSize?: number;
+  customPadding?: number;
+  customTheme?: string;
 }
 
 interface TerminalEntry {
@@ -14,7 +17,12 @@ interface TerminalEntry {
   id: number;
 }
 
-const Terminal: React.FC<TerminalProps> = ({ className }) => {
+const Terminal: React.FC<TerminalProps> = ({ 
+  className,
+  customFontSize = 14,
+  customPadding = 16,
+  customTheme = 'dark'
+}) => {
   const [entries, setEntries] = useState<TerminalEntry[]>([
     { 
       command: '', 
@@ -110,39 +118,51 @@ const Terminal: React.FC<TerminalProps> = ({ className }) => {
     }
   };
 
+  // Get terminal theme styles
+  const getTerminalTheme = () => {
+    switch (customTheme) {
+      case 'light':
+        return 'bg-[#f6f8fa] text-gray-800';
+      case 'blue':
+        return 'bg-[#0d2538] text-cyan-100';
+      case 'green':
+        return 'bg-[#0f2d1b] text-green-100';
+      case 'purple':
+        return 'bg-[#2b213a] text-purple-100';
+      default: // dark
+        return 'bg-[#262a33] text-white';
+    }
+  };
+
   return (
     <div 
       ref={containerRef}
       className={cn(
-        'glass-card terminal-shadow rounded-xl overflow-hidden flex flex-col',
-        'w-full h-[500px] md:h-[600px] transition-all duration-300 ease-in-out',
+        'glass-card terminal-shadow rounded-xl overflow-hidden flex flex-col w-full h-full transition-all duration-300 ease-in-out',
         className
       )}
     >
-      <div className="bg-[#2d333b] dark:bg-[#1c1e26] flex items-center px-4 py-2">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-red-500" />
-          <div className="w-3 h-3 rounded-full bg-yellow-500" />
-          <div className="w-3 h-3 rounded-full bg-green-500" />
-        </div>
-        <div className="text-white text-xs ml-4 opacity-70">Terminal</div>
-      </div>
-      
-      <div className="flex-1 p-4 overflow-y-auto bg-[#f6f8fa] dark:bg-[#262a33] terminal scrollbar-thin">
+      <div className={cn(
+        'flex-1 overflow-y-auto terminal scrollbar-thin',
+        getTerminalTheme()
+      )}
+        style={{ padding: `${customPadding}px` }}
+      >
         {entries.map((entry, index) => (
           <div key={entry.id} className="mb-2">
             {entry.command && (
               <div className="flex">
                 <span className="text-green-600 dark:text-green-400 mr-2">$</span>
-                <span>{entry.command}</span>
+                <span style={{ fontSize: `${customFontSize}px` }}>{entry.command}</span>
               </div>
             )}
             {entry.output && (
               <div 
                 className={cn(
-                  'whitespace-pre-wrap font-mono text-sm mt-1',
+                  'whitespace-pre-wrap font-mono mt-1',
                   entry.isError ? 'text-red-500' : 'text-foreground'
                 )}
+                style={{ fontSize: `${customFontSize}px` }}
                 dangerouslySetInnerHTML={{ __html: entry.output.replace(/\n/g, '<br />') }}
               />
             )}
@@ -159,6 +179,7 @@ const Terminal: React.FC<TerminalProps> = ({ className }) => {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               className="bg-transparent w-full outline-none terminal-text"
+              style={{ fontSize: `${customFontSize}px` }}
               autoFocus
             />
           </form>
