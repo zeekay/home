@@ -30,16 +30,6 @@ body {
   padding-bottom: 0;
 }
 
-/* Dock item styles */
-.dock-item {
-  transition: all 0.2s ease;
-}
-
-.dock-item:hover {
-  transform: scale(1.2);
-  margin: 0 8px;
-}
-
 /* Terminal styling */
 .terminal {
   font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Mono", "Droid Sans Mono", "Source Code Pro", monospace;
