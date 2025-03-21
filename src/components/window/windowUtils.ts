@@ -18,7 +18,7 @@ export const getWindowStyle = (windowType: 'default' | 'terminal' | 'safari' | '
     case 'terminal':
       return 'bg-black/75 text-white backdrop-blur-md';
     case 'safari':
-      return 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-md';
+      return 'bg-white/95 dark:bg-gray-800/95 backdrop-blur-md';
     case 'itunes':
       return 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-md';
     case 'textpad':

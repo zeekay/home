@@ -32,7 +32,7 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
 }) => {
   return (
     <div 
-      className="bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 border-b border-gray-300 dark:border-gray-600 flex items-center px-2 space-x-2"
+      className="bg-[#F6F6F6] dark:bg-[#2D2D2D] border-b border-gray-300 dark:border-gray-600 flex items-center px-2 space-x-2"
       style={{ 
         height: `${Math.max(24, 48 * scaleFactor)}px`, 
         fontSize: `${Math.max(10, 14 * scaleFactor)}px` 
@@ -88,7 +88,7 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
             type="text" 
             value={inputUrl}
             onChange={(e) => setInputUrl(e.target.value)}
-            className="w-full rounded-full bg-white/80 dark:bg-gray-800/80 border border-gray-300 dark:border-gray-600 text-sm"
+            className="w-full rounded-full bg-[#FFFFFF] dark:bg-[#3A3A3A] border border-gray-300 dark:border-gray-600 text-sm"
             style={{ 
               paddingLeft: `${Math.max(16, 32 * scaleFactor)}px`,
               paddingRight: `${Math.max(8, 12 * scaleFactor)}px`,
