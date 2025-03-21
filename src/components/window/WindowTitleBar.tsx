@@ -27,7 +27,7 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
       case 'safari':
         return 'bg-[#E8E8E8] dark:bg-[#38383A] text-gray-700 dark:text-gray-300';
       case 'itunes':
-        return 'bg-gradient-to-b from-gray-700 to-gray-800 text-white';
+        return 'bg-gradient-to-b from-gray-600 to-gray-800 text-white';
       case 'textpad':
         return 'bg-[#9F9EA1] text-gray-800 dark:text-gray-200';
       default:
@@ -38,13 +38,13 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
   return (
     <div
       className={cn(
-        'h-8 flex items-center px-3',
+        'h-8 flex items-center px-3 border-b border-gray-300/30 dark:border-gray-700/30',
         getTitleBarStyle()
       )}
       onMouseDown={onMouseDown}
     >
       <WindowControls onClose={onClose} onMinimize={onMinimize} />
-      <div className="text-center flex-1 text-xs font-medium">
+      <div className="text-center flex-1 text-xs font-medium select-none">
         {title}
       </div>
       {customControls}

@@ -32,7 +32,7 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
 }) => {
   return (
     <div 
-      className="bg-[#F6F6F6] dark:bg-[#2D2D2D] border-b border-gray-300 dark:border-gray-600 flex items-center px-2 space-x-2"
+      className="bg-[#F6F6F6] dark:bg-[#2D2D2D] border-b border-gray-300/50 dark:border-gray-600/50 flex items-center px-2 space-x-2"
       style={{ 
         height: `${Math.max(24, 48 * scaleFactor)}px`, 
         fontSize: `${Math.max(10, 14 * scaleFactor)}px` 
@@ -40,9 +40,9 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
     >
       <button 
         className={cn(
-          "rounded-full",
+          "rounded-full p-1",
           historyIndex > 0 
-            ? "hover:bg-gray-200 dark:hover:bg-gray-600" 
+            ? "hover:bg-gray-200 dark:hover:bg-gray-600 active:bg-gray-300 dark:active:bg-gray-500" 
             : "opacity-50 cursor-not-allowed"
         )}
         onClick={handleBack}
@@ -53,9 +53,9 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
       </button>
       <button 
         className={cn(
-          "rounded-full",
+          "rounded-full p-1",
           historyIndex < history.length - 1 
-            ? "hover:bg-gray-200 dark:hover:bg-gray-600" 
+            ? "hover:bg-gray-200 dark:hover:bg-gray-600 active:bg-gray-300 dark:active:bg-gray-500" 
             : "opacity-50 cursor-not-allowed"
         )}
         onClick={handleForward}
@@ -65,14 +65,14 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
         <ChevronRight style={{ width: `${Math.max(12, 16 * scaleFactor)}px`, height: `${Math.max(12, 16 * scaleFactor)}px` }} className="text-gray-600 dark:text-gray-300" />
       </button>
       <button 
-        className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+        className="rounded-full p-1 hover:bg-gray-200 dark:hover:bg-gray-600 active:bg-gray-300 dark:active:bg-gray-500"
         onClick={handleRefresh}
         style={{ padding: `${Math.max(2, 4 * scaleFactor)}px` }}
       >
         <RefreshCcw style={{ width: `${Math.max(12, 16 * scaleFactor)}px`, height: `${Math.max(12, 16 * scaleFactor)}px` }} className="text-gray-600 dark:text-gray-300" />
       </button>
       <button 
-        className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+        className="rounded-full p-1 hover:bg-gray-200 dark:hover:bg-gray-600 active:bg-gray-300 dark:active:bg-gray-500"
         onClick={handleHome}
         style={{ padding: `${Math.max(2, 4 * scaleFactor)}px` }}
       >
@@ -88,7 +88,7 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
             type="text" 
             value={inputUrl}
             onChange={(e) => setInputUrl(e.target.value)}
-            className="w-full rounded-full bg-[#FFFFFF] dark:bg-[#3A3A3A] border border-gray-300 dark:border-gray-600 text-sm"
+            className="w-full rounded-full bg-[#FFFFFF] dark:bg-[#3A3A3A] border border-gray-300/50 dark:border-gray-600/50 text-sm shadow-inner"
             style={{ 
               paddingLeft: `${Math.max(16, 32 * scaleFactor)}px`,
               paddingRight: `${Math.max(8, 12 * scaleFactor)}px`,
@@ -101,7 +101,7 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
       </form>
 
       <button 
-        className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+        className="rounded-full p-1 hover:bg-gray-200 dark:hover:bg-gray-600 active:bg-gray-300 dark:active:bg-gray-500"
         onClick={openRecursiveSafari}
         title="Open Safari in Safari"
         style={{ padding: `${Math.max(2, 4 * scaleFactor)}px` }}
@@ -109,7 +109,7 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
         <Star style={{ width: `${Math.max(12, 16 * scaleFactor)}px`, height: `${Math.max(12, 16 * scaleFactor)}px` }} className="text-gray-600 dark:text-gray-300" />
       </button>
       <button 
-        className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+        className="rounded-full p-1 hover:bg-gray-200 dark:hover:bg-gray-600 active:bg-gray-300 dark:active:bg-gray-500"
         onClick={openRecursiveSafari}
         title="Open Safari in Safari (another way)"
         style={{ padding: `${Math.max(2, 4 * scaleFactor)}px` }}

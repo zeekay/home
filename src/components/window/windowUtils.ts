@@ -20,10 +20,10 @@ export const getWindowStyle = (windowType: 'default' | 'terminal' | 'safari' | '
     case 'safari':
       return 'bg-white/95 dark:bg-gray-800/95 backdrop-blur-md';
     case 'itunes':
-      return 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-md';
+      return 'bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-gray-300/40 dark:border-gray-600/40';
     case 'textpad':
       return 'bg-white text-black';
     default:
-      return 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-md';
+      return 'bg-white/90 dark:bg-gray-800/90 backdrop-blur-md';
   }
 };

@@ -99,7 +99,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
   return (
     <div
       className={cn(
-        'fixed overflow-hidden shadow-2xl border border-gray-500/20 backdrop-blur-md rounded-lg',
+        'fixed overflow-hidden shadow-xl border border-gray-300/30 dark:border-gray-700/30 backdrop-blur-md rounded-lg',
         getWindowStyle(windowType),
         className
       )}
@@ -108,7 +108,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
         top: `${position.y}px`,
         width: `${size.width}px`,
         height: isMinimized ? '32px' : `${size.height}px`,
-        transition: isMinimized ? 'height 0.2s ease-in-out' : 'none',
+        transition: isMinimized ? 'height 0.2s ease-in-out, opacity 0.2s ease-in-out' : 'opacity 0.2s ease-in-out',
         zIndex: zIndex,
       }}
       onClick={bringToFront}
@@ -124,7 +124,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
 
       {!isMinimized && (
         <>
-          <div className="h-[calc(100%-32px)]">
+          <div className="h-[calc(100%-32px)] flex flex-col">
             {children}
           </div>
           
