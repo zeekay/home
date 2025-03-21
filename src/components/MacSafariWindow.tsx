@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RefreshCcw, ChevronLeft, ChevronRight, Search, Home, Star, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import MacWindow from './MacWindow';
@@ -19,6 +19,20 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
   const [inputUrl, setInputUrl] = useState(initialUrl);
   const [history, setHistory] = useState<string[]>([initialUrl]);
   const [historyIndex, setHistoryIndex] = useState(0);
+  const [iframeKey, setIframeKey] = useState(Date.now());
+
+  // Check if this Safari window is running inside an iframe
+  const [isInIframe, setIsInIframe] = useState(false);
+
+  useEffect(() => {
+    // Check if we're in an iframe
+    try {
+      setIsInIframe(window.self !== window.top);
+    } catch (e) {
+      // If accessing window.top throws an error, we're definitely in an iframe
+      setIsInIframe(true);
+    }
+  }, []);
 
   const handleNavigate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,9 +61,7 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
 
   const handleRefresh = () => {
     // Just re-set the URL to trigger a reload
-    const currentUrl = url;
-    setUrl('');
-    setTimeout(() => setUrl(currentUrl), 10);
+    setIframeKey(Date.now());
   };
 
   const handleHome = () => {
@@ -172,10 +184,11 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
           {url && (
             <iframe 
               src={url} 
-              title="Safari Content"
+              title={`Safari Content (Depth: ${depth})`}
               className="w-full h-full border-0"
               sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-              key={url} // Force iframe refresh when URL changes
+              key={`iframe-${depth}-${iframeKey}`} // Use depth in the key to ensure unique reload
+              data-safari-depth={depth} // Add a data attribute to track depth
             />
           )}
         </div>
