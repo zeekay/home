@@ -53,7 +53,7 @@ const MacDock: React.FC<MacDockProps> = ({
         className={cn(
           'flex justify-center items-end py-2 w-auto mx-auto',
           'bg-black/40 backdrop-blur-sm border border-white/5',
-          'rounded-2xl h-20 px-2',
+          'rounded-2xl h-20 px-4', // Added more horizontal padding
           className
         )}
       >

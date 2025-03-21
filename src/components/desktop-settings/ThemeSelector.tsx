@@ -14,12 +14,12 @@ interface ThemeSelectorProps {
 
 // Define themes outside the component to avoid recreating on each render
 const themes = [
-  { id: 'wireframe', name: 'Wireframe', color: 'bg-[#111]' },
-  { id: 'particles', name: 'Particles', color: 'bg-[#0a0a0d]' },
-  { id: 'matrix', name: 'Matrix', color: 'bg-gradient-to-br from-[#0a0a0d] to-[#111]' },
-  { id: 'waves', name: 'Waves', color: 'bg-gradient-to-b from-[#0a0a0d] to-[#111]' },
-  { id: 'neon', name: 'Neon', color: 'bg-[#050508]' },
-  { id: 'custom', name: 'Custom', color: 'bg-gray-900' },
+  { id: 'wireframe', name: 'Classic', color: 'bg-gradient-to-br from-[#111] to-[#222]' },
+  { id: 'particles', name: 'Silver', color: 'bg-gradient-to-br from-[#333] to-[#444]' },
+  { id: 'matrix', name: 'Green', color: 'bg-gradient-to-br from-[#003300] to-[#005500]' },
+  { id: 'waves', name: 'Blue', color: 'bg-gradient-to-br from-[#001133] to-[#002255]' },
+  { id: 'neon', name: 'Purple', color: 'bg-gradient-to-br from-[#220033] to-[#330055]' },
+  { id: 'custom', name: 'Custom', color: 'bg-gray-800' },
 ];
 
 const ThemeSelector: React.FC<ThemeSelectorProps> = ({
@@ -28,9 +28,9 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
 }) => {
   return (
     <div className="space-y-2">
-      <label className="text-sm flex items-center">
-        <Palette className="w-4 h-4 mr-2" />
-        Background Theme
+      <label className="text-sm flex items-center text-white">
+        <Palette className="w-4 h-4 mr-2 text-purple-400" />
+        Sound Wave Color
       </label>
       <RadioGroup 
         value={localTheme}
@@ -50,12 +50,12 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
             <label 
               htmlFor={theme.id}
               className={cn(
-                "w-full aspect-square rounded-md cursor-pointer border-2 hover:opacity-90",
+                "w-full aspect-square rounded-md cursor-pointer border-2 hover:opacity-90 transition-all duration-200",
                 theme.color,
-                localTheme === theme.id ? "border-white/50 shadow-lg" : "border-transparent"
+                localTheme === theme.id ? "border-white/50 shadow-lg scale-110" : "border-transparent"
               )}
             ></label>
-            <span className="text-xs mt-1">{theme.name}</span>
+            <span className="text-xs mt-1 text-white">{theme.name}</span>
           </div>
         ))}
       </RadioGroup>

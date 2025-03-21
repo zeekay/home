@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { PaintBucket, RefreshCw } from 'lucide-react';
+import { Palette, RefreshCw } from 'lucide-react';
 import { 
   Popover,
   PopoverContent,
@@ -84,24 +84,24 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
   };
 
   return (
-    <div className="fixed bottom-24 right-6 z-50">
+    <div className="fixed bottom-6 right-6 z-50">
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <button 
-            className="bg-white/20 dark:bg-black/20 backdrop-blur-lg p-3 rounded-full shadow-lg hover:bg-white/30 dark:hover:bg-black/30 transition-colors"
-            title="Desktop Settings"
+            className="bg-black/60 p-3 rounded-xl shadow-lg hover:bg-gray-900/80 transition-colors border border-white/10 group"
+            title="Edit Background"
           >
-            <PaintBucket className="w-5 h-5 text-white" />
+            <Palette className="w-5 h-5 text-purple-400 group-hover:animate-pulse transition-all duration-300" />
           </button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-80 backdrop-blur-xl bg-white/90 dark:bg-gray-800/90 border border-white/20 p-4 rounded-xl shadow-2xl"
+          className="w-80 backdrop-blur-xl bg-black/80 border border-white/20 p-4 rounded-xl shadow-2xl"
           side="top"
         >
           <div className="space-y-4">
-            <h3 className="text-lg font-medium flex items-center">
-              <PaintBucket className="w-4 h-4 mr-2" />
-              Desktop Settings
+            <h3 className="text-lg font-medium flex items-center text-white">
+              <Palette className="w-4 h-4 mr-2 text-purple-400" />
+              Background Settings
             </h3>
             
             <div className="space-y-3">
@@ -128,7 +128,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
               
               <button 
                 onClick={resetSettings}
-                className="w-full py-2 px-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md text-sm flex items-center justify-center"
+                className="w-full py-2 px-4 bg-gray-800 hover:bg-gray-700 rounded-md text-sm flex items-center justify-center text-white"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Reset to Default
