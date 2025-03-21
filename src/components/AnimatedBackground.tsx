@@ -96,11 +96,17 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     const verticalOscAmps = Array(waves).fill(0).map(() => Math.random() * 80 + 40); // More dramatic vertical oscillation
     const verticalOscOffsets = Array(waves).fill(0).map(() => Math.random() * Math.PI * 2);
     
+    // Dynamic opacity parameters
+    const opacityOscFreqs = Array(waves).fill(0).map(() => Math.random() * 0.01 + 0.002); // Opacity oscillation frequencies
+    const opacityOscAmps = Array(waves).fill(0).map(() => Math.random() * 0.04 + 0.02); // Opacity oscillation amplitudes
+    const opacityOscOffsets = Array(waves).fill(0).map(() => Math.random() * Math.PI * 2); // Random phase offsets
+    const baseOpacities = Array(waves).fill(0).map(() => Math.random() * 0.1 + 0.05); // Base opacity value for each wave
+    
     // Use a consistent color theme with different opacity levels
     const baseColor = options.color;
     const waveColors = Array(waves).fill(0).map((_, i) => {
-      const opacity = 0.2 - (i % 5 * 0.02); // Slightly increased opacity
-      return baseColor.replace(/[\d.]+\)$/, `${opacity})`);
+      // The opacity will be dynamically updated during animation
+      return baseColor.replace(/[\d.]+\)$/, `0)`); // Start with 0 opacity, will be updated during animation
     });
     
     let animationId: number;
@@ -117,9 +123,26 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         // Update offset for animation
         waveOffsets[index] += waveSpeeds[index];
         
+        // Calculate dynamic opacity for this frame
+        let dynamicOpacity = baseOpacities[index] + 
+                            Math.sin(time * opacityOscFreqs[index] + opacityOscOffsets[index]) * 
+                            opacityOscAmps[index];
+        
+        // Add opacity peaks that coordinate with wave height peaks
+        const peakEffect = calculateDynamicPeaks(time, index, peakFrequencies, peakTimings, waveDelays[index]);
+        if (peakEffect > 0.8) {
+          dynamicOpacity += (peakEffect - 0.6) * 0.2; // Increase opacity when wave peaks
+        }
+        
+        // Ensure opacity stays within reasonable bounds
+        dynamicOpacity = Math.min(Math.max(dynamicOpacity, 0.01), 0.25);
+        
+        // Update the wave color with new opacity
+        const rgbaColor = baseColor.replace(/[\d.]+\)$/, `${dynamicOpacity})`);
+        
         // Draw the wave line with a smooth vector-like appearance
         ctx.beginPath();
-        ctx.strokeStyle = waveColors[index % waveColors.length];
+        ctx.strokeStyle = rgbaColor;
         ctx.lineWidth = 1.5;
         
         // Use bezier curves for smoother, more vector-like waves
