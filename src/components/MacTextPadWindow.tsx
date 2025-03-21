@@ -69,15 +69,16 @@ const MacTextPadWindow: React.FC<MacTextPadWindowProps> = ({ onClose }) => {
       className="animate-scale-in"
       initialPosition={{ x: window.innerWidth / 2 - 250, y: window.innerHeight / 2 - 150 }}
       initialSize={{ width: 500, height: 300 }}
+      windowType="textpad"
     >
-      <div className="h-full p-2 bg-white/90 dark:bg-gray-800/90 overflow-auto backdrop-blur-sm">
+      <div className="h-full p-2 bg-white overflow-auto">
         {isTyping ? (
-          <div className="w-full h-full p-4 font-mono text-base bg-white/80 dark:bg-gray-800/80 whitespace-pre-wrap backdrop-blur-sm">
+          <div className="w-full h-full p-4 font-mono text-base text-black bg-white whitespace-pre-wrap">
             {text}
-            <span className="terminal-cursor animate-blink">|</span>
+            <span className="terminal-cursor animate-blink bg-black">|</span>
           </div>
         ) : (
-          <div className="w-full h-full p-4 font-mono text-base bg-white/80 dark:bg-gray-800/80 whitespace-pre-wrap backdrop-blur-sm">
+          <div className="w-full h-full p-4 font-mono text-base text-black bg-white whitespace-pre-wrap">
             {renderTextWithLinks()}
           </div>
         )}
