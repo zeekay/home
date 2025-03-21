@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { WebContainer } from '@webcontainer/api';
 import { cn } from '@/lib/utils';
@@ -40,11 +39,9 @@ const Terminal: React.FC<TerminalProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Initialize WebContainer on mount
   useEffect(() => {
     const initWebContainer = async () => {
       try {
-        // Check if WebContainer is supported by checking if it exists
         if (typeof WebContainer === 'undefined') {
           addEntry({
             command: '',
@@ -58,7 +55,6 @@ const Terminal: React.FC<TerminalProps> = ({
         const webContainerInstance = await WebContainer.boot();
         setWebContainerInstance(webContainerInstance);
         
-        // Initialize file system with some files
         await webContainerInstance.mount({
           'README.md': {
             file: {
@@ -128,7 +124,6 @@ Email: [redacted]`
     }
   }, [entries]);
   
-  // Focus input when clicking anywhere in the terminal
   useEffect(() => {
     const handleClick = () => {
       inputRef.current?.focus();
@@ -155,13 +150,11 @@ Email: [redacted]`
     if (!webContainerInstance || !isWebContainerReady) return;
 
     try {
-      // Special case for clear command
       if (command.trim() === 'clear') {
         setEntries([]);
         return;
       }
 
-      // Handle help command specially
       if (command.trim() === 'help') {
         addEntry({
           command,
@@ -184,10 +177,8 @@ help               - Show this help message`,
         return;
       }
 
-      // Handle other commands
       const shellProcess = await webContainerInstance.spawn('sh', []);
       
-      // Create a custom writer to handle the output
       const outputChunks: string[] = [];
       const outputWriter = new WritableStream({
         write(chunk) {
@@ -200,13 +191,10 @@ help               - Show this help message`,
         }
       });
       
-      // Pipe the shell output to our custom writer
       shellProcess.output.pipeTo(outputWriter);
 
-      // Use the input.write method correctly
-      await shellProcess.input.write(`${command}\n`);
+      await shellProcess.input.getWriter().write(`${command}\n`);
       
-      // Get the exit code
       const exitCode = await shellProcess.exit;
 
       if (exitCode !== 0 && exitCode !== undefined) {
@@ -234,25 +222,20 @@ help               - Show this help message`,
 
     const trimmedCommand = inputValue.trim();
     
-    // Add to history
     setCommandHistory(prev => [trimmedCommand, ...prev]);
     
-    // Add command to entries
     addEntry({
       command: trimmedCommand,
       output: '',
       id: Date.now()
     });
 
-    // If WebContainer is ready, execute command there
     if (webContainerInstance && isWebContainerReady) {
       await executeWebContainerCommand(trimmedCommand);
     } else {
-      // Fall back to simulated terminal
       if (trimmedCommand.toLowerCase() === 'clear') {
         setEntries([]);
       } else {
-        // Process using the fallback terminal
         import('@/utils/terminal').then(({ processCommand }) => {
           const result = processCommand(trimmedCommand);
           
@@ -271,7 +254,6 @@ help               - Show this help message`,
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    // Command history navigation
     if (e.key === 'ArrowUp') {
       e.preventDefault();
       const newIndex = Math.min(historyIndex + 1, commandHistory.length - 1);
@@ -291,7 +273,6 @@ help               - Show this help message`,
     }
   };
 
-  // Get terminal theme styles
   const getTerminalTheme = () => {
     switch (customTheme) {
       case 'light':
