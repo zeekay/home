@@ -67,7 +67,7 @@ const MacDock: React.FC<MacDockProps> = ({
     <TooltipProvider>
       <div 
         className={cn(
-          'fixed bottom-6 left-1/2 transform -translate-x-1/2',
+          'fixed left-1/2 transform -translate-x-1/2',
           'inline-flex items-center justify-center',
           'px-3 py-2',
           'bg-black/40 backdrop-blur-sm',
@@ -78,7 +78,9 @@ const MacDock: React.FC<MacDockProps> = ({
         style={{ 
           border: '1px solid rgba(255, 255, 255, 0.05)',
           maxWidth: 'calc(100% - 32px)',
-          width: 'max-content'
+          width: 'max-content',
+          bottom: '20px',
+          zIndex: 50
         }}
       >
         <div className="flex items-end space-x-2 py-1">

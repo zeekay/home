@@ -67,7 +67,7 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
       <AnimatedBackground theme={theme} customImageUrl={customBgUrl} />
       
       {/* Content Area */}
-      <div className="relative z-10 w-full h-full pb-20 overflow-auto">
+      <div className="relative z-10 w-full h-full pb-24 overflow-auto">
         {children}
       </div>
       
@@ -108,7 +108,7 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         currentBgUrl={customBgUrl}
       />
       
-      {/* Mac Dock */}
+      {/* Mac Dock - now positioned with its own styles */}
       <MacDock 
         onTerminalClick={handleToggleTerminal}
         onSafariClick={handleToggleSafari}
@@ -116,7 +116,6 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         onMailClick={handleToggleEmail}
         onCalendarClick={handleToggleCalendar}
         onSystemPreferencesClick={handleToggleSystemPreferences}
-        className="absolute bottom-0 left-0 right-0 z-20"
       />
     </div>
   );
