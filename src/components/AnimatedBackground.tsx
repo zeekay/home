@@ -41,61 +41,101 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       switch (theme) {
         case 'ocean':
           return [
-            { r: 30, g: 144, b: 255 },
-            { r: 0, g: 206, b: 209 },
+            { r: 30, g: 144, b: 255, a: 0.7 },
+            { r: 0, g: 206, b: 209, a: 0.7 },
+            { r: 65, g: 105, b: 225, a: 0.7 },
           ];
         case 'sunset':
           return [
-            { r: 255, g: 120, b: 50 },
-            { r: 255, g: 80, b: 160 },
+            { r: 255, g: 120, b: 50, a: 0.7 },
+            { r: 255, g: 80, b: 160, a: 0.7 },
+            { r: 255, g: 190, b: 100, a: 0.7 },
           ];
         case 'forest':
           return [
-            { r: 46, g: 139, b: 87 },
-            { r: 20, g: 200, b: 150 },
+            { r: 46, g: 139, b: 87, a: 0.7 },
+            { r: 20, g: 200, b: 150, a: 0.7 },
+            { r: 60, g: 179, b: 113, a: 0.7 },
           ];
         case 'lavender':
           return [
-            { r: 147, g: 112, b: 219 },
-            { r: 100, g: 90, b: 240 },
+            { r: 147, g: 112, b: 219, a: 0.7 },
+            { r: 100, g: 90, b: 240, a: 0.7 },
+            { r: 186, g: 85, b: 211, a: 0.7 },
           ];
-        default: // Default is blue-purple
+        default: // Stripe-like gradient
           return [
-            { r: 65, g: 105, b: 225 },
-            { r: 138, g: 43, b: 226 },
+            { r: 106, g: 48, b: 255, a: 0.7 },
+            { r: 0, g: 209, b: 255, a: 0.7 },
+            { r: 255, g: 86, b: 145, a: 0.7 },
+            { r: 255, g: 189, b: 80, a: 0.7 },
           ];
       }
     };
     
     const colors = getGradientColors();
     
-    // Create and animate the gradient
-    let tick = 0;
+    // Create gradient blobs
+    class GradientBlob {
+      x: number;
+      y: number;
+      radius: number;
+      color: { r: number; g: number; b: number; a: number };
+      vx: number;
+      vy: number;
+      
+      constructor(color: { r: number; g: number; b: number; a: number }) {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.radius = Math.random() * (canvas.width / 3) + (canvas.width / 6);
+        this.color = color;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = (Math.random() - 0.5) * 0.4;
+      }
+      
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        
+        // Bounce off edges
+        if (this.x < -this.radius) this.x = canvas.width + this.radius;
+        if (this.x > canvas.width + this.radius) this.x = -this.radius;
+        if (this.y < -this.radius) this.y = canvas.height + this.radius;
+        if (this.y > canvas.height + this.radius) this.y = -this.radius;
+      }
+      
+      draw(ctx: CanvasRenderingContext2D) {
+        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+        gradient.addColorStop(0, `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${this.color.a})`);
+        gradient.addColorStop(1, `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    
+    // Create blobs
+    const blobs: GradientBlob[] = [];
+    colors.forEach(color => {
+      // Create 2 blobs per color for more variety
+      blobs.push(new GradientBlob(color));
+      blobs.push(new GradientBlob(color));
+    });
+    
+    // Animation loop
     const animate = () => {
-      // Clear canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Create gradient
-      const time = tick * 0.002;
-      const cx = canvas.width * (0.5 + 0.3 * Math.sin(time));
-      const cy = canvas.height * (0.5 + 0.2 * Math.cos(time * 0.7));
-      const radius = Math.min(canvas.width, canvas.height) * (0.5 + 0.3 * Math.sin(time * 0.5));
-      
-      const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-      
-      // Add color stops
-      const color1 = colors[0];
-      const color2 = colors[1];
-      
-      gradient.addColorStop(0, `rgba(${color1.r}, ${color1.g}, ${color1.b}, 0.8)`);
-      gradient.addColorStop(1, `rgba(${color2.r}, ${color2.g}, ${color2.b}, 0.8)`);
-      
-      // Fill with gradient
-      ctx.fillStyle = gradient;
+      // Clear canvas with a slight fade effect
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Increment tick and request next frame
-      tick++;
+      // Update and draw blobs
+      blobs.forEach(blob => {
+        blob.update();
+        blob.draw(ctx);
+      });
+      
       requestAnimationFrame(animate);
     };
     
@@ -120,7 +160,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           className="absolute inset-0 w-full h-full"
         />
       )}
-      <div className="absolute inset-0 backdrop-blur-[2px]" />
+      <div className="absolute inset-0 backdrop-blur-[1px]" />
     </div>
   );
 };
