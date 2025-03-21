@@ -9,6 +9,8 @@ interface MacDockProps {
   onSafariClick: () => void;
   onITunesClick: () => void;
   onSystemPreferencesClick?: () => void;
+  onMailClick?: () => void;
+  onCalendarClick?: () => void;
 }
 
 const MacDock: React.FC<MacDockProps> = ({ 
@@ -16,17 +18,19 @@ const MacDock: React.FC<MacDockProps> = ({
   onTerminalClick, 
   onSafariClick, 
   onITunesClick,
-  onSystemPreferencesClick
+  onSystemPreferencesClick,
+  onMailClick,
+  onCalendarClick
 }) => {
   const dockItems = [
     { icon: Folder, label: 'Finder' },
     { icon: Globe, label: 'Safari', onClick: onSafariClick },
     { icon: Terminal, label: 'Terminal', onClick: onTerminalClick },
     { icon: Music, label: 'iTunes', onClick: onITunesClick },
-    { icon: Mail, label: 'Mail' },
+    { icon: Mail, label: 'Mail', onClick: onMailClick },
     { icon: Image, label: 'Photos' },
     { icon: Video, label: 'Videos' },
-    { icon: Calendar, label: 'Calendar' },
+    { icon: Calendar, label: 'Calendar', onClick: onCalendarClick },
     { icon: Settings, label: 'System Preferences', onClick: onSystemPreferencesClick },
   ];
 

@@ -4,6 +4,8 @@ import MacDock from './MacDock';
 import MacTerminalWindow from './MacTerminalWindow';
 import MacSafariWindow from './MacSafariWindow';
 import MacITunesWindow from './MacITunesWindow';
+import MacEmailWindow from './MacEmailWindow';
+import MacCalendarWindow from './MacCalendarWindow';
 import AnimatedBackground from './AnimatedBackground';
 import DesktopSettings from './DesktopSettings';
 
@@ -15,6 +17,8 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   const [showTerminal, setShowTerminal] = useState(false);
   const [showSafari, setShowSafari] = useState(false);
   const [showITunes, setShowITunes] = useState(false);
+  const [showEmail, setShowEmail] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
   
   // Desktop customization settings
   const [padding, setPadding] = useState(1);
@@ -32,6 +36,14 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
 
   const handleToggleITunes = () => {
     setShowITunes(!showITunes);
+  };
+
+  const handleToggleEmail = () => {
+    setShowEmail(!showEmail);
+  };
+
+  const handleToggleCalendar = () => {
+    setShowCalendar(!showCalendar);
   };
 
   // Apply custom document styles for padding
@@ -63,6 +75,14 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         <MacITunesWindow onClose={() => setShowITunes(false)} />
       )}
       
+      {showEmail && (
+        <MacEmailWindow onClose={() => setShowEmail(false)} />
+      )}
+      
+      {showCalendar && (
+        <MacCalendarWindow onClose={() => setShowCalendar(false)} />
+      )}
+      
       {/* Desktop Settings */}
       <DesktopSettings 
         onPaddingChange={setPadding}
@@ -80,6 +100,8 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         onTerminalClick={handleToggleTerminal}
         onSafariClick={handleToggleSafari}
         onITunesClick={handleToggleITunes}
+        onMailClick={handleToggleEmail}
+        onCalendarClick={handleToggleCalendar}
         className="absolute bottom-0 left-0 right-0 z-20"
       />
     </div>
