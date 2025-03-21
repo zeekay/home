@@ -7,6 +7,8 @@ import MacITunesWindow from './MacITunesWindow';
 import MacEmailWindow from './MacEmailWindow';
 import MacCalendarWindow from './MacCalendarWindow';
 import MacSystemPreferencesWindow from './MacSystemPreferencesWindow';
+import MacPhotosWindow from './MacPhotosWindow';
+import MacFaceTimeWindow from './MacFaceTimeWindow';
 import AnimatedBackground from './AnimatedBackground';
 import DesktopSettings from './DesktopSettings';
 
@@ -21,6 +23,8 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   const [showEmail, setShowEmail] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showSystemPreferences, setShowSystemPreferences] = useState(false);
+  const [showPhotos, setShowPhotos] = useState(false);
+  const [showFaceTime, setShowFaceTime] = useState(false);
   
   // Desktop customization settings
   const [padding, setPadding] = useState(1);
@@ -50,6 +54,14 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   
   const handleToggleSystemPreferences = () => {
     setShowSystemPreferences(!showSystemPreferences);
+  };
+  
+  const handleTogglePhotos = () => {
+    setShowPhotos(!showPhotos);
+  };
+  
+  const handleToggleFaceTime = () => {
+    setShowFaceTime(!showFaceTime);
   };
 
   // Apply custom document styles for padding
@@ -96,6 +108,14 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         <MacSystemPreferencesWindow onClose={() => setShowSystemPreferences(false)} />
       )}
       
+      {showPhotos && (
+        <MacPhotosWindow onClose={() => setShowPhotos(false)} />
+      )}
+      
+      {showFaceTime && (
+        <MacFaceTimeWindow onClose={() => setShowFaceTime(false)} />
+      )}
+      
       {/* Desktop Settings */}
       <DesktopSettings 
         onPaddingChange={setPadding}
@@ -116,6 +136,8 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         onMailClick={handleToggleEmail}
         onCalendarClick={handleToggleCalendar}
         onSystemPreferencesClick={handleToggleSystemPreferences}
+        onPhotosClick={handleTogglePhotos}
+        onFaceTimeClick={handleToggleFaceTime}
       />
     </div>
   );

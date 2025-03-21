@@ -23,6 +23,8 @@ interface MacDockProps {
   onSystemPreferencesClick?: () => void;
   onMailClick?: () => void;
   onCalendarClick?: () => void;
+  onPhotosClick?: () => void;
+  onFaceTimeClick?: () => void;
 }
 
 const MacDock: React.FC<MacDockProps> = ({ 
@@ -32,7 +34,9 @@ const MacDock: React.FC<MacDockProps> = ({
   onITunesClick,
   onSystemPreferencesClick,
   onMailClick,
-  onCalendarClick
+  onCalendarClick,
+  onPhotosClick,
+  onFaceTimeClick
 }) => {
   const [isTrashOpen, setIsTrashOpen] = useState(false);
 
@@ -42,7 +46,8 @@ const MacDock: React.FC<MacDockProps> = ({
     { icon: Terminal, label: 'Terminal', onClick: onTerminalClick, color: 'text-green-400' },
     { icon: Music, label: 'iTunes', onClick: onITunesClick, color: 'text-pink-400' },
     { icon: Mail, label: 'Mail', onClick: onMailClick, color: 'text-red-400' },
-    { icon: Image, label: 'Photos', color: 'text-purple-400' },
+    { icon: Image, label: 'Photos', onClick: onPhotosClick, color: 'text-purple-400' },
+    { icon: Camera, label: 'FaceTime', onClick: onFaceTimeClick, color: 'text-sky-500' },
     { icon: Video, label: 'Videos', color: 'text-amber-400' },
     { icon: Calendar, label: 'Calendar', onClick: onCalendarClick, color: 'text-orange-400' },
     { icon: Settings, label: 'System Preferences', onClick: onSystemPreferencesClick, color: 'text-indigo-400' },
@@ -54,7 +59,6 @@ const MacDock: React.FC<MacDockProps> = ({
     { icon: Coffee, label: 'Brew', color: 'text-amber-700' },
     { icon: Map, label: 'Maps', color: 'text-green-500' },
     { icon: Gamepad2, label: 'Games', color: 'text-purple-500' },
-    { icon: Camera, label: 'FaceTime', color: 'text-sky-500' },
     { icon: BookOpen, label: 'Books', color: 'text-orange-500' },
   ];
 
