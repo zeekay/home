@@ -51,9 +51,9 @@ const MacDock: React.FC<MacDockProps> = ({
     <TooltipProvider>
       <div 
         className={cn(
-          'flex justify-center items-end py-2 w-auto mx-auto',
+          'flex justify-center items-end py-2 w-fit mx-auto', // Changed from w-auto to w-fit
           'bg-black/40 backdrop-blur-sm border border-white/5',
-          'rounded-2xl h-20 px-4', // Added more horizontal padding
+          'rounded-2xl h-20 px-4',
           className
         )}
       >
