@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import MacDock from './MacDock';
 import MacTerminalWindow from './MacTerminalWindow';
@@ -24,7 +25,7 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   // Desktop customization settings
   const [padding, setPadding] = useState(1);
   const [opacity, setOpacity] = useState(0.7);
-  const [theme, setTheme] = useState('default');
+  const [theme, setTheme] = useState('wireframe');
   const [customBgUrl, setCustomBgUrl] = useState('');
 
   const handleToggleTerminal = () => {
@@ -55,6 +56,9 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   React.useEffect(() => {
     document.documentElement.style.setProperty('--window-padding', `${padding * 16}px`);
     document.documentElement.style.setProperty('--window-opacity', opacity.toString());
+    
+    // Force dark mode by default
+    document.documentElement.classList.add('dark');
   }, [padding, opacity]);
 
   return (

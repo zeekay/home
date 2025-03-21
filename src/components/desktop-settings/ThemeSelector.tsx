@@ -14,12 +14,12 @@ interface ThemeSelectorProps {
 
 // Define themes outside the component to avoid recreating on each render
 const themes = [
-  { id: 'default', name: 'Default', color: 'bg-gradient-to-br from-blue-500 to-purple-600' },
-  { id: 'ocean', name: 'Ocean', color: 'bg-gradient-to-br from-blue-400 to-cyan-500' },
-  { id: 'sunset', name: 'Sunset', color: 'bg-gradient-to-br from-orange-400 to-pink-600' },
-  { id: 'forest', name: 'Forest', color: 'bg-gradient-to-br from-green-400 to-emerald-600' },
-  { id: 'lavender', name: 'Lavender', color: 'bg-gradient-to-br from-purple-400 to-indigo-600' },
-  { id: 'custom', name: 'Custom', color: 'bg-gray-200 dark:bg-gray-700' },
+  { id: 'wireframe', name: 'Wireframe', color: 'bg-[#111]' },
+  { id: 'particles', name: 'Particles', color: 'bg-[#0a0a0d]' },
+  { id: 'matrix', name: 'Matrix', color: 'bg-gradient-to-br from-[#0a0a0d] to-[#111]' },
+  { id: 'waves', name: 'Waves', color: 'bg-gradient-to-b from-[#0a0a0d] to-[#111]' },
+  { id: 'neon', name: 'Neon', color: 'bg-[#050508]' },
+  { id: 'custom', name: 'Custom', color: 'bg-gray-900' },
 ];
 
 const ThemeSelector: React.FC<ThemeSelectorProps> = ({
@@ -52,7 +52,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
               className={cn(
                 "w-full aspect-square rounded-md cursor-pointer border-2 hover:opacity-90",
                 theme.color,
-                localTheme === theme.id ? "border-white shadow-lg" : "border-transparent"
+                localTheme === theme.id ? "border-white/50 shadow-lg" : "border-transparent"
               )}
             ></label>
             <span className="text-xs mt-1">{theme.name}</span>

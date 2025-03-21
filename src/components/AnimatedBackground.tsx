@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -10,7 +9,7 @@ interface AnimatedBackgroundProps {
 
 const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({ 
   className,
-  theme = 'default',
+  theme = 'wireframe',
   customImageUrl 
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -36,116 +35,324 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     window.addEventListener('resize', updateSize);
     updateSize();
     
-    // Set gradient colors based on theme
-    const getGradientColors = () => {
-      switch (theme) {
-        case 'ocean':
-          return [
-            { r: 30, g: 144, b: 255, a: 0.7 },
-            { r: 0, g: 206, b: 209, a: 0.7 },
-            { r: 65, g: 105, b: 225, a: 0.7 },
-          ];
-        case 'sunset':
-          return [
-            { r: 255, g: 120, b: 50, a: 0.7 },
-            { r: 255, g: 80, b: 160, a: 0.7 },
-            { r: 255, g: 190, b: 100, a: 0.7 },
-          ];
-        case 'forest':
-          return [
-            { r: 46, g: 139, b: 87, a: 0.7 },
-            { r: 20, g: 200, b: 150, a: 0.7 },
-            { r: 60, g: 179, b: 113, a: 0.7 },
-          ];
-        case 'lavender':
-          return [
-            { r: 147, g: 112, b: 219, a: 0.7 },
-            { r: 100, g: 90, b: 240, a: 0.7 },
-            { r: 186, g: 85, b: 211, a: 0.7 },
-          ];
-        default: // Stripe-like gradient
-          return [
-            { r: 106, g: 48, b: 255, a: 0.7 },
-            { r: 0, g: 209, b: 255, a: 0.7 },
-            { r: 255, g: 86, b: 145, a: 0.7 },
-            { r: 255, g: 189, b: 80, a: 0.7 },
-          ];
-      }
-    };
-    
-    const colors = getGradientColors();
-    
-    // Create gradient blobs
-    class GradientBlob {
-      x: number;
-      y: number;
-      radius: number;
-      color: { r: number; g: number; b: number; a: number };
-      vx: number;
-      vy: number;
-      
-      constructor(color: { r: number; g: number; b: number; a: number }) {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.radius = Math.random() * (canvas.width / 3) + (canvas.width / 6);
-        this.color = color;
-        this.vx = (Math.random() - 0.5) * 0.4;
-        this.vy = (Math.random() - 0.5) * 0.4;
-      }
-      
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        
-        // Bounce off edges
-        if (this.x < -this.radius) this.x = canvas.width + this.radius;
-        if (this.x > canvas.width + this.radius) this.x = -this.radius;
-        if (this.y < -this.radius) this.y = canvas.height + this.radius;
-        if (this.y > canvas.height + this.radius) this.y = -this.radius;
-      }
-      
-      draw(ctx: CanvasRenderingContext2D) {
-        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
-        gradient.addColorStop(0, `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${this.color.a})`);
-        gradient.addColorStop(1, `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0)`);
-        
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
+    // Different animation based on theme
+    switch (theme) {
+      case 'wireframe':
+        animateWireframe(ctx, canvas);
+        break;
+      case 'particles':
+        animateParticles(ctx, canvas);
+        break;
+      case 'matrix':
+        animateMatrix(ctx, canvas);
+        break;
+      case 'waves':
+        animateWaves(ctx, canvas);
+        break;
+      case 'neon':
+        animateNeon(ctx, canvas);
+        break;
+      default:
+        animateWireframe(ctx, canvas);
     }
-    
-    // Create blobs
-    const blobs: GradientBlob[] = [];
-    colors.forEach(color => {
-      // Create 2 blobs per color for more variety
-      blobs.push(new GradientBlob(color));
-      blobs.push(new GradientBlob(color));
-    });
-    
-    // Animation loop
-    const animate = () => {
-      // Clear canvas with a slight fade effect
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Update and draw blobs
-      blobs.forEach(blob => {
-        blob.update();
-        blob.draw(ctx);
-      });
-      
-      requestAnimationFrame(animate);
-    };
-    
-    const animationId = requestAnimationFrame(animate);
     
     return () => {
       window.removeEventListener('resize', updateSize);
-      cancelAnimationFrame(animationId);
     };
   }, [theme, customImageUrl]);
+  
+  // Wireframe waves animation
+  const animateWireframe = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
+    const points: {x: number, y: number, originX: number, originY: number}[] = [];
+    const spacing = 50;
+    const rows = Math.floor(canvas.height / spacing) + 1;
+    const cols = Math.floor(canvas.width / spacing) + 1;
+    
+    // Create points grid
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        points.push({
+          x: j * spacing,
+          y: i * spacing,
+          originX: j * spacing,
+          originY: i * spacing
+        });
+      }
+    }
+    
+    let animationId: number;
+    let time = 0;
+    
+    const animate = () => {
+      time += 0.01;
+      
+      // Clear canvas
+      ctx.fillStyle = 'rgba(10, 10, 13, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = 'rgba(70, 70, 75, 0.3)';
+      ctx.lineWidth = 0.5;
+      
+      // Update points position based on sine wave
+      points.forEach(point => {
+        const wave = Math.sin(time + point.originX * 0.01) * 15;
+        point.y = point.originY + wave;
+      });
+      
+      // Draw lines between points to create a grid
+      for (let i = 0; i < rows - 1; i++) {
+        for (let j = 0; j < cols - 1; j++) {
+          const idx = i * cols + j;
+          const p1 = points[idx];
+          const p2 = points[idx + 1];
+          const p3 = points[idx + cols];
+          const p4 = points[idx + cols + 1];
+          
+          // Draw horizontal line
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+          
+          // Draw vertical line
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p3.x, p3.y);
+          ctx.stroke();
+          
+          // Optional diagonal lines for more complex grid
+          if (j % 2 === 0 && i % 2 === 0) {
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p4.x, p4.y);
+            ctx.stroke();
+          }
+        }
+      }
+      
+      animationId = requestAnimationFrame(animate);
+    };
+    
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  };
+  
+  // Floating particles animation
+  const animateParticles = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
+    const particles: {x: number, y: number, size: number, vx: number, vy: number, alpha: number}[] = [];
+    const particleCount = 100;
+    
+    // Create particles
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 2 + 0.5,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        alpha: Math.random() * 0.6 + 0.2
+      });
+    }
+    
+    let animationId: number;
+    
+    const animate = () => {
+      // Clear canvas with slight fade effect
+      ctx.fillStyle = 'rgba(10, 10, 13, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Update and draw particles
+      particles.forEach(particle => {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        
+        // Wrap around screen edges
+        if (particle.x < 0) particle.x = canvas.width;
+        if (particle.x > canvas.width) particle.x = 0;
+        if (particle.y < 0) particle.y = canvas.height;
+        if (particle.y > canvas.height) particle.y = 0;
+        
+        // Draw particle
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(160, 160, 170, ${particle.alpha})`;
+        ctx.fill();
+      });
+      
+      // Draw connections between nearby particles
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < 100) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(120, 120, 130, ${0.15 * (1 - distance / 100)})`;
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      
+      animationId = requestAnimationFrame(animate);
+    };
+    
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  };
+  
+  // Matrix-like rain effect
+  const animateMatrix = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
+    const fontSize = 14;
+    const columns = Math.floor(canvas.width / fontSize);
+    
+    // Start position of each column
+    const drops: number[] = Array(columns).fill(1);
+    
+    // Characters to display
+    const chars = '01';
+    
+    let animationId: number;
+    
+    const animate = () => {
+      // Semi-transparent black to create trail effect
+      ctx.fillStyle = 'rgba(10, 10, 13, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Set text color and font
+      ctx.fillStyle = '#333';
+      ctx.font = `${fontSize}px monospace`;
+      
+      // Loop through drops
+      for (let i = 0; i < drops.length; i++) {
+        // Random character
+        const text = chars[Math.floor(Math.random() * chars.length)];
+        
+        // x = i*fontSize, y = value of drops[i]*fontSize
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        
+        // Randomly reset some drops to top
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        
+        // Increment y coordinate
+        drops[i]++;
+      }
+      
+      animationId = requestAnimationFrame(animate);
+    };
+    
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  };
+  
+  // Smooth wave animation
+  const animateWaves = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
+    const waves = [
+      { amplitude: 50, frequency: 0.01, speed: 0.02, offset: 0, y: canvas.height * 0.3 },
+      { amplitude: 30, frequency: 0.02, speed: 0.03, offset: 0, y: canvas.height * 0.5 },
+      { amplitude: 20, frequency: 0.04, speed: 0.01, offset: 0, y: canvas.height * 0.7 }
+    ];
+    
+    let animationId: number;
+    
+    const animate = () => {
+      // Clear canvas
+      ctx.fillStyle = 'rgba(10, 10, 13, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Update and draw each wave
+      waves.forEach(wave => {
+        wave.offset += wave.speed;
+        
+        ctx.beginPath();
+        ctx.moveTo(0, wave.y);
+        
+        for (let x = 0; x < canvas.width; x++) {
+          const y = wave.y + Math.sin((x * wave.frequency) + wave.offset) * wave.amplitude;
+          ctx.lineTo(x, y);
+        }
+        
+        ctx.strokeStyle = 'rgba(50, 50, 55, 0.2)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      });
+      
+      animationId = requestAnimationFrame(animate);
+    };
+    
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  };
+  
+  // Neon glow animation
+  const animateNeon = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
+    const lines: {x1: number, y1: number, x2: number, y2: number, hue: number, speed: number}[] = [];
+    const lineCount = 15;
+    
+    // Create random lines
+    for (let i = 0; i < lineCount; i++) {
+      lines.push({
+        x1: Math.random() * canvas.width,
+        y1: Math.random() * canvas.height,
+        x2: Math.random() * canvas.width,
+        y2: Math.random() * canvas.height,
+        hue: 220 + Math.random() * 40, // Bluish hue
+        speed: 0.2 + Math.random() * 0.5
+      });
+    }
+    
+    let animationId: number;
+    let time = 0;
+    
+    const animate = () => {
+      time += 0.01;
+      
+      // Clear canvas with fade effect
+      ctx.fillStyle = 'rgba(5, 5, 8, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Update and draw lines
+      lines.forEach(line => {
+        // Move line endpoints in a circular motion
+        line.x1 += Math.cos(time * line.speed) * 1;
+        line.y1 += Math.sin(time * line.speed) * 1;
+        line.x2 += Math.cos(time * line.speed + Math.PI) * 1;
+        line.y2 += Math.sin(time * line.speed + Math.PI) * 1;
+        
+        // Keep lines within canvas
+        if (line.x1 < 0 || line.x1 > canvas.width) line.x1 = Math.random() * canvas.width;
+        if (line.y1 < 0 || line.y1 > canvas.height) line.y1 = Math.random() * canvas.height;
+        if (line.x2 < 0 || line.x2 > canvas.width) line.x2 = Math.random() * canvas.width;
+        if (line.y2 < 0 || line.y2 > canvas.height) line.y2 = Math.random() * canvas.height;
+        
+        // Draw line with glow effect
+        ctx.beginPath();
+        ctx.moveTo(line.x1, line.y1);
+        ctx.lineTo(line.x2, line.y2);
+        
+        // Create glow effect with multiple strokes
+        for (let size = 3; size > 0; size--) {
+          ctx.strokeStyle = `hsla(${line.hue}, 100%, ${20 + size * 20}%, ${0.05 + size * 0.05})`;
+          ctx.lineWidth = size * 2;
+          ctx.stroke();
+        }
+      });
+      
+      animationId = requestAnimationFrame(animate);
+    };
+    
+    animate();
+    
+    return () => cancelAnimationFrame(animationId);
+  };
   
   return (
     <div className={cn('absolute inset-0 w-full h-full overflow-hidden z-0', className)}>
