@@ -1,4 +1,3 @@
-
 /* Reset some defaults */
 body, html {
   margin: 0;
@@ -39,6 +38,16 @@ body {
   font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Mono", "Droid Sans Mono", "Source Code Pro", monospace;
 }
 
+/* Cursor animation */
+@keyframes terminal-cursor {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
 .terminal-cursor {
   display: inline-block;
   width: 0.55em;
@@ -47,6 +56,20 @@ body {
   margin-left: 2px;
   vertical-align: middle;
   animation: terminal-cursor 1s infinite;
+}
+
+/* Blink animation */
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+.animate-blink {
+  animation: blink 0.7s infinite;
 }
 
 /* Remove default margin */

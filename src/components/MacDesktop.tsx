@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MacDock from './MacDock';
 import MacTerminalWindow from './MacTerminalWindow';
 import MacSafariWindow from './MacSafariWindow';
@@ -9,6 +8,7 @@ import MacCalendarWindow from './MacCalendarWindow';
 import MacSystemPreferencesWindow from './MacSystemPreferencesWindow';
 import MacPhotosWindow from './MacPhotosWindow';
 import MacFaceTimeWindow from './MacFaceTimeWindow';
+import MacTextPadWindow from './MacTextPadWindow';
 import AnimatedBackground from './AnimatedBackground';
 import DesktopSettings from './DesktopSettings';
 
@@ -25,12 +25,22 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   const [showSystemPreferences, setShowSystemPreferences] = useState(false);
   const [showPhotos, setShowPhotos] = useState(false);
   const [showFaceTime, setShowFaceTime] = useState(false);
+  const [showTextPad, setShowTextPad] = useState(false);
   
   // Desktop customization settings
   const [padding, setPadding] = useState(1);
   const [opacity, setOpacity] = useState(0.7);
   const [theme, setTheme] = useState('wireframe');
   const [customBgUrl, setCustomBgUrl] = useState('');
+
+  // Auto open TextPad with welcome message on component mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowTextPad(true);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleToggleTerminal = () => {
     setShowTerminal(!showTerminal);
@@ -62,6 +72,10 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   
   const handleToggleFaceTime = () => {
     setShowFaceTime(!showFaceTime);
+  };
+
+  const handleToggleTextPad = () => {
+    setShowTextPad(!showTextPad);
   };
 
   // Apply custom document styles for padding
@@ -116,6 +130,10 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         <MacFaceTimeWindow onClose={() => setShowFaceTime(false)} />
       )}
       
+      {showTextPad && (
+        <MacTextPadWindow onClose={() => setShowTextPad(false)} />
+      )}
+      
       {/* Desktop Settings */}
       <DesktopSettings 
         onPaddingChange={setPadding}
@@ -138,6 +156,7 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         onSystemPreferencesClick={handleToggleSystemPreferences}
         onPhotosClick={handleTogglePhotos}
         onFaceTimeClick={handleToggleFaceTime}
+        onTextPadClick={handleToggleTextPad}
       />
     </div>
   );

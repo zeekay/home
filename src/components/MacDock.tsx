@@ -25,6 +25,7 @@ interface MacDockProps {
   onCalendarClick?: () => void;
   onPhotosClick?: () => void;
   onFaceTimeClick?: () => void;
+  onTextPadClick?: () => void;
 }
 
 const MacDock: React.FC<MacDockProps> = ({ 
@@ -36,7 +37,8 @@ const MacDock: React.FC<MacDockProps> = ({
   onMailClick,
   onCalendarClick,
   onPhotosClick,
-  onFaceTimeClick
+  onFaceTimeClick,
+  onTextPadClick
 }) => {
   const [isTrashOpen, setIsTrashOpen] = useState(false);
 
@@ -45,6 +47,7 @@ const MacDock: React.FC<MacDockProps> = ({
     { icon: Globe, label: 'Safari', onClick: onSafariClick, color: 'text-sky-400' },
     { icon: Terminal, label: 'Terminal', onClick: onTerminalClick, color: 'text-green-400' },
     { icon: Music, label: 'iTunes', onClick: onITunesClick, color: 'text-pink-400' },
+    { icon: FileText, label: 'TextPad', onClick: onTextPadClick, color: 'text-yellow-300' },
     { icon: Mail, label: 'Mail', onClick: onMailClick, color: 'text-red-400' },
     { icon: Image, label: 'Photos', onClick: onPhotosClick, color: 'text-purple-400' },
     { icon: Camera, label: 'FaceTime', onClick: onFaceTimeClick, color: 'text-sky-500' },
