@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Code, 
@@ -12,31 +13,31 @@ export const interests: InterestCategory[] = [
   { 
     category: "Technology",
     icon: "Code",
-    iconColor: "text-blue-500",
+    iconColor: "text-cyan-400",
     items: ["Programming", "Functional Programming", "Distributed Systems", "Cryptography"]
   },
   { 
     category: "Computing",
     icon: "Cpu",
-    iconColor: "text-purple-500",
+    iconColor: "text-purple-400",
     items: ["Quantum Computing", "ZK (Zero Knowledge) Proofs", "Cloud Architecture"]
   },
   { 
     category: "AI & Robotics",
     icon: "Bot",
-    iconColor: "text-green-500",
+    iconColor: "text-emerald-400",
     items: ["Artificial Intelligence", "Machine Learning", "Robotics", "Neural Networks"]
   },
   { 
     category: "Arts",
     icon: "Palette",
-    iconColor: "text-orange-500",
+    iconColor: "text-pink-400",
     items: ["Music", "Art", "Photography", "Design"]
   },
   { 
     category: "Literature",
     icon: "Library",
-    iconColor: "text-yellow-500",
+    iconColor: "text-amber-400",
     items: ["Books", "Poetry", "Science Fiction", "Philosophy"]
   }
 ];

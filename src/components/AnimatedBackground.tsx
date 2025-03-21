@@ -38,7 +38,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     // Different animation based on theme
     switch (theme) {
       case 'wireframe':
-        animateWireframe(ctx, canvas);
+        animateSoundWaves(ctx, canvas);
         break;
       case 'particles':
         animateParticles(ctx, canvas);
@@ -53,7 +53,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         animateNeon(ctx, canvas);
         break;
       default:
-        animateWireframe(ctx, canvas);
+        animateSoundWaves(ctx, canvas);
     }
     
     return () => {
@@ -61,73 +61,49 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     };
   }, [theme, customImageUrl]);
   
-  // Wireframe waves animation
-  const animateWireframe = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
-    const points: {x: number, y: number, originX: number, originY: number}[] = [];
-    const spacing = 50;
-    const rows = Math.floor(canvas.height / spacing) + 1;
-    const cols = Math.floor(canvas.width / spacing) + 1;
-    
-    // Create points grid
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < cols; j++) {
-        points.push({
-          x: j * spacing,
-          y: i * spacing,
-          originX: j * spacing,
-          originY: i * spacing
-        });
-      }
-    }
+  // Sound waves animation (like the iconic t-shirt design)
+  const animateSoundWaves = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
+    const waves = 5; // Number of wave lines
+    const waveAmplitudes = Array(waves).fill(0).map(() => Math.random() * 30 + 15);
+    const waveFrequencies = Array(waves).fill(0).map(() => Math.random() * 0.02 + 0.01);
+    const waveSpeeds = Array(waves).fill(0).map(() => Math.random() * 0.03 + 0.01);
+    const waveOffsets = Array(waves).fill(0);
+    const waveColors = ['rgba(255,255,255,0.15)', 'rgba(255,255,255,0.12)', 'rgba(255,255,255,0.09)', 'rgba(255,255,255,0.06)', 'rgba(255,255,255,0.03)'];
     
     let animationId: number;
-    let time = 0;
     
     const animate = () => {
-      time += 0.01;
-      
-      // Clear canvas
-      ctx.fillStyle = 'rgba(10, 10, 13, 0.05)';
+      // Clear canvas with slight fade effect
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = 'rgba(70, 70, 75, 0.3)';
-      ctx.lineWidth = 0.5;
       
-      // Update points position based on sine wave
-      points.forEach(point => {
-        const wave = Math.sin(time + point.originX * 0.01) * 15;
-        point.y = point.originY + wave;
-      });
+      const centerY = canvas.height / 2;
       
-      // Draw lines between points to create a grid
-      for (let i = 0; i < rows - 1; i++) {
-        for (let j = 0; j < cols - 1; j++) {
-          const idx = i * cols + j;
-          const p1 = points[idx];
-          const p2 = points[idx + 1];
-          const p3 = points[idx + cols];
-          const p4 = points[idx + cols + 1];
+      // Draw each wave line
+      waveOffsets.forEach((offset, index) => {
+        // Update offset for animation
+        waveOffsets[index] += waveSpeeds[index];
+        
+        // Draw the wave line
+        ctx.beginPath();
+        ctx.strokeStyle = waveColors[index % waveColors.length];
+        ctx.lineWidth = 2;
+        
+        for (let x = 0; x < canvas.width; x += 1) {
+          const y = centerY + 
+                   Math.sin((x * waveFrequencies[index]) + waveOffsets[index]) * 
+                   waveAmplitudes[index] * 
+                   (1 - Math.abs(x / canvas.width - 0.5) * 1.5); // Amplitude decreases toward edges
           
-          // Draw horizontal line
-          ctx.beginPath();
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(p2.x, p2.y);
-          ctx.stroke();
-          
-          // Draw vertical line
-          ctx.beginPath();
-          ctx.moveTo(p1.x, p1.y);
-          ctx.lineTo(p3.x, p3.y);
-          ctx.stroke();
-          
-          // Optional diagonal lines for more complex grid
-          if (j % 2 === 0 && i % 2 === 0) {
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p4.x, p4.y);
-            ctx.stroke();
+          if (x === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
           }
         }
-      }
+        
+        ctx.stroke();
+      });
       
       animationId = requestAnimationFrame(animate);
     };
@@ -364,7 +340,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       ) : (
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 w-full h-full"
+          className="absolute inset-0 w-full h-full bg-black"
         />
       )}
       <div className="absolute inset-0 backdrop-blur-[1px]" />
