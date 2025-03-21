@@ -7,11 +7,13 @@ import MacWindow from './MacWindow';
 interface MacSafariWindowProps {
   onClose: () => void;
   initialUrl?: string;
+  depth?: number;
 }
 
 const MacSafariWindow: React.FC<MacSafariWindowProps> = ({ 
   onClose,
-  initialUrl = window.location.href // Set default to current page for recursive effect
+  initialUrl = window.location.href, // Set default to current page
+  depth = 0
 }) => {
   const [url, setUrl] = useState(initialUrl);
   const [inputUrl, setInputUrl] = useState(initialUrl);
@@ -20,15 +22,10 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
 
   const handleNavigate = (e: React.FormEvent) => {
     e.preventDefault();
-    let processedUrl = inputUrl;
-    
-    // Add https if no protocol specified
-    if (!/^https?:\/\//i.test(processedUrl)) {
-      processedUrl = 'https://' + processedUrl;
-    }
-    
-    setUrl(processedUrl);
-    setHistory(prev => [...prev.slice(0, historyIndex + 1), processedUrl]);
+    const currentUrl = window.location.href;
+    setUrl(currentUrl);
+    setInputUrl(currentUrl);
+    setHistory(prev => [...prev.slice(0, historyIndex + 1), currentUrl]);
     setHistoryIndex(prev => prev + 1);
   };
 
@@ -56,19 +53,38 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
   };
 
   const handleHome = () => {
-    const homeUrl = window.location.origin;
-    setUrl(homeUrl);
-    setInputUrl(homeUrl);
-    setHistory(prev => [...prev.slice(0, historyIndex + 1), homeUrl]);
+    const currentUrl = window.location.href;
+    setUrl(currentUrl);
+    setInputUrl(currentUrl);
+    setHistory(prev => [...prev.slice(0, historyIndex + 1), currentUrl]);
     setHistoryIndex(prev => prev + 1);
+  };
+
+  // Open a new recursive safari window
+  const openRecursiveSafari = () => {
+    const newWindow = document.createElement('div');
+    document.body.appendChild(newWindow);
+    
+    // Create a new Safari window component with increased depth
+    const safariWindow = (
+      <MacSafariWindow 
+        onClose={() => document.body.removeChild(newWindow)} 
+        initialUrl={window.location.href}
+        depth={depth + 1}
+      />
+    );
+    
+    // Render the new Safari window
+    const root = ReactDOM.createRoot(newWindow);
+    root.render(safariWindow);
   };
 
   return (
     <MacWindow
-      title="Safari"
+      title={`Safari${depth > 0 ? ` (${depth})` : ''}`}
       onClose={onClose}
-      initialPosition={{ x: 100, y: 100 }}
-      initialSize={{ width: 800, height: 600 }}
+      initialPosition={{ x: 100 + (depth * 30), y: 100 + (depth * 20) }}
+      initialSize={{ width: 800 - (depth * 40), height: 600 - (depth * 30) }}
       windowType="safari"
       className="z-40"
     >
@@ -126,23 +142,18 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
             </div>
           </form>
 
-          <button className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600">
+          <button 
+            className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+            onClick={openRecursiveSafari}
+          >
             <Star className="w-4 h-4 text-gray-600 dark:text-gray-300" />
           </button>
-          <button className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600">
+          <button 
+            className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+            onClick={openRecursiveSafari}
+          >
             <BookOpen className="w-4 h-4 text-gray-600 dark:text-gray-300" />
           </button>
-        </div>
-
-        {/* Bookmarks Bar */}
-        <div className="h-8 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-300 dark:border-gray-600 flex items-center px-4 text-xs">
-          <div className="flex space-x-4">
-            <span className="text-blue-600 dark:text-blue-400 cursor-pointer" onClick={() => { setUrl('https://apple.com'); setInputUrl('https://apple.com'); }}>Apple</span>
-            <span className="text-blue-600 dark:text-blue-400 cursor-pointer" onClick={() => { setUrl('https://icloud.com'); setInputUrl('https://icloud.com'); }}>iCloud</span>
-            <span className="text-blue-600 dark:text-blue-400 cursor-pointer" onClick={() => { setUrl(window.location.href); setInputUrl(window.location.href); }}>This Site</span>
-            <span className="text-blue-600 dark:text-blue-400 cursor-pointer" onClick={() => { setUrl('https://github.com/zeekay'); setInputUrl('https://github.com/zeekay'); }}>GitHub</span>
-            <span className="text-blue-600 dark:text-blue-400 cursor-pointer" onClick={() => { setUrl('https://twitter.com/zeekay'); setInputUrl('https://twitter.com/zeekay'); }}>Twitter</span>
-          </div>
         </div>
 
         {/* Browser Content */}
@@ -161,5 +172,8 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
     </MacWindow>
   );
 };
+
+// We need to import ReactDOM for the recursive window creation
+import ReactDOM from 'react-dom/client';
 
 export default MacSafariWindow;
