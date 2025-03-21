@@ -19,6 +19,7 @@ const themes = [
   { id: 'matrix', name: 'Green', color: 'bg-gradient-to-br from-[#003300] to-[#005500]' },
   { id: 'waves', name: 'Blue', color: 'bg-gradient-to-br from-[#001133] to-[#002255]' },
   { id: 'neon', name: 'Purple', color: 'bg-gradient-to-br from-[#220033] to-[#330055]' },
+  { id: 'black', name: 'Black', color: 'bg-black' },
   { id: 'custom', name: 'Custom', color: 'bg-gray-800' },
 ];
 
