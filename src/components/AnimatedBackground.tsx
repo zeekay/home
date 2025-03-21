@@ -39,22 +39,22 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     // Different animation based on theme
     switch (theme) {
       case 'wireframe':
-        animateEnhancedWaves(ctx, canvas, { color: 'rgba(255,255,255,0.2)' });
+        animateEnhancedWaves(ctx, canvas, { color: 'rgba(255,255,255,0.28)' });
         break;
       case 'particles':
-        animateEnhancedWaves(ctx, canvas, { color: 'rgba(200, 200, 210, 0.22)' });
+        animateEnhancedWaves(ctx, canvas, { color: 'rgba(230, 230, 240, 0.30)' });
         break;
       case 'matrix':
-        animateEnhancedWaves(ctx, canvas, { color: 'rgba(160, 255, 180, 0.18)' });
+        animateEnhancedWaves(ctx, canvas, { color: 'rgba(180, 255, 200, 0.25)' });
         break;
       case 'waves':
-        animateEnhancedWaves(ctx, canvas, { color: 'rgba(160, 200, 255, 0.20)' });
+        animateEnhancedWaves(ctx, canvas, { color: 'rgba(180, 220, 255, 0.28)' });
         break;
       case 'neon':
-        animateEnhancedWaves(ctx, canvas, { color: 'rgba(180, 160, 255, 0.25)' });
+        animateEnhancedWaves(ctx, canvas, { color: 'rgba(200, 180, 255, 0.32)' });
         break;
       default:
-        animateEnhancedWaves(ctx, canvas, { color: 'rgba(255,255,255,0.2)' });
+        animateEnhancedWaves(ctx, canvas, { color: 'rgba(255,255,255,0.28)' });
     }
     
     return () => {
@@ -66,7 +66,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
   const animateEnhancedWaves = (
     ctx: CanvasRenderingContext2D, 
     canvas: HTMLCanvasElement,
-    options = { color: 'rgba(255,255,255,0.2)' }
+    options = { color: 'rgba(255,255,255,0.28)' }
   ) => {
     // Increased number of waves for density
     const waves = 100;
@@ -98,14 +98,24 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     
     // Dynamic opacity parameters
     const opacityOscFreqs = Array(waves).fill(0).map(() => Math.random() * 0.01 + 0.002); // Opacity oscillation frequencies
-    const opacityOscAmps = Array(waves).fill(0).map(() => Math.random() * 0.04 + 0.02); // Opacity oscillation amplitudes
+    const opacityOscAmps = Array(waves).fill(0).map(() => Math.random() * 0.05 + 0.03); // Stronger opacity oscillation
     const opacityOscOffsets = Array(waves).fill(0).map(() => Math.random() * Math.PI * 2); // Random phase offsets
-    const baseOpacities = Array(waves).fill(0).map(() => Math.random() * 0.15 + 0.1); // Higher base opacity value for each wave
+    const baseOpacities = Array(waves).fill(0).map(() => Math.random() * 0.2 + 0.15); // Higher base opacity value for each wave
     
     // Glow parameters for each wave
-    const glowRadii = Array(waves).fill(0).map(() => Math.random() * 4 + 2); // Random glow radius
+    const glowRadii = Array(waves).fill(0).map(() => Math.random() * 6 + 3); // Increased glow radius
     const glowFreqs = Array(waves).fill(0).map(() => Math.random() * 0.008 + 0.001); // Glow animation frequency
     const glowOffsets = Array(waves).fill(0).map(() => Math.random() * Math.PI * 2); // Random phase offsets
+    
+    // Line width variation
+    const lineWidths = Array(waves).fill(0).map(() => Math.random() * 1 + 1.2); // Varied line thickness
+    const lineWidthFreqs = Array(waves).fill(0).map(() => Math.random() * 0.01 + 0.002);
+    const lineWidthOffsets = Array(waves).fill(0).map(() => Math.random() * Math.PI * 2);
+    
+    // Z-axis simulation parameters (for 3D-like effect)
+    const zFreqs = Array(waves).fill(0).map(() => Math.random() * 0.005 + 0.001);
+    const zAmps = Array(waves).fill(0).map(() => Math.random() * 0.4 + 0.7); // Scale factor
+    const zOffsets = Array(waves).fill(0).map(() => Math.random() * Math.PI * 2);
     
     // Use a consistent color theme with different opacity levels
     const baseColor = options.color;
@@ -123,35 +133,48 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       
       time += 0.01;
       
-      // Draw each wave line
-      waveOffsets.forEach((offset, index) => {
+      // Sort waves by simulated z-depth for proper drawing order
+      const sortedWaveIndices = Array.from({ length: waves }, (_, i) => i).sort((a, b) => {
+        const zDepthA = Math.sin(time * zFreqs[a] + zOffsets[a]) * 0.2 + 0.8;
+        const zDepthB = Math.sin(time * zFreqs[b] + zOffsets[b]) * 0.2 + 0.8;
+        return zDepthA - zDepthB; // Sort by z-depth to create layering effect
+      });
+      
+      // Draw each wave line in z-sorted order
+      sortedWaveIndices.forEach(index => {
         // Update offset for animation
         waveOffsets[index] += waveSpeeds[index];
         
         // Calculate dynamic opacity for this frame
         let dynamicOpacity = baseOpacities[index] + 
-                            Math.sin(time * opacityOscFreqs[index] + opacityOscOffsets[index]) * 
-                            opacityOscAmps[index];
+                           Math.sin(time * opacityOscFreqs[index] + opacityOscOffsets[index]) * 
+                           opacityOscAmps[index];
         
         // Add opacity peaks that coordinate with wave height peaks
         const peakEffect = calculateDynamicPeaks(time, index, peakFrequencies, peakTimings, waveDelays[index]);
         if (peakEffect > 0.8) {
-          dynamicOpacity += (peakEffect - 0.6) * 0.3; // Increase opacity when wave peaks (more pronounced)
+          dynamicOpacity += (peakEffect - 0.6) * 0.4; // Increase opacity when wave peaks (more pronounced)
         }
         
         // Ensure opacity stays within reasonable bounds (increased for more visibility)
-        dynamicOpacity = Math.min(Math.max(dynamicOpacity, 0.02), 0.35);
+        dynamicOpacity = Math.min(Math.max(dynamicOpacity, 0.05), 0.45);
         
         // Update the wave color with new opacity
         const rgbaColor = baseColor.replace(/[\d.]+\)$/, `${dynamicOpacity})`);
         
         // Calculate dynamic glow for this frame
-        const glowRadius = glowRadii[index] * (1 + Math.sin(time * glowFreqs[index] + glowOffsets[index]) * 0.5);
+        const glowRadius = glowRadii[index] * (1 + Math.sin(time * glowFreqs[index] + glowOffsets[index]) * 0.6);
+        
+        // Calculate dynamic line width
+        const lineWidth = lineWidths[index] * (1 + Math.sin(time * lineWidthFreqs[index] + lineWidthOffsets[index]) * 0.3);
+        
+        // Calculate simulated z-depth for scaling effect
+        const zDepth = zAmps[index] * (Math.sin(time * zFreqs[index] + zOffsets[index]) * 0.2 + 0.8);
         
         // Draw the wave line with a smooth vector-like appearance
         ctx.beginPath();
         ctx.strokeStyle = rgbaColor;
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = lineWidth;
         
         // Add glow effect
         ctx.shadowBlur = glowRadius;
@@ -186,7 +209,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
           }
           
           // Add vertical flux component and dynamic peak effect
-          const amplitude = waveAmplitudes[index] * amplitudeModifier * dynamicPeakMultiplier + vertFlux;
+          const amplitude = waveAmplitudes[index] * amplitudeModifier * dynamicPeakMultiplier * zDepth + vertFlux;
           
           // Calculate vertical position with phase offset for more varied waves
           const y = canvas.height / 2 + 
