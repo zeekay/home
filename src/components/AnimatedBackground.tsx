@@ -39,22 +39,22 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     // Different animation based on theme
     switch (theme) {
       case 'wireframe':
-        animateSoundWaves(ctx, canvas);
+        animateEnhancedWaves(ctx, canvas);
         break;
       case 'particles':
-        animateSoundWaves(ctx, canvas, { color: 'rgba(160, 160, 170, 0.12)' });
+        animateEnhancedWaves(ctx, canvas, { color: 'rgba(160, 160, 170, 0.12)' });
         break;
       case 'matrix':
-        animateSoundWaves(ctx, canvas, { color: 'rgba(120, 255, 150, 0.08)' });
+        animateEnhancedWaves(ctx, canvas, { color: 'rgba(120, 255, 150, 0.08)' });
         break;
       case 'waves':
-        animateSoundWaves(ctx, canvas, { color: 'rgba(100, 160, 255, 0.10)' });
+        animateEnhancedWaves(ctx, canvas, { color: 'rgba(100, 160, 255, 0.10)' });
         break;
       case 'neon':
-        animateSoundWaves(ctx, canvas, { color: 'rgba(140, 100, 255, 0.15)' });
+        animateEnhancedWaves(ctx, canvas, { color: 'rgba(140, 100, 255, 0.15)' });
         break;
       default:
-        animateSoundWaves(ctx, canvas);
+        animateEnhancedWaves(ctx, canvas);
     }
     
     return () => {
@@ -62,20 +62,20 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     };
   }, [theme, customImageUrl]);
   
-  // Enhanced sound waves animation with more waves and musical ratios
-  const animateSoundWaves = (
+  // Enhanced waves animation with increased vertical movement and center fill
+  const animateEnhancedWaves = (
     ctx: CanvasRenderingContext2D, 
     canvas: HTMLCanvasElement,
     options = { color: 'rgba(255,255,255,0.12)' }
   ) => {
-    // Increased number of waves - much more dense
+    // Increased number of waves for density
     const waves = 100;
     
     // Music-inspired frequency ratios (based on harmonic series)
     const musicalRatios = [1, 1.5, 2, 2.5, 3, 4, 6, 8, 12];
     
-    // Create arrays for wave properties
-    const waveAmplitudes = Array(waves).fill(0).map(() => Math.random() * 120 + 40); // Taller waves
+    // Create arrays for wave properties with enhanced vertical movement
+    const waveAmplitudes = Array(waves).fill(0).map(() => Math.random() * 200 + 80); // Much taller waves
     const waveFrequencies = Array(waves).fill(0).map(() => {
       // Apply musical ratios to frequencies
       const baseFreq = 0.005;
@@ -86,18 +86,26 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     const waveOffsets = Array(waves).fill(0);
     const wavePhases = Array(waves).fill(0).map(() => Math.random() * Math.PI * 2); // Random starting phases
     
+    // Vertical oscillation parameters
+    const verticalOscFreqs = Array(waves).fill(0).map(() => Math.random() * 0.01 + 0.002);
+    const verticalOscAmps = Array(waves).fill(0).map(() => Math.random() * 50 + 30);
+    const verticalOscOffsets = Array(waves).fill(0).map(() => Math.random() * Math.PI * 2);
+    
     // Use a consistent color theme with different opacity levels
     const baseColor = options.color;
     const waveColors = Array(waves).fill(0).map((_, i) => {
-      const opacity = 0.15 - (i % 5 * 0.02); // Varied opacity with 5 levels
+      const opacity = 0.18 - (i % 5 * 0.02); // Slightly increased opacity
       return baseColor.replace(/[\d.]+\)$/, `${opacity})`);
     });
     
     let animationId: number;
+    let time = 0;
     
     const animate = () => {
       // Clear canvas with a complete clear for cleaner lines
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      time += 0.01;
       
       // Draw each wave line
       waveOffsets.forEach((offset, index) => {
@@ -112,12 +120,27 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         // Use bezier curves for smoother, more vector-like waves
         let points: {x: number, y: number}[] = [];
         
-        // Generate points for the wave - Use full viewport width
-        for (let x = 0; x <= canvas.width; x += 5) {
+        // Calculate vertical flux for this wave
+        const vertFlux = Math.sin(time * verticalOscFreqs[index] + verticalOscOffsets[index]) * verticalOscAmps[index];
+        
+        // Generate points for the wave - Use full viewport width with more points for smoother curves
+        for (let x = 0; x <= canvas.width; x += 3) {
           const normalizedX = x / canvas.width;
-          // Shape amplitude so it's max in the middle, lower at edges - using a sine wave
-          const amplitudeModifier = Math.sin(normalizedX * Math.PI);
-          const amplitude = waveAmplitudes[index] * amplitudeModifier;
+          
+          // Shape amplitude to be max in the center 75% of the viewport
+          let amplitudeModifier;
+          if (normalizedX < 0.125 || normalizedX > 0.875) {
+            // Taper edges for smooth transition
+            amplitudeModifier = normalizedX < 0.125 
+              ? normalizedX * 8 // Ramp up from left edge
+              : (1 - normalizedX) * 8; // Ramp down to right edge
+          } else {
+            // Full amplitude in center 75%
+            amplitudeModifier = 1.0;
+          }
+          
+          // Add vertical flux component
+          const amplitude = waveAmplitudes[index] * amplitudeModifier + vertFlux;
           
           // Calculate vertical position with phase offset for more varied waves
           const y = canvas.height / 2 + 
