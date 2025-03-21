@@ -67,18 +67,18 @@ const MacDock: React.FC<MacDockProps> = ({
     <TooltipProvider>
       <div 
         className={cn(
-          'fixed bottom-6 left-1/2 -translate-x-1/2',
-          'flex items-center justify-center',
-          'p-3',
+          'fixed bottom-6 left-1/2 transform -translate-x-1/2',
+          'inline-flex items-center justify-center',
+          'px-3 py-2',
           'bg-black/40 backdrop-blur-sm',
-          'rounded-2xl h-20',
+          'rounded-2xl',
           'shadow-xl',
           className
         )}
         style={{ 
-          maxWidth: '90vw', 
-          overflow: 'auto',
-          border: '1px solid rgba(255, 255, 255, 0.05)'
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          maxWidth: 'calc(100% - 32px)',
+          width: 'max-content'
         }}
       >
         <div className="flex items-end space-x-2 py-1">
@@ -103,7 +103,7 @@ const MacDock: React.FC<MacDockProps> = ({
           
           <Separator orientation="vertical" className="h-10 bg-white/10 mx-1" />
           
-          {/* App Launcher (Documents) */}
+          {/* App Launcher */}
           <Popover>
             <Tooltip>
               <TooltipTrigger asChild>
