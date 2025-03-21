@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Settings, Image, Sliders, Palette, RefreshCw, X } from 'lucide-react';
+import { PaintBucket, Image, Sliders, Palette, RefreshCw, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 import { 
@@ -109,7 +109,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
             className="bg-white/20 dark:bg-black/20 backdrop-blur-lg p-3 rounded-full shadow-lg hover:bg-white/30 dark:hover:bg-black/30 transition-colors"
             title="Desktop Settings"
           >
-            <Settings className="w-5 h-5 text-white" />
+            <PaintBucket className="w-5 h-5 text-white" />
           </button>
         </PopoverTrigger>
         <PopoverContent 
@@ -118,7 +118,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
         >
           <div className="space-y-4">
             <h3 className="text-lg font-medium flex items-center">
-              <Settings className="w-4 h-4 mr-2" />
+              <PaintBucket className="w-4 h-4 mr-2" />
               Desktop Settings
             </h3>
             
