@@ -70,14 +70,14 @@ const MacTextPadWindow: React.FC<MacTextPadWindowProps> = ({ onClose }) => {
       initialPosition={{ x: window.innerWidth / 2 - 250, y: window.innerHeight / 2 - 150 }}
       initialSize={{ width: 500, height: 300 }}
     >
-      <div className="h-full p-2 bg-white dark:bg-gray-800 overflow-auto">
+      <div className="h-full p-2 bg-white/90 dark:bg-gray-800/90 overflow-auto backdrop-blur-sm">
         {isTyping ? (
-          <div className="w-full h-full p-4 font-mono text-base bg-white dark:bg-gray-800 whitespace-pre-wrap">
+          <div className="w-full h-full p-4 font-mono text-base bg-white/80 dark:bg-gray-800/80 whitespace-pre-wrap backdrop-blur-sm">
             {text}
             <span className="terminal-cursor animate-blink">|</span>
           </div>
         ) : (
-          <div className="w-full h-full p-4 font-mono text-base bg-white dark:bg-gray-800 whitespace-pre-wrap">
+          <div className="w-full h-full p-4 font-mono text-base bg-white/80 dark:bg-gray-800/80 whitespace-pre-wrap backdrop-blur-sm">
             {renderTextWithLinks()}
           </div>
         )}

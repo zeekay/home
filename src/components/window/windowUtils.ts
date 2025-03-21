@@ -16,12 +16,12 @@ export const getNextZIndex = () => ++globalZIndex;
 export const getWindowStyle = (windowType: 'default' | 'terminal' | 'safari' | 'itunes') => {
   switch (windowType) {
     case 'terminal':
-      return 'bg-[#262a33] text-white';
+      return 'bg-black/75 text-white backdrop-blur-md';
     case 'safari':
-      return 'bg-white/90 dark:bg-gray-800/90';
+      return 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-md';
     case 'itunes':
-      return 'bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800';
+      return 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-md';
     default:
-      return 'bg-white/90 dark:bg-gray-800/90';
+      return 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-md';
   }
 };
