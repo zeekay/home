@@ -62,7 +62,7 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     };
   }, [theme, customImageUrl]);
   
-  // Enhanced waves animation with increased vertical movement and center fill
+  // Enhanced waves animation with increased width, dynamic peaks, and varied timing
   const animateEnhancedWaves = (
     ctx: CanvasRenderingContext2D, 
     canvas: HTMLCanvasElement,
@@ -74,27 +74,32 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
     // Music-inspired frequency ratios (based on harmonic series)
     const musicalRatios = [1, 1.5, 2, 2.5, 3, 4, 6, 8, 12];
     
+    // Dynamic peak creation variables
+    const peakFrequencies = Array(5).fill(0).map(() => Math.random() * 0.01 + 0.002);
+    const peakTimings = Array(5).fill(0).map(() => Math.random() * Math.PI * 2);
+    
     // Create arrays for wave properties with enhanced vertical movement
-    const waveAmplitudes = Array(waves).fill(0).map(() => Math.random() * 200 + 80); // Much taller waves
+    const waveAmplitudes = Array(waves).fill(0).map(() => Math.random() * 250 + 100); // Taller waves with more variance
     const waveFrequencies = Array(waves).fill(0).map(() => {
       // Apply musical ratios to frequencies
-      const baseFreq = 0.005;
+      const baseFreq = 0.003;
       const ratio = musicalRatios[Math.floor(Math.random() * musicalRatios.length)];
-      return baseFreq * ratio * (0.5 + Math.random() * 0.5); // Add some randomness
+      return baseFreq * ratio * (0.4 + Math.random() * 0.7); // More randomness
     });
-    const waveSpeeds = Array(waves).fill(0).map(() => Math.random() * 0.02 + 0.005);
+    const waveSpeeds = Array(waves).fill(0).map(() => Math.random() * 0.015 + 0.003); // Slower speeds for some waves
     const waveOffsets = Array(waves).fill(0);
     const wavePhases = Array(waves).fill(0).map(() => Math.random() * Math.PI * 2); // Random starting phases
+    const waveDelays = Array(waves).fill(0).map(() => Math.random() * 5 + 2); // Random delays before peak
     
     // Vertical oscillation parameters
-    const verticalOscFreqs = Array(waves).fill(0).map(() => Math.random() * 0.01 + 0.002);
-    const verticalOscAmps = Array(waves).fill(0).map(() => Math.random() * 50 + 30);
+    const verticalOscFreqs = Array(waves).fill(0).map(() => Math.random() * 0.008 + 0.001); // Slower vertical oscillations
+    const verticalOscAmps = Array(waves).fill(0).map(() => Math.random() * 80 + 40); // More dramatic vertical oscillation
     const verticalOscOffsets = Array(waves).fill(0).map(() => Math.random() * Math.PI * 2);
     
     // Use a consistent color theme with different opacity levels
     const baseColor = options.color;
     const waveColors = Array(waves).fill(0).map((_, i) => {
-      const opacity = 0.18 - (i % 5 * 0.02); // Slightly increased opacity
+      const opacity = 0.2 - (i % 5 * 0.02); // Slightly increased opacity
       return baseColor.replace(/[\d.]+\)$/, `${opacity})`);
     });
     
@@ -120,27 +125,33 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         // Use bezier curves for smoother, more vector-like waves
         let points: {x: number, y: number}[] = [];
         
+        // Calculate dynamic peaks based on time
+        const dynamicPeakMultiplier = calculateDynamicPeaks(time, index, peakFrequencies, peakTimings, waveDelays[index]);
+        
         // Calculate vertical flux for this wave
         const vertFlux = Math.sin(time * verticalOscFreqs[index] + verticalOscOffsets[index]) * verticalOscAmps[index];
         
-        // Generate points for the wave - Use full viewport width with more points for smoother curves
-        for (let x = 0; x <= canvas.width; x += 3) {
-          const normalizedX = x / canvas.width;
+        // Generate points for the wave - Extend 33% wider
+        const widthExtension = 1.33; // 33% wider
+        for (let x = -canvas.width * (widthExtension - 1) / 2; x <= canvas.width * widthExtension; x += 3) {
+          // Normalize x to the canvas width for amplitude calculations
+          const normalizedX = (x + (canvas.width * (widthExtension - 1) / 2)) / (canvas.width * widthExtension);
           
-          // Shape amplitude to be max in the center 75% of the viewport
+          // Shape amplitude to be max in the center 60% of the viewport (narrower center focus)
           let amplitudeModifier;
-          if (normalizedX < 0.125 || normalizedX > 0.875) {
+          if (normalizedX < 0.2 || normalizedX > 0.8) {
             // Taper edges for smooth transition
-            amplitudeModifier = normalizedX < 0.125 
-              ? normalizedX * 8 // Ramp up from left edge
-              : (1 - normalizedX) * 8; // Ramp down to right edge
+            amplitudeModifier = normalizedX < 0.2 
+              ? normalizedX * 5 // Ramp up from left edge
+              : (1 - normalizedX) * 5; // Ramp down to right edge
           } else {
-            // Full amplitude in center 75%
-            amplitudeModifier = 1.0;
+            // Center 60% - with dynamic height variation
+            const centerPosition = Math.abs(normalizedX - 0.5) * 2; // 0 at center, 1 at edges
+            amplitudeModifier = 1.0 - (centerPosition * 0.2); // Slight decrease toward edges
           }
           
-          // Add vertical flux component
-          const amplitude = waveAmplitudes[index] * amplitudeModifier + vertFlux;
+          // Add vertical flux component and dynamic peak effect
+          const amplitude = waveAmplitudes[index] * amplitudeModifier * dynamicPeakMultiplier + vertFlux;
           
           // Calculate vertical position with phase offset for more varied waves
           const y = canvas.height / 2 + 
@@ -170,6 +181,32 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
       });
       
       animationId = requestAnimationFrame(animate);
+    };
+    
+    // Function to calculate dynamic peaks that occur at random intervals
+    const calculateDynamicPeaks = (
+      currentTime: number, 
+      waveIndex: number,
+      frequencies: number[],
+      timings: number[],
+      delay: number
+    ) => {
+      // Base multiplier
+      let peakMultiplier = 0.6 + (Math.sin(currentTime * 0.1 + waveIndex) * 0.2); // Base height variation
+      
+      // Add dynamic peaks based on multiple sine waves with different frequencies
+      frequencies.forEach((freq, i) => {
+        const sinVal = Math.sin(currentTime * freq + timings[i] + (waveIndex * 0.1));
+        
+        // Only create peak when sine wave crosses high threshold and after delay
+        if (sinVal > 0.95 && currentTime > delay) {
+          // Calculate a spike effect that diminishes over time
+          const timeSinceTrigger = 0.05; // Pretend we just started
+          peakMultiplier += Math.exp(-timeSinceTrigger * 5) * 0.8; // Exponential decay
+        }
+      });
+      
+      return peakMultiplier;
     };
     
     animate();
