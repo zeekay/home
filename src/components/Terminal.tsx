@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { TerminalProps } from '@/types/terminal';
-import { useTerminal } from '@/hooks/useTerminal';
+import { useTerminal } from '@/contexts/TerminalContext';
 
 const Terminal: React.FC<TerminalProps> = ({ 
   className,
