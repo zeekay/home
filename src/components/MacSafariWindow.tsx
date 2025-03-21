@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, RefreshCcw, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { X, RefreshCcw, ChevronLeft, ChevronRight, Search, Home, Star, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MacSafariWindowProps {
@@ -68,7 +68,7 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
     <div
       className={cn(
         'fixed z-40 rounded-lg overflow-hidden shadow-2xl border border-gray-500/20',
-        'bg-white dark:bg-gray-800'
+        'bg-white/90 backdrop-blur-md dark:bg-gray-800/90'
       )}
       style={{
         left: `${position.x}px`,
@@ -85,8 +85,10 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
         <div className="flex space-x-2 items-center">
           <button 
             onClick={onClose}
-            className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition-colors"
-          />
+            className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition-colors flex items-center justify-center"
+          >
+            <X className="w-2 h-2 text-red-800 opacity-0 group-hover:opacity-100" />
+          </button>
           <div className="w-3 h-3 rounded-full bg-yellow-500" />
           <div className="w-3 h-3 rounded-full bg-green-500" />
         </div>
@@ -96,15 +98,18 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
       </div>
       
       {/* Navigation Bar */}
-      <div className="h-10 bg-gray-100 dark:bg-gray-700 border-b border-gray-300 dark:border-gray-600 flex items-center px-2 space-x-2">
-        <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600">
+      <div className="h-12 bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 border-b border-gray-300 dark:border-gray-600 flex items-center px-2 space-x-2">
+        <button className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600">
           <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-300" />
         </button>
-        <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600">
+        <button className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600">
           <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
         </button>
-        <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600">
+        <button className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600">
           <RefreshCcw className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+        </button>
+        <button className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600">
+          <Home className="w-4 h-4 text-gray-600 dark:text-gray-300" />
         </button>
         
         <form onSubmit={handleNavigate} className="flex-1 flex items-center">
@@ -116,14 +121,32 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
               type="text" 
               value={inputUrl}
               onChange={(e) => setInputUrl(e.target.value)}
-              className="w-full py-1 pl-8 pr-3 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-sm"
+              className="w-full py-1 pl-8 pr-3 rounded-full bg-white/80 dark:bg-gray-800/80 border border-gray-300 dark:border-gray-600 text-sm"
             />
           </div>
         </form>
+
+        <button className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600">
+          <Star className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+        </button>
+        <button className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600">
+          <BookOpen className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+        </button>
+      </div>
+
+      {/* Bookmarks Bar */}
+      <div className="h-8 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-300 dark:border-gray-600 flex items-center px-4 text-xs">
+        <div className="flex space-x-4">
+          <span className="text-blue-600 dark:text-blue-400 cursor-pointer">Apple</span>
+          <span className="text-blue-600 dark:text-blue-400 cursor-pointer">iCloud</span>
+          <span className="text-blue-600 dark:text-blue-400 cursor-pointer">App Store</span>
+          <span className="text-blue-600 dark:text-blue-400 cursor-pointer">Mac</span>
+          <span className="text-blue-600 dark:text-blue-400 cursor-pointer">Support</span>
+        </div>
       </div>
 
       {/* Browser Content */}
-      <div className="w-full h-[calc(100%-72px)]">
+      <div className="w-full h-[calc(100%-88px)]">
         <iframe 
           src={url} 
           title="Safari Content"

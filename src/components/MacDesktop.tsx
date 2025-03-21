@@ -4,7 +4,7 @@ import MacDock from './MacDock';
 import MacTerminalWindow from './MacTerminalWindow';
 import MacSafariWindow from './MacSafariWindow';
 import MacITunesWindow from './MacITunesWindow';
-import Terminal from './Terminal';
+import AnimatedBackground from './AnimatedBackground';
 
 interface MacDesktopProps {
   children: React.ReactNode;
@@ -29,15 +29,8 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      {/* Snow Leopard Background */}
-      <div 
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: 'url("https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?auto=format&fit=crop&q=80&w=1932&ixlib=rb-4.0.3")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      />
+      {/* Animated Background */}
+      <AnimatedBackground />
       
       {/* Content Area */}
       <div className="relative z-10 w-full h-full pb-20 overflow-auto">
