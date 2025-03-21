@@ -1,5 +1,6 @@
 
 // File system types and utilities
+import { CommandResult } from './terminalCommands';
 
 // File system types
 export interface FileSystemItem {
