@@ -21,10 +21,16 @@ const WaveAnimationCanvas: React.FC<WaveAnimationCanvasProps> = ({ theme }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    // Set canvas dimensions
+    // Set canvas dimensions with high DPI support for smoother lines
     const updateSize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      
+      // Scale context for high DPI displays
+      ctx.scale(dpr, dpr);
     };
     
     window.addEventListener('resize', updateSize);

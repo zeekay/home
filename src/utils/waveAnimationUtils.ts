@@ -1,4 +1,3 @@
-
 import { calculateDynamicPeaks } from './animationUtils';
 
 // Get theme-specific color
@@ -61,6 +60,18 @@ export const getWaveAnimationInitialState = (numWaves: number) => {
   const zAmps = Array(numWaves).fill(0).map(() => Math.random() * 0.4 + 0.7); // Scale factor
   const zOffsets = Array(numWaves).fill(0).map(() => Math.random() * Math.PI * 2);
   
+  // Ripple effect parameters
+  const rippleFrequencies = Array(3).fill(0).map(() => Math.random() * 0.003 + 0.0005); // Slower ripple frequencies
+  const rippleAmplitudes = Array(3).fill(0).map(() => Math.random() * 300 + 200); // Large ripple amplitudes
+  const ripplePhases = Array(3).fill(0).map(() => Math.random() * Math.PI * 2); // Random starting phases
+  const rippleSpeeds = Array(3).fill(0).map(() => Math.random() * 0.004 + 0.001); // Slow ripple speeds
+  const rippleCenters = Array(3).fill(0).map(() => Math.random()); // Random positions along x-axis (0-1)
+  const rippleWidth = Array(3).fill(0).map(() => Math.random() * 0.3 + 0.1); // Width of ripple effect (0.1-0.4)
+  const rippleDecay = Array(3).fill(0).map(() => Math.random() * 0.2 + 0.7); // How quickly ripples fade (0.7-0.9)
+  const rippleActive = Array(3).fill(false); // Initially no active ripples
+  const rippleStartTimes = Array(3).fill(0); // When ripples start
+  const rippleDurations = Array(3).fill(0).map(() => Math.random() * 6 + 4); // How long ripples last (4-10s)
+  
   return {
     peakFrequencies,
     peakTimings,
@@ -85,8 +96,96 @@ export const getWaveAnimationInitialState = (numWaves: number) => {
     lineWidthOffsets,
     zFreqs,
     zAmps,
-    zOffsets
+    zOffsets,
+    rippleFrequencies,
+    rippleAmplitudes,
+    ripplePhases,
+    rippleSpeeds,
+    rippleCenters,
+    rippleWidth,
+    rippleDecay,
+    rippleActive,
+    rippleStartTimes,
+    rippleDurations
   };
+};
+
+// Calculate ripple effect at a specific position
+const calculateRippleEffect = (
+  normalizedX: number, 
+  currentTime: number, 
+  state: ReturnType<typeof getWaveAnimationInitialState>,
+  canvasWidth: number
+) => {
+  let totalRippleEffect = 0;
+  
+  // Process each ripple
+  for (let i = 0; i < state.rippleActive.length; i++) {
+    if (!state.rippleActive[i]) continue;
+    
+    // Calculate time since ripple started
+    const rippleTime = currentTime - state.rippleStartTimes[i];
+    
+    // Check if ripple is still active based on duration
+    if (rippleTime > state.rippleDurations[i]) {
+      state.rippleActive[i] = false;
+      continue;
+    }
+    
+    // Calculate ripple progress (0 to 1)
+    const rippleProgress = rippleTime / state.rippleDurations[i];
+    
+    // Ripple expands outward from center
+    const rippleCenter = state.rippleCenters[i];
+    const rippleDistance = Math.abs(normalizedX - rippleCenter);
+    
+    // The ripple wave moves outward over time
+    // For natural ripple behavior, we use a sigmoid-like function that smoothly transitions
+    const expansionProgress = Math.min(rippleProgress * 1.5, 1); // Slightly faster than the fade
+    const rippleExpansion = expansionProgress * 0.5; // Control how far the ripple spreads
+    
+    // Only affect waves within the expanding ripple width + base width
+    const effectiveWidth = state.rippleWidth[i] + rippleExpansion;
+    
+    if (rippleDistance <= effectiveWidth) {
+      // Calculate intensity based on distance from center and ripple decay
+      const normalizedDistance = rippleDistance / effectiveWidth;
+      
+      // Create a wave-like pattern that diminishes with distance from center
+      const waveIntensity = Math.cos(normalizedDistance * Math.PI * 2 + state.ripplePhases[i] + currentTime * state.rippleFrequencies[i]) * 
+                            (1 - normalizedDistance) * 
+                            (1 - Math.pow(rippleProgress, 0.7)); // Fade out as ripple progresses
+      
+      totalRippleEffect += waveIntensity * state.rippleAmplitudes[i] * Math.pow(state.rippleDecay[i], rippleProgress * 10);
+    }
+  }
+  
+  return totalRippleEffect;
+};
+
+// Trigger new ripples at random intervals
+const manageRipples = (
+  time: number, 
+  state: ReturnType<typeof getWaveAnimationInitialState>
+) => {
+  // Randomly trigger new ripples, more likely when none are active
+  const activeRippleCount = state.rippleActive.filter(active => active).length;
+  const baseChance = 0.005 - (activeRippleCount * 0.002); // Less likely to trigger new ripples if many are active
+  
+  if (Math.random() < baseChance) {
+    // Find an inactive ripple slot
+    for (let i = 0; i < state.rippleActive.length; i++) {
+      if (!state.rippleActive[i]) {
+        // Activate this ripple
+        state.rippleActive[i] = true;
+        state.rippleStartTimes[i] = time;
+        state.rippleCenters[i] = Math.random(); // Random position 0-1
+        state.rippleDurations[i] = Math.random() * 6 + 4; // 4-10 seconds
+        state.rippleWidth[i] = Math.random() * 0.3 + 0.1; // 0.1-0.4 width
+        break;
+      }
+    }
+  }
 };
 
 // Enhanced waves animation with increased width, dynamic peaks, and varied timing
@@ -115,7 +214,11 @@ export const animateEnhancedWaves = (
     // Clear canvas with a complete clear for cleaner lines
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    time += 0.01;
+    // Use a smaller time increment for smoother animations
+    time += 0.006;
+    
+    // Manage ripple effects
+    manageRipples(time, state);
     
     // Sort waves by simulated z-depth for proper drawing order
     const sortedWaveIndices = Array.from({ length: waves }, (_, i) => i).sort((a, b) => {
@@ -126,8 +229,8 @@ export const animateEnhancedWaves = (
     
     // Draw each wave line in z-sorted order
     sortedWaveIndices.forEach(index => {
-      // Update offset for animation
-      state.waveOffsets[index] += state.waveSpeeds[index];
+      // Update offset with smoother interpolation
+      state.waveOffsets[index] += state.waveSpeeds[index] * 0.7; // Reduce speed for smoother movement
       
       // Calculate dynamic opacity for this frame
       let dynamicOpacity = state.baseOpacities[index] + 
@@ -205,8 +308,11 @@ export const animateEnhancedWaves = (
           amplitudeModifier = 1.0 - (centerPosition * 0.2); // Slight decrease toward edges
         }
         
-        // Add vertical flux component and dynamic peak effect
-        const amplitude = state.waveAmplitudes[index] * amplitudeModifier * dynamicPeakMultiplier * zDepth + vertFlux;
+        // Calculate ripple effect at this position
+        const rippleEffect = calculateRippleEffect(normalizedX, time, state, canvas.width);
+        
+        // Add vertical flux component, dynamic peak effect, and ripple effect
+        const amplitude = state.waveAmplitudes[index] * amplitudeModifier * dynamicPeakMultiplier * zDepth + vertFlux + rippleEffect;
         
         // Calculate vertical position with phase offset for more varied waves
         const y = canvas.height / 2 + 
@@ -216,7 +322,7 @@ export const animateEnhancedWaves = (
         points.push({x, y});
       }
       
-      // Draw using points
+      // Draw using points with smoother interpolation
       if (points.length > 0) {
         ctx.moveTo(points[0].x, points[0].y);
         
