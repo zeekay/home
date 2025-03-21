@@ -44,7 +44,7 @@ const Terminal: React.FC<TerminalProps> = ({
   useEffect(() => {
     const initWebContainer = async () => {
       try {
-        // Check if WebContainer is supported
+        // Check if WebContainer is supported by checking if it exists
         if (typeof WebContainer === 'undefined') {
           addEntry({
             command: '',
@@ -188,8 +188,10 @@ help               - Show this help message`,
       const shellProcess = await webContainerInstance.spawn('sh', []);
       
       // Create a custom writer to handle the output
+      const outputChunks: string[] = [];
       const outputWriter = new WritableStream({
         write(chunk) {
+          outputChunks.push(chunk);
           addEntry({
             command: '',
             output: chunk,
@@ -201,7 +203,7 @@ help               - Show this help message`,
       // Pipe the shell output to our custom writer
       shellProcess.output.pipeTo(outputWriter);
 
-      // Write the command to the shell
+      // Use the input.write method correctly
       await shellProcess.input.write(`${command}\n`);
       
       // Get the exit code
