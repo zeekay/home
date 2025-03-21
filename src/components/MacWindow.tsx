@@ -1,6 +1,11 @@
+
 import React, { useState, useEffect, ReactNode } from 'react';
 import { X, Minus, Square } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+// Create a global z-index manager
+let globalZIndex = 40;
+const getNextZIndex = () => ++globalZIndex;
 
 export interface MacWindowProps {
   title: string;
@@ -33,6 +38,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
   const [resizeStartPos, setResizeStartPos] = useState({ x: 0, y: 0 });
   const [startSize, setStartSize] = useState({ width: 0, height: 0 });
   const [isMinimized, setIsMinimized] = useState(false);
+  const [zIndex, setZIndex] = useState(globalZIndex);
   
   const getWindowStyle = () => {
     switch (windowType) {
@@ -66,6 +72,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
       x: e.clientX - position.x,
       y: e.clientY - position.y,
     });
+    bringToFront();
   };
   
   const handleResizeStart = (e: React.MouseEvent) => {
@@ -74,10 +81,17 @@ const MacWindow: React.FC<MacWindowProps> = ({
     setIsResizing(true);
     setResizeStartPos({ x: e.clientX, y: e.clientY });
     setStartSize({ width: size.width, height: size.height });
+    bringToFront();
   };
 
   const toggleMinimize = () => {
     setIsMinimized(!isMinimized);
+  };
+  
+  // New method to bring window to front
+  const bringToFront = () => {
+    const newZIndex = getNextZIndex();
+    setZIndex(newZIndex);
   };
 
   useEffect(() => {
@@ -113,7 +127,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
   return (
     <div
       className={cn(
-        'fixed z-40 rounded-lg overflow-hidden shadow-2xl border border-gray-500/20 backdrop-blur-md',
+        'fixed overflow-hidden shadow-2xl border border-gray-500/20 backdrop-blur-md rounded-lg',
         getWindowStyle(),
         className
       )}
@@ -123,7 +137,9 @@ const MacWindow: React.FC<MacWindowProps> = ({
         width: `${size.width}px`,
         height: isMinimized ? '32px' : `${size.height}px`,
         transition: isMinimized ? 'height 0.2s ease-in-out' : 'none',
+        zIndex: zIndex,
       }}
+      onClick={bringToFront}
     >
       <div
         className={cn(
