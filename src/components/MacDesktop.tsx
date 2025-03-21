@@ -6,6 +6,7 @@ import MacSafariWindow from './MacSafariWindow';
 import MacITunesWindow from './MacITunesWindow';
 import MacEmailWindow from './MacEmailWindow';
 import MacCalendarWindow from './MacCalendarWindow';
+import MacSystemPreferencesWindow from './MacSystemPreferencesWindow';
 import AnimatedBackground from './AnimatedBackground';
 import DesktopSettings from './DesktopSettings';
 
@@ -19,6 +20,7 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   const [showITunes, setShowITunes] = useState(false);
   const [showEmail, setShowEmail] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [showSystemPreferences, setShowSystemPreferences] = useState(false);
   
   // Desktop customization settings
   const [padding, setPadding] = useState(1);
@@ -44,6 +46,10 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
 
   const handleToggleCalendar = () => {
     setShowCalendar(!showCalendar);
+  };
+  
+  const handleToggleSystemPreferences = () => {
+    setShowSystemPreferences(!showSystemPreferences);
   };
 
   // Apply custom document styles for padding
@@ -83,6 +89,10 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         <MacCalendarWindow onClose={() => setShowCalendar(false)} />
       )}
       
+      {showSystemPreferences && (
+        <MacSystemPreferencesWindow onClose={() => setShowSystemPreferences(false)} />
+      )}
+      
       {/* Desktop Settings */}
       <DesktopSettings 
         onPaddingChange={setPadding}
@@ -102,6 +112,7 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         onITunesClick={handleToggleITunes}
         onMailClick={handleToggleEmail}
         onCalendarClick={handleToggleCalendar}
+        onSystemPreferencesClick={handleToggleSystemPreferences}
         className="absolute bottom-0 left-0 right-0 z-20"
       />
     </div>
