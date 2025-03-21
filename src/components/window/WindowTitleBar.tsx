@@ -2,6 +2,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import WindowControls from './WindowControls';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface WindowTitleBarProps {
   title: string;
@@ -20,6 +21,8 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
   onMinimize,
   customControls
 }) => {
+  const isMobile = useIsMobile();
+  
   const getTitleBarStyle = () => {
     switch (windowType) {
       case 'terminal':
@@ -39,7 +42,8 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
     <div
       className={cn(
         'h-8 flex items-center px-3 border-b border-gray-300/30 dark:border-gray-700/30',
-        getTitleBarStyle()
+        getTitleBarStyle(),
+        isMobile ? 'cursor-default' : 'cursor-move'
       )}
       onMouseDown={onMouseDown}
     >

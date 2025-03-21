@@ -3,7 +3,8 @@ import React, { useState, useEffect, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import WindowTitleBar from './window/WindowTitleBar';
 import WindowResizeHandle from './window/WindowResizeHandle';
-import { getWindowStyle, getNextZIndex } from './window/windowUtils';
+import { getWindowStyle, getNextZIndex, getResponsiveWindowSize, getResponsiveWindowPosition } from './window/windowUtils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export interface MacWindowProps {
   title: string;
@@ -28,8 +29,14 @@ const MacWindow: React.FC<MacWindowProps> = ({
   resizable = true,
   customControls,
 }) => {
-  const [position, setPosition] = useState(initialPosition);
-  const [size, setSize] = useState(initialSize);
+  const isMobile = useIsMobile();
+  
+  // Get responsive size and position
+  const responsiveSize = getResponsiveWindowSize(initialSize);
+  const responsivePosition = getResponsiveWindowPosition(initialPosition);
+  
+  const [position, setPosition] = useState(responsivePosition);
+  const [size, setSize] = useState(responsiveSize);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isResizing, setIsResizing] = useState(false);
@@ -38,7 +45,35 @@ const MacWindow: React.FC<MacWindowProps> = ({
   const [isMinimized, setIsMinimized] = useState(false);
   const [zIndex, setZIndex] = useState(getNextZIndex());
   
+  // Update position and size when screen size changes
+  useEffect(() => {
+    const handleResize = () => {
+      // Update window size based on screen size
+      setSize(prevSize => {
+        const newSize = getResponsiveWindowSize({
+          width: prevSize.width,
+          height: prevSize.height
+        });
+        return newSize;
+      });
+      
+      // Make sure window is still visible after resize
+      setPosition(prevPos => {
+        const newPos = {
+          x: Math.min(Math.max(10, prevPos.x), window.innerWidth - 350),
+          y: Math.min(Math.max(10, prevPos.y), window.innerHeight - 400)
+        };
+        return newPos;
+      });
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isMobile) return; // Disable dragging on mobile
+    
     setIsDragging(true);
     setDragOffset({
       x: e.clientX - position.x,
@@ -48,6 +83,8 @@ const MacWindow: React.FC<MacWindowProps> = ({
   };
   
   const handleResizeStart = (e: React.MouseEvent) => {
+    if (isMobile) return; // Disable resizing on mobile
+    
     e.preventDefault();
     e.stopPropagation();
     setIsResizing(true);
@@ -70,13 +107,16 @@ const MacWindow: React.FC<MacWindowProps> = ({
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
         setPosition({
-          x: Math.max(0, e.clientX - dragOffset.x),
-          y: Math.max(0, e.clientY - dragOffset.y),
+          x: Math.max(0, Math.min(e.clientX - dragOffset.x, window.innerWidth - size.width/2)),
+          y: Math.max(0, Math.min(e.clientY - dragOffset.y, window.innerHeight - 50)),
         });
       } else if (isResizing) {
         const newWidth = Math.max(300, startSize.width + (e.clientX - resizeStartPos.x));
         const newHeight = Math.max(200, startSize.height + (e.clientY - resizeStartPos.y));
-        setSize({ width: newWidth, height: newHeight });
+        setSize({ 
+          width: Math.min(newWidth, window.innerWidth - position.x - 10), 
+          height: Math.min(newHeight, window.innerHeight - position.y - 10) 
+        });
       }
     };
 
@@ -94,13 +134,27 @@ const MacWindow: React.FC<MacWindowProps> = ({
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, isResizing, dragOffset, resizeStartPos, startSize]);
+  }, [isDragging, isResizing, dragOffset, resizeStartPos, startSize, position.x, position.y]);
+
+  // For touch events on mobile
+  useEffect(() => {
+    if (!isMobile) return;
+    
+    const handleTouchStart = (e: TouchEvent) => {
+      bringToFront();
+    };
+    
+    return () => {
+      // Cleanup if needed
+    };
+  }, [isMobile]);
 
   return (
     <div
       className={cn(
         'fixed overflow-hidden shadow-xl border border-gray-300/30 dark:border-gray-700/30 backdrop-blur-md rounded-lg',
         getWindowStyle(windowType),
+        isMobile ? 'transition-all duration-300' : '',
         className
       )}
       style={{
@@ -128,7 +182,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
             {children}
           </div>
           
-          {resizable && <WindowResizeHandle onResizeStart={handleResizeStart} />}
+          {resizable && !isMobile && <WindowResizeHandle onResizeStart={handleResizeStart} />}
         </>
       )}
     </div>
