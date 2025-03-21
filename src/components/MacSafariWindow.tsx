@@ -97,6 +97,9 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
     return baseSize * Math.pow(0.9, depth);
   };
 
+  // Scale factor for UI elements based on depth
+  const scaleFactor = Math.pow(0.9, depth);
+
   return (
     <MacWindow
       title={`Safari${depth > 0 ? ` (${depth})` : ''}`}
@@ -110,72 +113,91 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
       className="z-40"
     >
       <div className="w-full h-full flex flex-col">
-        {/* Navigation Bar */}
-        <div className="h-12 bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 border-b border-gray-300 dark:border-gray-600 flex items-center px-2 space-x-2">
+        {/* Navigation Bar - Apply scaling based on depth */}
+        <div 
+          className="bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 border-b border-gray-300 dark:border-gray-600 flex items-center px-2 space-x-2"
+          style={{ 
+            height: `${Math.max(24, 48 * scaleFactor)}px`, 
+            fontSize: `${Math.max(10, 14 * scaleFactor)}px` 
+          }}
+        >
           <button 
             className={cn(
-              "p-1 rounded-full",
+              "rounded-full",
               historyIndex > 0 
                 ? "hover:bg-gray-200 dark:hover:bg-gray-600" 
                 : "opacity-50 cursor-not-allowed"
             )}
             onClick={handleBack}
             disabled={historyIndex <= 0}
+            style={{ padding: `${Math.max(2, 4 * scaleFactor)}px` }}
           >
-            <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+            <ChevronLeft style={{ width: `${Math.max(12, 16 * scaleFactor)}px`, height: `${Math.max(12, 16 * scaleFactor)}px` }} className="text-gray-600 dark:text-gray-300" />
           </button>
           <button 
             className={cn(
-              "p-1 rounded-full",
+              "rounded-full",
               historyIndex < history.length - 1 
                 ? "hover:bg-gray-200 dark:hover:bg-gray-600" 
                 : "opacity-50 cursor-not-allowed"
             )}
             onClick={handleForward}
             disabled={historyIndex >= history.length - 1}
+            style={{ padding: `${Math.max(2, 4 * scaleFactor)}px` }}
           >
-            <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+            <ChevronRight style={{ width: `${Math.max(12, 16 * scaleFactor)}px`, height: `${Math.max(12, 16 * scaleFactor)}px` }} className="text-gray-600 dark:text-gray-300" />
           </button>
           <button 
-            className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+            className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
             onClick={handleRefresh}
+            style={{ padding: `${Math.max(2, 4 * scaleFactor)}px` }}
           >
-            <RefreshCcw className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+            <RefreshCcw style={{ width: `${Math.max(12, 16 * scaleFactor)}px`, height: `${Math.max(12, 16 * scaleFactor)}px` }} className="text-gray-600 dark:text-gray-300" />
           </button>
           <button 
-            className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+            className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
             onClick={handleHome}
+            style={{ padding: `${Math.max(2, 4 * scaleFactor)}px` }}
           >
-            <Home className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+            <Home style={{ width: `${Math.max(12, 16 * scaleFactor)}px`, height: `${Math.max(12, 16 * scaleFactor)}px` }} className="text-gray-600 dark:text-gray-300" />
           </button>
           
           <form onSubmit={handleNavigate} className="flex-1 flex items-center">
             <div className="relative w-full">
               <div className="absolute inset-y-0 left-0 flex items-center pl-2">
-                <Search className="w-4 h-4 text-gray-400" />
+                <Search style={{ width: `${Math.max(12, 16 * scaleFactor)}px`, height: `${Math.max(12, 16 * scaleFactor)}px` }} className="text-gray-400" />
               </div>
               <input 
                 type="text" 
                 value={inputUrl}
                 onChange={(e) => setInputUrl(e.target.value)}
-                className="w-full py-1 pl-8 pr-3 rounded-full bg-white/80 dark:bg-gray-800/80 border border-gray-300 dark:border-gray-600 text-sm"
+                className="w-full rounded-full bg-white/80 dark:bg-gray-800/80 border border-gray-300 dark:border-gray-600 text-sm"
+                style={{ 
+                  paddingLeft: `${Math.max(16, 32 * scaleFactor)}px`,
+                  paddingRight: `${Math.max(8, 12 * scaleFactor)}px`,
+                  paddingTop: `${Math.max(2, 4 * scaleFactor)}px`,
+                  paddingBottom: `${Math.max(2, 4 * scaleFactor)}px`,
+                  fontSize: `${Math.max(10, 14 * scaleFactor)}px`
+                }}
               />
             </div>
           </form>
 
           <button 
-            className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+            className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
             onClick={openRecursiveSafari}
             title="Open Safari in Safari"
+            style={{ padding: `${Math.max(2, 4 * scaleFactor)}px` }}
           >
-            <Star className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+            <Star style={{ width: `${Math.max(12, 16 * scaleFactor)}px`, height: `${Math.max(12, 16 * scaleFactor)}px` }} className="text-gray-600 dark:text-gray-300" />
           </button>
           <button 
-            className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+            className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
             onClick={openRecursiveSafari}
             title="Open Safari in Safari (another way)"
+            style={{ padding: `${Math.max(2, 4 * scaleFactor)}px` }}
           >
-            <BookOpen className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+            <BookOpen style={{ width: `${Math.max(12, 16 * scaleFactor)}px`, height: `${Math.max(12, 16 * scaleFactor)}px` }} className="text-gray-600 dark:text-gray-300" />
           </button>
         </div>
 
