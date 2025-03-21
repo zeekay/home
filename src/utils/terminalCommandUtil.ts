@@ -22,7 +22,24 @@ echo [text]        - Print text
 echo "text" > file - Write text to file
 clear              - Clear terminal
 pwd                - Print working directory
+history            - Show command history
 help               - Show this help message`,
+    id: Date.now()
+  });
+};
+
+export const executeHistoryCommand = (
+  commandHistory: string[],
+  addEntry: (entry: Omit<TerminalEntry, 'id'> & { id?: number }) => void,
+  command: string
+): void => {
+  const historyOutput = commandHistory.length > 0
+    ? commandHistory.map((cmd, index) => `${(commandHistory.length - index).toString().padStart(4)}: ${cmd}`).join('\n')
+    : 'No command history available';
+
+  addEntry({
+    command,
+    output: historyOutput,
     id: Date.now()
   });
 };
@@ -32,7 +49,8 @@ export const processCommand = async (
   webContainerInstance: WebContainer | null,
   isWebContainerReady: boolean,
   addEntry: (entry: Omit<TerminalEntry, 'id'> & { id?: number }) => void,
-  clearEntries: () => void
+  clearEntries: () => void,
+  commandHistory: string[] = []
 ): Promise<void> => {
   if (!command.trim()) return;
 
@@ -49,6 +67,11 @@ export const processCommand = async (
 
   if (command.trim() === 'help') {
     executeHelpCommand(addEntry, command);
+    return;
+  }
+
+  if (command.trim() === 'history') {
+    executeHistoryCommand(commandHistory, addEntry, command);
     return;
   }
 

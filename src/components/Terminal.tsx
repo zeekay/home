@@ -48,7 +48,14 @@ const Terminal: React.FC<TerminalProps> = ({
 
     const trimmedCommand = inputValue.trim();
     
-    setCommandHistory(prev => [trimmedCommand, ...prev]);
+    // Add the command to history only if it's not the same as the most recent one
+    setCommandHistory(prev => {
+      if (prev.length === 0 || prev[0] !== trimmedCommand) {
+        return [trimmedCommand, ...prev];
+      }
+      return prev;
+    });
+    
     setInputValue('');
     setHistoryIndex(-1);
     
@@ -71,6 +78,11 @@ const Terminal: React.FC<TerminalProps> = ({
         setInputValue(commandHistory[newIndex]);
       } else {
         setInputValue('');
+      }
+    } else {
+      // Reset history index when typing new commands
+      if (historyIndex !== -1) {
+        setHistoryIndex(-1);
       }
     }
   };

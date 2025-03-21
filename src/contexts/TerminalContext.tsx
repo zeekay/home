@@ -56,7 +56,8 @@ export const TerminalProvider: React.FC<TerminalProviderProps> = ({ children }) 
       webContainerInstance,
       isWebContainerReady,
       addEntry,
-      clearEntries
+      clearEntries,
+      commandHistory
     );
   };
 
