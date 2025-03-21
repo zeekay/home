@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Heart } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import { InterestCategory } from './types';
 
 interface InterestCardProps {
@@ -8,10 +9,13 @@ interface InterestCardProps {
 }
 
 const InterestCard: React.FC<InterestCardProps> = ({ category }) => {
+  // Dynamically get the icon component from lucide-react
+  const IconComponent = LucideIcons[category.icon as keyof typeof LucideIcons];
+
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
       <div className="flex items-center mb-3">
-        {category.icon}
+        {IconComponent && <IconComponent className={`w-6 h-6 ${category.iconColor}`} />}
         <h3 className="ml-2 text-lg font-medium">{category.category}</h3>
       </div>
       <ul className="space-y-2">

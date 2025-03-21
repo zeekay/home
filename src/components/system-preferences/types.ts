@@ -1,8 +1,7 @@
 
-import { ReactNode } from 'react';
-
 export interface InterestCategory {
   category: string;
-  icon: ReactNode;
+  icon: string;
+  iconColor: string;
   items: string[];
 }
