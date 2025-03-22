@@ -30,8 +30,8 @@ const AppLauncher: React.FC = () => {
       <Tooltip>
         <TooltipTrigger asChild>
           <PopoverTrigger asChild>
-            <button className="group relative flex flex-col items-center justify-center">
-              <div className="w-12 h-12 flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-125 shadow-lg group-hover:shadow-xl border border-white/15">
+            <button className="group relative flex flex-col items-center justify-center px-2">
+              <div className="flex items-center justify-center p-2 transition-all duration-200 hover:scale-110">
                 <FileText className="w-6 h-6 text-yellow-300 group-hover:animate-pulse transition-all duration-300" />
               </div>
               <div className="w-1 h-1 rounded-full bg-white mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -42,7 +42,7 @@ const AppLauncher: React.FC = () => {
           Applications
         </TooltipContent>
       </Tooltip>
-      <PopoverContent side="top" className="w-72 bg-black/90 backdrop-blur-sm border-white/15 text-white rounded-xl p-2">
+      <PopoverContent side="top" className="w-72 bg-black/90 backdrop-blur-sm border-white/20 text-white rounded-xl p-2">
         <div className="grid grid-cols-3 gap-2">
           {appLauncherItems.map((app, index) => (
             <div key={index} className="flex flex-col items-center p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer">

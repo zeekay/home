@@ -76,8 +76,8 @@ const MacDock: React.FC<MacDockProps> = ({
         className={cn(
           'fixed left-1/2 transform -translate-x-1/2',
           'inline-flex items-center justify-center',
-          'px-4 py-3',
-          'bg-black/70 backdrop-blur-md',
+          'px-2 py-2',
+          'bg-black/80 backdrop-blur-md',
           'rounded-2xl',
           'shadow-xl',
           className
@@ -86,11 +86,11 @@ const MacDock: React.FC<MacDockProps> = ({
           border: '1px solid rgba(255, 255, 255, 0.2)',
           maxWidth: 'calc(100% - 16px)',
           width: 'max-content',
-          bottom: isMobile ? '10px' : '20px',
+          bottom: isMobile ? '10px' : '16px',
           zIndex: 50
         }}
       >
-        <div className="flex items-center space-x-4 py-1">
+        <div className="flex items-center space-x-1 py-0.5">
           {dockItems.map((item: DockItemType, index: number) => (
             <DockItem 
               key={index}

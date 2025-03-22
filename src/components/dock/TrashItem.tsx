@@ -20,10 +20,10 @@ const TrashItem: React.FC = () => {
       <Tooltip>
         <TooltipTrigger asChild>
           <button
-            className="group relative flex flex-col items-center justify-center"
+            className="group relative flex flex-col items-center justify-center px-2"
             onClick={handleTrashClick}
           >
-            <div className="flex items-center justify-center transition-all duration-200 hover:scale-110">
+            <div className="flex items-center justify-center p-2 transition-all duration-200 hover:scale-110">
               <Trash2 className="w-6 h-6 text-gray-400 group-hover:animate-pulse transition-all duration-300" />
             </div>
             <div className="w-1 h-1 rounded-full bg-white mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -36,8 +36,8 @@ const TrashItem: React.FC = () => {
 
       {/* Trash Finder Window */}
       {isTrashOpen && (
-        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 w-80 h-64 bg-black/80 backdrop-blur-md rounded-lg border border-white/10 shadow-2xl overflow-hidden animate-fade-in">
-          <div className="bg-gray-800 h-6 flex items-center px-2 border-b border-white/10">
+        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 w-80 h-64 bg-black/80 backdrop-blur-md rounded-lg border border-white/20 shadow-2xl overflow-hidden animate-fade-in">
+          <div className="bg-black h-6 flex items-center px-2 border-b border-white/10">
             <div className="flex space-x-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
               <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
