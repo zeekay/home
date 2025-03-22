@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Terminal, Folder, Mail, Globe, Image, Music, Video, Settings, Calendar, Trash2, FileText, Files, FileCode, Coffee, Map, Gamepad2, Camera, BookOpen, MoreHorizontal } from 'lucide-react';
@@ -116,7 +115,7 @@ const MacDock: React.FC<MacDockProps> = ({
           className
         )}
         style={{ 
-          border: '1px solid rgba(255, 255, 255, 0.05)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
           maxWidth: 'calc(100% - 16px)',
           width: 'max-content',
           bottom: isMobile ? '10px' : '20px',
@@ -131,7 +130,7 @@ const MacDock: React.FC<MacDockProps> = ({
                   className="group relative flex flex-col items-center justify-center"
                   onClick={item.onClick}
                 >
-                  <div className={`${getButtonSize()} flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-110 shadow-lg group-hover:shadow-xl border border-white/10`}>
+                  <div className={`${getButtonSize()} flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-110 shadow-lg group-hover:shadow-xl border border-white/15`}>
                     <item.icon className={`${getIconSize()} ${item.color} group-hover:animate-pulse transition-all duration-300`} />
                   </div>
                   <div className="w-1 h-1 rounded-full bg-white mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -153,7 +152,7 @@ const MacDock: React.FC<MacDockProps> = ({
                   <TooltipTrigger asChild>
                     <PopoverTrigger asChild>
                       <button className="group relative flex flex-col items-center justify-center">
-                        <div className={`${getButtonSize()} flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-110 shadow-lg group-hover:shadow-xl border border-white/10`}>
+                        <div className={`${getButtonSize()} flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-110 shadow-lg group-hover:shadow-xl border border-white/15`}>
                           <MoreHorizontal className={`${getIconSize()} text-white group-hover:animate-pulse transition-all duration-300`} />
                         </div>
                         <div className="w-1 h-1 rounded-full bg-white mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -164,7 +163,7 @@ const MacDock: React.FC<MacDockProps> = ({
                     More Apps
                   </TooltipContent>
                 </Tooltip>
-                <PopoverContent side="top" align="end" className="w-72 bg-black/90 backdrop-blur-sm border-white/10 text-white rounded-xl p-2">
+                <PopoverContent side="top" align="end" className="w-72 bg-black/90 backdrop-blur-sm border-white/15 text-white rounded-xl p-2">
                   <div className="grid grid-cols-3 gap-2">
                     {overflowItems.map((app, index) => (
                       <div 
@@ -189,7 +188,7 @@ const MacDock: React.FC<MacDockProps> = ({
             </>
           )}
           
-          {!isMobile && <Separator orientation="vertical" className="h-10 bg-white/10 mx-1" />}
+          {!isMobile && <Separator orientation="vertical" className="h-10 bg-white/15 mx-1" />}
           
           {/* App Launcher - Only visible on desktop */}
           {!isMobile && (
@@ -198,7 +197,7 @@ const MacDock: React.FC<MacDockProps> = ({
                 <TooltipTrigger asChild>
                   <PopoverTrigger asChild>
                     <button className="group relative flex flex-col items-center justify-center">
-                      <div className="w-12 h-12 flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-125 shadow-lg group-hover:shadow-xl border border-white/10">
+                      <div className="w-12 h-12 flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-125 shadow-lg group-hover:shadow-xl border border-white/15">
                         <FileText className="w-6 h-6 text-yellow-300 group-hover:animate-pulse transition-all duration-300" />
                       </div>
                       <div className="w-1 h-1 rounded-full bg-white mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -209,11 +208,11 @@ const MacDock: React.FC<MacDockProps> = ({
                   Applications
                 </TooltipContent>
               </Tooltip>
-              <PopoverContent side="top" className="w-72 bg-black/90 backdrop-blur-sm border-white/10 text-white rounded-xl p-2">
+              <PopoverContent side="top" className="w-72 bg-black/90 backdrop-blur-sm border-white/15 text-white rounded-xl p-2">
                 <div className="grid grid-cols-3 gap-2">
                   {appLauncherItems.map((app, index) => (
                     <div key={index} className="flex flex-col items-center p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer">
-                      <div className="w-12 h-12 flex items-center justify-center bg-black/40 rounded-xl mb-1 border border-white/5">
+                      <div className="w-12 h-12 flex items-center justify-center bg-black/40 rounded-xl mb-1 border border-white/15">
                         <app.icon className={`w-6 h-6 ${app.color}`} />
                       </div>
                       <span className="text-xs text-center">{app.label}</span>
@@ -232,7 +231,7 @@ const MacDock: React.FC<MacDockProps> = ({
                   className="group relative flex flex-col items-center justify-center"
                   onClick={handleTrashClick}
                 >
-                  <div className="w-12 h-12 flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-125 shadow-lg group-hover:shadow-xl border border-white/10">
+                  <div className="w-12 h-12 flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-125 shadow-lg group-hover:shadow-xl border border-white/15">
                     <Trash2 className="w-6 h-6 text-gray-400 group-hover:animate-pulse transition-all duration-300" />
                   </div>
                   <div className="w-1 h-1 rounded-full bg-white mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
