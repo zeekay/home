@@ -70,7 +70,7 @@ const MacTextPadWindow: React.FC<MacTextPadWindowProps> = ({ onClose }) => {
       initialSize={{ width: 500, height: 300 }}
       windowType="textpad"
     >
-      <div className="h-full p-2 bg-white dark:bg-[#1e2029] overflow-auto">
+      <div className="h-full p-2 bg-white dark:bg-[#222222] overflow-auto">
         {isTyping ? (
           <div className="w-full h-full p-4 font-mono text-base text-black dark:text-gray-200 whitespace-pre-wrap">
             {text}

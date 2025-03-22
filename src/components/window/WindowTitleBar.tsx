@@ -32,7 +32,7 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
       case 'itunes':
         return 'bg-gradient-to-b from-gray-600 to-gray-800 text-white';
       case 'textpad':
-        return 'bg-gradient-to-b from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300';
+        return 'bg-gradient-to-b from-gray-200 to-gray-300 dark:from-[#333333] dark:to-[#222222] text-gray-700 dark:text-gray-300';
       default:
         return 'bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300';
     }
