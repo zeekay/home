@@ -23,7 +23,7 @@ const TrashItem: React.FC = () => {
             className="group relative flex flex-col items-center justify-center"
             onClick={handleTrashClick}
           >
-            <div className="w-12 h-12 flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-125 shadow-lg group-hover:shadow-xl border border-white/15">
+            <div className="flex items-center justify-center transition-all duration-200 hover:scale-110">
               <Trash2 className="w-6 h-6 text-gray-400 group-hover:animate-pulse transition-all duration-300" />
             </div>
             <div className="w-1 h-1 rounded-full bg-white mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />

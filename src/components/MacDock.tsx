@@ -76,21 +76,21 @@ const MacDock: React.FC<MacDockProps> = ({
         className={cn(
           'fixed left-1/2 transform -translate-x-1/2',
           'inline-flex items-center justify-center',
-          'px-2 py-1.5',
-          'bg-black/40 backdrop-blur-sm',
+          'px-4 py-3',
+          'bg-black/70 backdrop-blur-md',
           'rounded-2xl',
           'shadow-xl',
           className
         )}
         style={{ 
-          border: '1px solid rgba(255, 255, 255, 0.15)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
           maxWidth: 'calc(100% - 16px)',
           width: 'max-content',
           bottom: isMobile ? '10px' : '20px',
           zIndex: 50
         }}
       >
-        <div className="flex items-end space-x-1.5 py-1">
+        <div className="flex items-center space-x-4 py-1">
           {dockItems.map((item: DockItemType, index: number) => (
             <DockItem 
               key={index}
@@ -104,12 +104,12 @@ const MacDock: React.FC<MacDockProps> = ({
           {/* More apps button (only on mobile) */}
           {isMobile && overflowItems.length > 0 && (
             <>
-              <Separator orientation="vertical" className="h-8 bg-white/10 mx-1" />
+              <Separator orientation="vertical" className="h-8 bg-white/20 mx-1" />
               <MobileOverflow items={overflowItems} />
             </>
           )}
           
-          {!isMobile && <Separator orientation="vertical" className="h-10 bg-white/15 mx-1" />}
+          {!isMobile && <Separator orientation="vertical" className="h-8 bg-white/20 mx-1" />}
           
           {/* App Launcher - Only visible on desktop */}
           {!isMobile && <AppLauncher />}
