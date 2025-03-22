@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import MacWindow from './MacWindow';
-import { Textarea } from './ui/textarea';
 import { cn } from '@/lib/utils';
 import { ExternalLink } from 'lucide-react';
 
@@ -66,19 +65,19 @@ const MacTextPadWindow: React.FC<MacTextPadWindowProps> = ({ onClose }) => {
     <MacWindow 
       title="TextPad" 
       onClose={onClose}
-      className="animate-scale-in"
+      className="animate-scale-in shadow-lg"
       initialPosition={{ x: window.innerWidth / 2 - 250, y: window.innerHeight / 2 - 150 }}
       initialSize={{ width: 500, height: 300 }}
       windowType="textpad"
     >
-      <div className="h-full p-2 bg-white overflow-auto">
+      <div className="h-full p-2 bg-white dark:bg-gray-800 overflow-auto">
         {isTyping ? (
-          <div className="w-full h-full p-4 font-mono text-base text-black bg-white whitespace-pre-wrap">
+          <div className="w-full h-full p-4 font-mono text-base text-black dark:text-gray-200 whitespace-pre-wrap">
             {text}
-            <span className="terminal-cursor animate-blink bg-black">|</span>
+            <span className="terminal-cursor animate-blink bg-black dark:bg-gray-200">|</span>
           </div>
         ) : (
-          <div className="w-full h-full p-4 font-mono text-base text-black bg-white whitespace-pre-wrap">
+          <div className="w-full h-full p-4 font-mono text-base text-black dark:text-gray-200 whitespace-pre-wrap">
             {renderTextWithLinks()}
           </div>
         )}
