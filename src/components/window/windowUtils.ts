@@ -22,7 +22,7 @@ export const getWindowStyle = (windowType: 'default' | 'terminal' | 'safari' | '
     case 'itunes':
       return 'bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-gray-300/40 dark:border-gray-600/40';
     case 'textpad':
-      return 'bg-white dark:bg-[#222222] text-black dark:text-gray-200';
+      return 'bg-[#151517] text-gray-300 border-[#2A2A2A]/40';
     default:
       return 'bg-white/90 dark:bg-gray-800/90 backdrop-blur-md';
   }
