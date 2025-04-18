@@ -28,16 +28,16 @@ const DockItem: React.FC<DockItemProps> = ({ icon: Icon, label, color, onClick }
     <Tooltip>
       <TooltipTrigger asChild>
         <button
-          className="group relative flex items-center justify-center px-2"
+          className="group relative flex items-center justify-center px-3"
           onClick={onClick}
         >
-          <div className="flex items-center justify-center transition-all duration-200">
-            <Icon className={`${getIconSize()} ${color}`} />
+          <div className="flex items-center justify-center">
+            <Icon className={`${getIconSize()} text-white`} />
           </div>
-          <div className="w-1 h-1 rounded-full bg-white mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute bottom-0 w-1 h-1 rounded-full bg-white mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
         </button>
       </TooltipTrigger>
-      <TooltipContent side={isMobile ? "bottom" : "top"} className="bg-black/80 text-white border-0">
+      <TooltipContent side={isMobile ? "bottom" : "top"} className="bg-black/90 text-white border-0">
         {label}
       </TooltipContent>
     </Tooltip>

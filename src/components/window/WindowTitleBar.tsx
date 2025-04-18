@@ -26,22 +26,22 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
   const getTitleBarStyle = () => {
     switch (windowType) {
       case 'terminal':
-        return 'bg-gradient-to-b from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300';
+        return 'bg-black text-gray-300';
       case 'safari':
-        return 'bg-[#E8E8E8] dark:bg-[#38383A] text-gray-700 dark:text-gray-300';
+        return 'bg-black text-gray-300';
       case 'itunes':
-        return 'bg-gradient-to-b from-gray-600 to-gray-800 text-white';
+        return 'bg-black text-white';
       case 'textpad':
-        return 'bg-black text-gray-400'; // Matched with dock styling
+        return 'bg-black text-gray-300'; 
       default:
-        return 'bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 text-gray-700 dark:text-gray-300';
+        return 'bg-black text-gray-300';
     }
   };
 
   return (
     <div
       className={cn(
-        'h-8 flex items-center px-3 border-b border-gray-300/30 dark:border-gray-700/30',
+        'h-8 flex items-center px-3 border-b border-white/10',
         getTitleBarStyle(),
         isMobile ? 'cursor-default' : 'cursor-move'
       )}
