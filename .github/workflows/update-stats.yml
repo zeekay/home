@@ -1,0 +1,82 @@
+name: Update Stats
+
+on:
+  schedule:
+    # Run daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Install dependencies
+        run: pip install flask python-dotenv requests
+        
+      - name: Sync Claude stats
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python << 'PYEOF'
+          import sqlite3
+          import json
+          import hashlib
+          from pathlib import Path
+          from datetime import datetime
+          
+          DB_PATH = Path('cache/stats.db')
+          DB_PATH.parent.mkdir(exist_ok=True)
+          
+          # Initialize database
+          conn = sqlite3.connect(DB_PATH)
+          conn.executescript('''
+              CREATE TABLE IF NOT EXISTS github_commits (
+                  sha TEXT PRIMARY KEY,
+                  username TEXT,
+                  date TEXT,
+                  repo TEXT,
+                  message TEXT,
+                  additions INTEGER,
+                  deletions INTEGER
+              );
+              
+              CREATE TABLE IF NOT EXISTS claude_usage (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  date TEXT,
+                  model TEXT,
+                  input_tokens INTEGER,
+                  output_tokens INTEGER,
+                  cache_creation INTEGER DEFAULT 0,
+                  cache_read INTEGER DEFAULT 0,
+                  interaction_hash TEXT UNIQUE
+              );
+          ''')
+          conn.commit()
+          conn.close()
+          
+          print(f"Database initialized at {DB_PATH}")
+          print(f"Last updated: {datetime.now().isoformat()}")
+          PYEOF
+          
+      - name: Build static site
+        run: |
+          mkdir -p dist
+          cp -r templates/* dist/ 2>/dev/null || true
+          cp cache/stats.db dist/ 2>/dev/null || true
+          
+      - name: Commit and push if changed
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "Update stats $(date +%Y-%m-%d)"
+          git push || true
