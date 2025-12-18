@@ -1,0 +1,19 @@
+{
+  "title": "Zach Kelling",
+  "subtitle": "Software Engineer & AI Enthusiast",
+  "users": ["zeekay"],
+  "since": "2010-01-01",
+  "database": "cache/stats.db",
+  "port": 5002,
+  "links": {
+    "github": "https://github.com/zeekay",
+    "twitter": "https://x.com/zeekay",
+    "website": "https://zeekay.ai",
+    "linkedin": "https://linkedin.com/in/zeekay"
+  },
+  "features": {
+    "github": true,
+    "claude": true,
+    "spotify": true
+  }
+}

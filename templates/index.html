@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config.get('title', 'zeekay.ai') }}</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.min.js"></script>
+    <style>
+        :root {
+            --background: #0a0a0a;
+            --foreground: #fafafa;
+            --card: #111111;
+            --card-foreground: #fafafa;
+            --primary: #3b82f6;
+            --primary-foreground: #fafafa;
+            --muted: #1a1a1a;
+            --muted-foreground: #a1a1aa;
+            --border: #27272a;
+            --ring: #3b82f6;
+            --radius: 0.5rem;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid var(--border);
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero .subtitle {
+            color: var(--muted-foreground);
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--foreground);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: all 150ms ease;
+        }
+
+        .social-links a:hover {
+            border-color: var(--primary);
+            background: var(--muted);
+        }
+
+        /* Stats Grid */
+        .stats-section {
+            margin-bottom: 3rem;
+        }
+
+        .stats-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-card .label {
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .chart-container {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+        }
+
+        .chart-container h3 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+
+        footer a {
+            color: var(--foreground);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .hero { padding: 2rem 1rem; }
+            .hero h1 { font-size: 2rem; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .stat-card .value { font-size: 1.5rem; }
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--muted-foreground);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <img id="avatar" class="avatar" src="https://github.com/zeekay.png" alt="Avatar">
+            <h1 id="name">{{ config.get('title', 'Zach Kelling') }}</h1>
+            <p class="subtitle" id="subtitle">{{ config.get('subtitle', 'Software Engineer & AI Enthusiast') }}</p>
+            <div class="social-links" id="socialLinks">
+                <a href="https://github.com/zeekay" target="_blank">GitHub</a>
+                <a href="https://x.com/zeekay" target="_blank">𝕏</a>
+                <a href="https://linkedin.com/in/zeekay" target="_blank">LinkedIn</a>
+            </div>
+        </section>
+
+        <!-- GitHub Stats -->
+        <section class="stats-section" id="githubSection">
+            <h2>📊 GitHub Stats</h2>
+            <div class="stats-grid" id="githubStats">
+                <div class="stat-card">
+                    <div class="value" id="ghCommits">-</div>
+                    <div class="label">Commits</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="ghRepos">-</div>
+                    <div class="label">Repositories</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="ghLoc">-</div>
+                    <div class="label">Lines of Code</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="ghYears">-</div>
+                    <div class="label">Years Coding</div>
+                </div>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>Commits Over Time</h3>
+                    <div id="ghCommitsChart"></div>
+                </div>
+                <div class="chart-container">
+                    <h3>Top Languages</h3>
+                    <div id="ghLanguagesChart"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Claude Stats -->
+        <section class="stats-section" id="claudeSection">
+            <h2>🤖 Claude AI Usage</h2>
+            <div class="stats-grid" id="claudeStats">
+                <div class="stat-card">
+                    <div class="value" id="clInteractions">-</div>
+                    <div class="label">Interactions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="clInputTokens">-</div>
+                    <div class="label">Input Tokens</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="clOutputTokens">-</div>
+                    <div class="label">Output Tokens</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="clActiveDays">-</div>
+                    <div class="label">Active Days</div>
+                </div>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>Token Usage Over Time</h3>
+                    <div id="clTokensChart"></div>
+                </div>
+                <div class="chart-container">
+                    <h3>Usage by Model</h3>
+                    <div id="clModelsChart"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Spotify Stats -->
+        <section class="stats-section" id="spotifySection">
+            <h2>🎵 Spotify</h2>
+            <div class="stats-grid" id="spotifyStats">
+                <div class="stat-card">
+                    <div class="value" id="spPlays">-</div>
+                    <div class="label">Tracks Played</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="spArtists">-</div>
+                    <div class="label">Artists</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="spMinutes">-</div>
+                    <div class="label">Minutes Listened</div>
+                </div>
+                <div class="stat-card">
+                    <div class="value" id="spTracks">-</div>
+                    <div class="label">Unique Tracks</div>
+                </div>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>Top Artists</h3>
+                    <div id="spArtistsChart"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>
+            <a href="https://github.com/zeekay/home" target="_blank">⭐ Star</a> ·
+            <a href="https://github.com/zeekay/home/fork" target="_blank">🍴 Fork</a>
+        </p>
+        <p style="margin-top:0.5rem">
+            Crafted with ❤️ by <a href="https://zeekay.ai">@zeekay</a>
+        </p>
+        <p style="font-size:0.75rem;margin-top:0.5rem;color:var(--muted-foreground)">
+            BSD-3-Clause © Zach Kelling
+        </p>
+    </footer>
+
+    <script>
+        // Format large numbers
+        function formatNumber(n) {
+            if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
+            if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+            if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+            return n?.toLocaleString() || '0';
+        }
+
+        // Dark theme for Plotly
+        const darkLayout = {
+            paper_bgcolor: 'transparent',
+            plot_bgcolor: 'transparent',
+            font: { color: '#a1a1aa', size: 11 },
+            margin: { l: 40, r: 20, t: 20, b: 40 },
+            xaxis: { gridcolor: '#27272a', linecolor: '#27272a' },
+            yaxis: { gridcolor: '#27272a', linecolor: '#27272a' }
+        };
+
+        const plotConfig = { displayModeBar: false, responsive: true };
+
+        // Load GitHub stats
+        async function loadGitHubStats() {
+            try {
+                const res = await fetch('/api/github/stats');
+                const data = await res.json();
+                if (data.success && data.stats) {
+                    const s = data.stats;
+                    document.getElementById('ghCommits').textContent = formatNumber(s.total_commits || 0);
+                    document.getElementById('ghRepos').textContent = formatNumber(s.repos || 0);
+                    document.getElementById('ghLoc').textContent = formatNumber((s.additions || 0) - (s.deletions || 0));
+                    
+                    // Calculate years
+                    if (s.first_commit) {
+                        const years = ((new Date() - new Date(s.first_commit)) / (365.25 * 24 * 60 * 60 * 1000)).toFixed(1);
+                        document.getElementById('ghYears').textContent = years;
+                    }
+                }
+            } catch (e) {
+                console.error('GitHub stats error:', e);
+            }
+        }
+
+        // Load Claude stats
+        async function loadClaudeStats() {
+            try {
+                const res = await fetch('/api/claude/stats');
+                const data = await res.json();
+                if (data.success && data.stats) {
+                    const s = data.stats;
+                    document.getElementById('clInteractions').textContent = formatNumber(s.interactions || 0);
+                    document.getElementById('clInputTokens').textContent = formatNumber(s.input_tokens || 0);
+                    document.getElementById('clOutputTokens').textContent = formatNumber(s.output_tokens || 0);
+                    document.getElementById('clActiveDays').textContent = formatNumber(s.active_days || 0);
+                    
+                    // Model breakdown chart
+                    if (data.by_model && data.by_model.length > 0) {
+                        Plotly.newPlot('clModelsChart', [{
+                            labels: data.by_model.map(m => m.model.replace('claude-', '').replace(/-\d+$/, '')),
+                            values: data.by_model.map(m => m.input + m.output),
+                            type: 'pie',
+                            marker: { colors: ['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981'] },
+                            textinfo: 'percent',
+                            hoverinfo: 'label+value'
+                        }], { ...darkLayout, showlegend: true, legend: { x: 1, y: 0.5 } }, plotConfig);
+                    }
+                }
+            } catch (e) {
+                console.error('Claude stats error:', e);
+            }
+        }
+
+        // Load Spotify stats
+        async function loadSpotifyStats() {
+            try {
+                const res = await fetch('/api/spotify/stats');
+                const data = await res.json();
+                if (data.success && data.stats) {
+                    const s = data.stats;
+                    document.getElementById('spPlays').textContent = formatNumber(s.total_plays || 0);
+                    document.getElementById('spArtists').textContent = formatNumber(s.unique_artists || 0);
+                    document.getElementById('spMinutes').textContent = formatNumber(s.total_minutes || 0);
+                    document.getElementById('spTracks').textContent = formatNumber(s.unique_tracks || 0);
+                    
+                    // Top artists chart
+                    if (data.top_artists && data.top_artists.length > 0) {
+                        Plotly.newPlot('spArtistsChart', [{
+                            y: data.top_artists.map(a => a.artist_name).reverse(),
+                            x: data.top_artists.map(a => a.plays).reverse(),
+                            type: 'bar',
+                            orientation: 'h',
+                            marker: { color: '#1db954' }
+                        }], { ...darkLayout, margin: { l: 120, r: 20, t: 20, b: 40 } }, plotConfig);
+                    }
+                }
+            } catch (e) {
+                console.error('Spotify stats error:', e);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadGitHubStats();
+            loadClaudeStats();
+            loadSpotifyStats();
+        });
+    </script>
+</body>
+</html>
