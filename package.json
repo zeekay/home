@@ -1,0 +1,25 @@
+{
+  "name": "zeekay-home",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Zach Kelling's personal homepage - static Next.js site",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "export": "next build",
+    "sync": "node scripts/sync-data.mjs"
+  },
+  "dependencies": {
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^2.10.0",
+    "sql.js": "^1.10.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "typescript": "^5.6.0"
+  }
+}
