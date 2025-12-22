@@ -78,8 +78,8 @@ export const socialProfiles: Record<string, SocialProfile> = {
     handle: 'zeekayai',
     url: 'https://sora.chatgpt.com/profile/zeekayai',
     displayName: 'Z',
-    color: '#10A37F',
-    icon: 'Video',
+    color: '#0066FF',
+    icon: 'Sora',
   },
 };
 
