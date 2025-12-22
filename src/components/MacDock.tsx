@@ -14,26 +14,30 @@ interface MacDockProps {
   className?: string;
   onTerminalClick: () => void;
   onSafariClick: () => void;
-  onITunesClick: () => void;
+  onMusicClick: () => void;
+  onSocialsClick?: () => void;
   onSystemPreferencesClick?: () => void;
   onMailClick?: () => void;
   onCalendarClick?: () => void;
   onPhotosClick?: () => void;
   onFaceTimeClick?: () => void;
   onTextPadClick?: () => void;
+  onGitHubStatsClick?: () => void;
 }
 
-const MacDock: React.FC<MacDockProps> = ({ 
-  className, 
-  onTerminalClick, 
-  onSafariClick, 
-  onITunesClick,
+const MacDock: React.FC<MacDockProps> = ({
+  className,
+  onTerminalClick,
+  onSafariClick,
+  onMusicClick,
+  onSocialsClick,
   onSystemPreferencesClick,
   onMailClick,
   onCalendarClick,
   onPhotosClick,
   onFaceTimeClick,
-  onTextPadClick
+  onTextPadClick,
+  onGitHubStatsClick
 }) => {
   const isMobile = useIsMobile();
 
@@ -41,13 +45,15 @@ const MacDock: React.FC<MacDockProps> = ({
   const allDockItems = createDockItems({
     onTerminalClick,
     onSafariClick,
-    onITunesClick,
+    onMusicClick,
+    onSocialsClick,
     onSystemPreferencesClick,
     onMailClick,
     onCalendarClick,
     onPhotosClick,
     onFaceTimeClick,
-    onTextPadClick
+    onTextPadClick,
+    onGitHubStatsClick
   });
 
   // Decide how many items to show directly in the dock based on screen size

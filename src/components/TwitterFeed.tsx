@@ -1,90 +1,147 @@
-
-import React from 'react';
-import { Twitter, Search } from 'lucide-react';
-import TweetCard, { TweetProps } from './TweetCard';
+import React, { useEffect, useRef, useState } from 'react';
+import { Twitter, ExternalLink, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { socialProfiles } from '@/data/socials';
 
 interface TwitterFeedProps {
   className?: string;
 }
 
-// Mock data for tweets
-const mockTweets: TweetProps[] = [
-  {
-    id: '1',
-    text: 'Just released a new open-source library for reactive order execution. Check it out: github.com/zeekay/executive-order',
-    likes: 24,
-    retweets: 8,
-    replies: 3,
-    date: '2023-05-15T14:23:00Z',
-    url: 'https://twitter.com/zeekay/status/1'
-  },
-  {
-    id: '2',
-    text: 'Working on some improvements to vice, my meta Vim configuration framework. The real power comes from the simplicity and composability.',
-    likes: 37,
-    retweets: 12,
-    replies: 5,
-    date: '2023-04-22T10:15:00Z',
-    url: 'https://twitter.com/zeekay/status/2'
-  },
-  {
-    id: '3',
-    text: 'Excited to be speaking at the upcoming JavaScript conference about building natural language interfaces with Elliptical!',
-    likes: 54,
-    retweets: 17,
-    replies: 8,
-    date: '2023-03-10T19:42:00Z',
-    url: 'https://twitter.com/zeekay/status/3'
-  },
-  {
-    id: '4',
-    text: 'Just pushed some major updates to Ko, my interactive Makefile replacement / task-runner. Makes complex task running so much more maintainable.',
-    likes: 42,
-    retweets: 14,
-    replies: 6,
-    date: '2023-02-05T08:30:00Z',
-    url: 'https://twitter.com/zeekay/status/4'
-  },
-  {
-    id: '5',
-    text: 'Contributed to Handlebars.js today. It\'s amazing how this library has become such a fundamental part of so many developers\' toolkits.',
-    likes: 67,
-    retweets: 21,
-    replies: 12,
-    date: '2023-01-18T16:25:00Z',
-    url: 'https://twitter.com/zeekay/status/5'
-  },
-  {
-    id: '6',
-    text: 'Exploring the intersection of functional programming and UI development. The patterns that emerge are fascinating and lead to more maintainable code.',
-    likes: 83,
-    retweets: 29,
-    replies: 15,
-    date: '2022-12-07T11:10:00Z',
-    url: 'https://twitter.com/zeekay/status/6'
+declare global {
+  interface Window {
+    twttr?: {
+      widgets: {
+        load: (element?: HTMLElement) => void;
+        createTimeline: (
+          dataSource: { sourceType: string; screenName?: string },
+          element: HTMLElement,
+          options?: Record<string, unknown>
+        ) => Promise<HTMLElement>;
+      };
+    };
   }
-];
+}
 
 const TwitterFeed: React.FC<TwitterFeedProps> = ({ className }) => {
+  const embedContainerRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  
+  const twitterProfile = socialProfiles.twitter;
+  const twitterHandle = twitterProfile.handle;
+
+  useEffect(() => {
+    // Load Twitter widgets script
+    const loadTwitterScript = () => {
+      if (window.twttr) {
+        renderTimeline();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://platform.twitter.com/widgets.js';
+      script.async = true;
+      script.onload = () => {
+        renderTimeline();
+      };
+      script.onerror = () => {
+        setIsLoading(false);
+        setHasError(true);
+      };
+      document.body.appendChild(script);
+    };
+
+    const renderTimeline = () => {
+      if (!embedContainerRef.current || !window.twttr) return;
+
+      // Clear existing content
+      embedContainerRef.current.innerHTML = '';
+
+      window.twttr.widgets
+        .createTimeline(
+          {
+            sourceType: 'profile',
+            screenName: twitterHandle,
+          },
+          embedContainerRef.current,
+          {
+            theme: 'dark',
+            chrome: 'noheader nofooter noborders transparent',
+            height: 500,
+            dnt: true,
+            tweetLimit: 10,
+          }
+        )
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsLoading(false);
+          setHasError(true);
+        });
+    };
+
+    loadTwitterScript();
+  }, [twitterHandle]);
+
   return (
     <div className={cn('glass-card rounded-xl overflow-hidden', className)}>
+      {/* Header */}
       <div className="bg-accent/50 dark:bg-accent/30 p-4 border-b border-border flex items-center justify-between">
         <div className="flex items-center">
           <Twitter className="mr-2" size={18} />
-          <h2 className="text-lg font-medium">Latest Tweets</h2>
-          <span className="ml-2 text-xs py-0.5 px-2 bg-primary text-primary-foreground rounded-full">
-            @zeekay
-          </span>
+          <h2 className="text-lg font-medium">X / Twitter</h2>
+          <a
+            href={twitterProfile.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-2 text-xs py-0.5 px-2 bg-black text-white rounded-full hover:bg-zinc-800 transition-colors flex items-center gap-1"
+          >
+            @{twitterHandle}
+            <ExternalLink className="w-3 h-3" />
+          </a>
         </div>
+        <a
+          href={twitterProfile.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+        >
+          View Profile <ExternalLink className="w-3 h-3" />
+        </a>
       </div>
-      
-      <div className="p-4 h-[500px] overflow-y-auto scrollbar-thin">
-        <div className="space-y-4">
-          {mockTweets.map((tweet) => (
-            <TweetCard key={tweet.id} {...tweet} />
-          ))}
-        </div>
+
+      {/* Twitter Timeline Embed */}
+      <div className="p-4 h-[520px] overflow-hidden bg-zinc-900/50">
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+            <RefreshCw className="w-8 h-8 animate-spin mb-3" />
+            <p className="text-sm">Loading tweets...</p>
+          </div>
+        )}
+        
+        {hasError && (
+          <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+            <Twitter className="w-12 h-12 mb-4 opacity-50" />
+            <p className="text-sm mb-2">Could not load tweets</p>
+            <a
+              href={twitterProfile.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-primary hover:underline flex items-center gap-1"
+            >
+              View on X <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        )}
+        
+        <div
+          ref={embedContainerRef}
+          className={cn(
+            'h-full overflow-y-auto scrollbar-thin',
+            isLoading || hasError ? 'hidden' : 'block'
+          )}
+        />
       </div>
     </div>
   );

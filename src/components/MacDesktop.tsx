@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import MacDock from './MacDock';
 import MacTerminalWindow from './MacTerminalWindow';
 import MacSafariWindow from './MacSafariWindow';
-import MacITunesWindow from './MacITunesWindow';
+import MacMusicWindow from './MacMusicWindow';
 import MacEmailWindow from './MacEmailWindow';
 import MacCalendarWindow from './MacCalendarWindow';
 import MacSystemPreferencesWindow from './MacSystemPreferencesWindow';
 import MacPhotosWindow from './MacPhotosWindow';
 import MacFaceTimeWindow from './MacFaceTimeWindow';
 import MacTextPadWindow from './MacTextPadWindow';
+import MacGitHubStatsWindow from './MacGitHubStatsWindow';
+import MacSocialsWindow from './MacSocialsWindow';
 import AnimatedBackground from './AnimatedBackground';
 import DesktopSettings from './DesktopSettings';
 
@@ -19,14 +21,16 @@ interface MacDesktopProps {
 const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   const [showTerminal, setShowTerminal] = useState(false);
   const [showSafari, setShowSafari] = useState(false);
-  const [showITunes, setShowITunes] = useState(false);
+  const [showMusic, setShowMusic] = useState(false);
+  const [showSocials, setShowSocials] = useState(false);
   const [showEmail, setShowEmail] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showSystemPreferences, setShowSystemPreferences] = useState(false);
   const [showPhotos, setShowPhotos] = useState(false);
   const [showFaceTime, setShowFaceTime] = useState(false);
   const [showTextPad, setShowTextPad] = useState(false);
-  
+  const [showGitHubStats, setShowGitHubStats] = useState(false);
+
   // Desktop customization settings
   const [padding, setPadding] = useState(1);
   const [opacity, setOpacity] = useState(0.7);
@@ -50,8 +54,12 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
     setShowSafari(!showSafari);
   };
 
-  const handleToggleITunes = () => {
-    setShowITunes(!showITunes);
+  const handleToggleMusic = () => {
+    setShowMusic(!showMusic);
+  };
+
+  const handleToggleSocials = () => {
+    setShowSocials(!showSocials);
   };
 
   const handleToggleEmail = () => {
@@ -76,6 +84,10 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
 
   const handleToggleTextPad = () => {
     setShowTextPad(!showTextPad);
+  };
+
+  const handleToggleGitHubStats = () => {
+    setShowGitHubStats(!showGitHubStats);
   };
 
   // Apply custom document styles for padding
@@ -106,8 +118,8 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         <MacSafariWindow onClose={() => setShowSafari(false)} />
       )}
       
-      {showITunes && (
-        <MacITunesWindow onClose={() => setShowITunes(false)} />
+      {showMusic && (
+        <MacMusicWindow onClose={() => setShowMusic(false)} />
       )}
       
       {showEmail && (
@@ -133,7 +145,15 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
       {showTextPad && (
         <MacTextPadWindow onClose={() => setShowTextPad(false)} />
       )}
-      
+
+      {showGitHubStats && (
+        <MacGitHubStatsWindow onClose={() => setShowGitHubStats(false)} />
+      )}
+
+      {showSocials && (
+        <MacSocialsWindow onClose={() => setShowSocials(false)} />
+      )}
+
       {/* Desktop Settings */}
       <DesktopSettings 
         onPaddingChange={setPadding}
@@ -147,16 +167,18 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
       />
       
       {/* Mac Dock - now positioned with its own styles */}
-      <MacDock 
+      <MacDock
         onTerminalClick={handleToggleTerminal}
         onSafariClick={handleToggleSafari}
-        onITunesClick={handleToggleITunes}
+        onMusicClick={handleToggleMusic}
+        onSocialsClick={handleToggleSocials}
         onMailClick={handleToggleEmail}
         onCalendarClick={handleToggleCalendar}
         onSystemPreferencesClick={handleToggleSystemPreferences}
         onPhotosClick={handleTogglePhotos}
         onFaceTimeClick={handleToggleFaceTime}
         onTextPadClick={handleToggleTextPad}
+        onGitHubStatsClick={handleToggleGitHubStats}
       />
     </div>
   );
