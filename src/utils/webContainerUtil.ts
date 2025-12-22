@@ -21,50 +21,106 @@ export const initializeWebContainer = async (
     });
     
     await webContainerInstance.mount({
+      '.zshrc': {
+        file: {
+          contents: `# zOS zsh configuration
+# Author: Zach Kelling
+
+# Oh My Zsh
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="agnoster"
+plugins=(git node npm docker kubectl)
+
+# Aliases
+alias ll="ls -la"
+alias la="ls -A"
+alias l="ls -CF"
+alias ..="cd .."
+alias ...="cd ../.."
+alias g="git"
+alias gs="git status"
+alias vim="nvim"
+alias v="nvim"
+
+# Path
+export PATH="$HOME/.local/bin:$HOME/go/bin:$PATH"
+
+# Starship prompt
+eval "$(starship init zsh)"`
+        }
+      },
+      '.vimrc': {
+        file: {
+          contents: `" zOS vim configuration
+set nocompatible
+syntax on
+set number relativenumber
+set tabstop=2 shiftwidth=2 expandtab
+colorscheme dracula`
+        }
+      },
+      '.gitconfig': {
+        file: {
+          contents: `[user]
+    name = Zach Kelling
+    email = z@hanzo.ai
+
+[core]
+    editor = nvim
+
+[alias]
+    st = status
+    co = checkout`
+        }
+      },
       'README.md': {
         file: {
-          contents: `# Zach Kelling
-          
-Welcome to my terminal!
+          contents: `# Welcome to zOS
 
-## Commands to try:
-- ls: list files 
-- cat README.md
-- cd projects
-- mkdir new-project
-- touch hello.txt
-- echo "Hello world" > hello.txt
-- cat hello.txt
+This is Zach Kelling's terminal environment.
 
-Feel free to explore!`
+## Quick Commands
+- ll - List files (long format)
+- la - List all files
+- vim <file> - Edit file
+- cat <file> - View file
+- help - Show all commands
+- neofetch - System info
+
+## Projects
+Check out ~/projects for my work.`
         }
       },
       'projects': {
         directory: {
-          'awesome-project.txt': {
-            file: {
-              contents: 'This is one of my awesome projects. Check out more at github.com/zeekay'
+          'hanzo': {
+            directory: {
+              'README.md': {
+                file: { contents: '# Hanzo AI\n\nFrontier AI infrastructure.\ngithub.com/hanzoai' }
+              }
+            }
+          },
+          'lux': {
+            directory: {
+              'README.md': {
+                file: { contents: '# LUX Network\n\nQuantum-safe blockchain.\ngithub.com/luxfi' }
+              }
+            }
+          },
+          'zoo': {
+            directory: {
+              'README.md': {
+                file: { contents: '# ZOO\n\nDecentralized AI research.\ngithub.com/zooai' }
+              }
             }
           }
-        }
-      },
-      'contact.txt': {
-        file: {
-          contents: `Twitter: @zeekay
-GitHub: @zeekay
-Email: [redacted]`
-        }
-      },
-      'bio.txt': {
-        file: {
-          contents: 'Software engineer with a passion for building elegant solutions to complex problems.'
         }
       }
     });
 
     addEntry({
       command: '',
-      output: "WebContainer loaded successfully! Try commands like 'ls', 'cat README.md', or 'help'.",
+      output: "zsh loaded. Try 'll', 'neofetch', or 'cat .zshrc'",
       id: Date.now()
     });
 
