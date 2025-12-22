@@ -1,5 +1,5 @@
 
-import { LucideIcon, Folder, Mail, Globe, Image, Music, Video, Settings, Calendar, Trash2, FileText, Terminal, Camera } from 'lucide-react';
+import { LucideIcon, Folder, Mail, Globe, Image, Music, Video, Settings, Calendar, Trash2, FileText, Terminal, Camera, Github, BarChart3, Users } from 'lucide-react';
 
 export interface DockItemType {
   icon: LucideIcon;
@@ -11,19 +11,23 @@ export interface DockItemType {
 export const createDockItems = (callbacks: {
   onTerminalClick?: () => void;
   onSafariClick?: () => void;
-  onITunesClick?: () => void;
+  onMusicClick?: () => void;
+  onSocialsClick?: () => void;
   onSystemPreferencesClick?: () => void;
   onMailClick?: () => void;
   onCalendarClick?: () => void;
   onPhotosClick?: () => void;
   onFaceTimeClick?: () => void;
   onTextPadClick?: () => void;
+  onGitHubStatsClick?: () => void;
 }): DockItemType[] => {
   return [
     { icon: Folder, label: 'Finder', color: 'text-blue-400' },
     { icon: Globe, label: 'Safari', onClick: callbacks.onSafariClick, color: 'text-sky-400' },
     { icon: Terminal, label: 'Terminal', onClick: callbacks.onTerminalClick, color: 'text-green-400' },
-    { icon: Music, label: 'iTunes', onClick: callbacks.onITunesClick, color: 'text-pink-400' },
+    { icon: BarChart3, label: 'GitHub Stats', onClick: callbacks.onGitHubStatsClick, color: 'text-purple-400' },
+    { icon: Users, label: 'Socials', onClick: callbacks.onSocialsClick, color: 'text-blue-400' },
+    { icon: Music, label: 'Music', onClick: callbacks.onMusicClick, color: 'text-pink-400' },
     { icon: FileText, label: 'TextPad', onClick: callbacks.onTextPadClick, color: 'text-yellow-300' },
     { icon: Mail, label: 'Mail', onClick: callbacks.onMailClick, color: 'text-red-400' },
     { icon: Image, label: 'Photos', onClick: callbacks.onPhotosClick, color: 'text-purple-400' },
