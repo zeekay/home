@@ -1,427 +1,440 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import MacWindow from './MacWindow';
 import { cn } from '@/lib/utils';
-import { 
-  Twitter, 
-  Linkedin, 
-  Instagram, 
+import {
+  Twitter,
+  Linkedin,
+  Instagram,
   Youtube,
   ExternalLink,
-  RefreshCw,
-  Users,
+  Github,
+  Music,
+  Radio,
+  Code2,
+  Search,
+  Plus,
   Globe,
-  Code2
+  Mail,
+  Phone,
+  MapPin,
+  Building2,
+  Star,
+  Share2,
 } from 'lucide-react';
-import { socialProfiles, professionalInfo } from '@/data/socials';
+import { socialProfiles, professionalInfo, pinnedProjects } from '@/data/socials';
 
 interface MacSocialsWindowProps {
   onClose: () => void;
 }
 
-type TabType = 'twitter' | 'linkedin' | 'instagram' | 'youtube';
+// Define contact cards - different identities/usernames across platforms
+const contactIdentities = [
+  {
+    id: 'main',
+    name: 'Z',
+    subtitle: 'Zach Kelling',
+    avatar: 'ZK',
+    color: 'from-purple-500 to-pink-500',
+    isPrimary: true,
+  },
+  {
+    id: 'github',
+    name: 'zeekay',
+    subtitle: 'GitHub',
+    avatar: '🐙',
+    color: 'from-gray-600 to-gray-800',
+    platform: 'github',
+  },
+  {
+    id: 'twitter',
+    name: '@zeekay',
+    subtitle: 'X / Twitter',
+    avatar: '𝕏',
+    color: 'from-gray-800 to-black',
+    platform: 'twitter',
+  },
+  {
+    id: 'linkedin',
+    name: 'Zach Kelling',
+    subtitle: 'LinkedIn',
+    avatar: 'in',
+    color: 'from-blue-600 to-blue-800',
+    platform: 'linkedin',
+  },
+  {
+    id: 'instagram',
+    name: '@zeekayai',
+    subtitle: 'Instagram',
+    avatar: '📸',
+    color: 'from-pink-500 to-orange-500',
+    platform: 'instagram',
+  },
+  {
+    id: 'youtube',
+    name: '@zeekay',
+    subtitle: 'YouTube',
+    avatar: '▶',
+    color: 'from-red-600 to-red-700',
+    platform: 'youtube',
+  },
+  {
+    id: 'spotify',
+    name: 'zeek4y',
+    subtitle: 'Spotify',
+    avatar: '🎵',
+    color: 'from-green-500 to-green-700',
+    platform: 'spotify',
+  },
+  {
+    id: 'soundcloud',
+    name: 'zeekay',
+    subtitle: 'SoundCloud',
+    avatar: '☁',
+    color: 'from-orange-500 to-orange-600',
+    platform: 'soundcloud',
+  },
+  {
+    id: 'stackoverflow',
+    name: 'zach-kelling',
+    subtitle: 'Stack Overflow',
+    avatar: '📚',
+    color: 'from-orange-400 to-orange-600',
+    platform: 'stackoverflow',
+  },
+];
 
-declare global {
-  interface Window {
-    twttr?: {
-      widgets: {
-        load: (element?: HTMLElement) => void;
-        createTimeline: (
-          dataSource: { sourceType: string; screenName?: string },
-          element: HTMLElement,
-          options?: Record<string, unknown>
-        ) => Promise<HTMLElement>;
-      };
-    };
-    instgrm?: {
-      Embeds: {
-        process: () => void;
-      };
-    };
-    LI?: {
-      init: () => void;
-    };
+const getIconForPlatform = (platform: string) => {
+  switch (platform) {
+    case 'github': return <Github className="w-4 h-4" />;
+    case 'twitter': return <Twitter className="w-4 h-4" />;
+    case 'linkedin': return <Linkedin className="w-4 h-4" />;
+    case 'instagram': return <Instagram className="w-4 h-4" />;
+    case 'youtube': return <Youtube className="w-4 h-4" />;
+    case 'spotify': return <Music className="w-4 h-4" />;
+    case 'soundcloud': return <Radio className="w-4 h-4" />;
+    case 'stackoverflow': return <Code2 className="w-4 h-4" />;
+    default: return <Globe className="w-4 h-4" />;
   }
-}
+};
 
 const MacSocialsWindow: React.FC<MacSocialsWindowProps> = ({ onClose }) => {
-  const [activeTab, setActiveTab] = useState<TabType>('twitter');
-  const [isLoading, setIsLoading] = useState(true);
-  const twitterRef = useRef<HTMLDivElement>(null);
+  const [selectedContact, setSelectedContact] = useState('main');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const tabs: { id: TabType; label: string; icon: React.ReactNode; color: string }[] = [
-    { id: 'twitter', label: 'X', icon: <Twitter className="w-4 h-4" />, color: 'bg-black' },
-    { id: 'linkedin', label: 'LinkedIn', icon: <Linkedin className="w-4 h-4" />, color: 'bg-blue-600' },
-    { id: 'instagram', label: 'Instagram', icon: <Instagram className="w-4 h-4" />, color: 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400' },
-    { id: 'youtube', label: 'YouTube', icon: <Youtube className="w-4 h-4" />, color: 'bg-red-600' },
-  ];
-
-  // Load Twitter timeline
-  useEffect(() => {
-    if (activeTab !== 'twitter') return;
-    setIsLoading(true);
-
-    const loadTwitter = () => {
-      if (!window.twttr) {
-        const script = document.createElement('script');
-        script.src = 'https://platform.twitter.com/widgets.js';
-        script.async = true;
-        script.onload = renderTwitter;
-        document.body.appendChild(script);
-      } else {
-        renderTwitter();
-      }
-    };
-
-    const renderTwitter = () => {
-      if (!twitterRef.current || !window.twttr) return;
-      twitterRef.current.innerHTML = '';
-      
-      window.twttr.widgets
-        .createTimeline(
-          { sourceType: 'profile', screenName: socialProfiles.twitter.handle },
-          twitterRef.current,
-          {
-            theme: 'dark',
-            chrome: 'noheader nofooter noborders transparent',
-            height: 450,
-            dnt: true,
-            tweetLimit: 5,
-          }
-        )
-        .then(() => setIsLoading(false))
-        .catch(() => setIsLoading(false));
-    };
-
-    loadTwitter();
-  }, [activeTab]);
-
-  useEffect(() => {
-    if (activeTab !== 'twitter') {
-      setIsLoading(false);
-    }
-  }, [activeTab]);
-
-  const SocialCard = ({ profile, icon }: { profile: typeof socialProfiles.twitter; icon: React.ReactNode }) => (
-    <a
-      href={profile.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center gap-4 p-4 rounded-xl glass-card glass-card-hover transition-all group"
-    >
-      <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: profile.color }}>
-        {icon}
-      </div>
-      <div className="flex-1">
-        <h3 className="text-white font-medium">{profile.platform}</h3>
-        <p className="text-white/50 text-sm">@{profile.handle}</p>
-      </div>
-      <ExternalLink className="w-5 h-5 text-white/30 group-hover:text-white/70 transition-colors" />
-    </a>
+  const filteredContacts = contactIdentities.filter(contact =>
+    contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    contact.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const currentContact = contactIdentities.find(c => c.id === selectedContact);
 
   return (
     <MacWindow
-      title="Socials"
+      title="Contacts"
       onClose={onClose}
-      defaultWidth={800}
-      defaultHeight={600}
-      minWidth={600}
-      minHeight={450}
-      defaultPosition={{ x: 220, y: 120 }}
+      defaultWidth={900}
+      defaultHeight={620}
+      minWidth={700}
+      minHeight={500}
+      defaultPosition={{ x: 180, y: 100 }}
     >
-      <div className="flex flex-col h-full bg-transparent">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/30">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
-              <Users className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-white font-semibold text-lg">Social Profiles</h2>
-              <p className="text-white/50 text-xs">@{socialProfiles.twitter.handle}</p>
+      <div className="flex h-full bg-transparent overflow-hidden">
+        {/* Sidebar - Contact List */}
+        <div className="w-64 border-r border-white/10 flex flex-col bg-black/20">
+          {/* Search Bar */}
+          <div className="p-3 border-b border-white/10">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg">
+              <Search className="w-4 h-4 text-white/40" />
+              <input
+                type="text"
+                placeholder="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent text-white text-sm outline-none placeholder:text-white/40"
+              />
             </div>
           </div>
-          
-          {/* Tab buttons */}
-          <div className="flex gap-1 bg-white/5 rounded-lg p-1">
-            {tabs.map((tab) => (
+
+          {/* All Contacts Header */}
+          <div className="px-4 py-2 border-b border-white/10">
+            <div className="flex items-center justify-between">
+              <span className="text-white/60 text-xs font-medium uppercase tracking-wider">All Contacts</span>
+              <span className="text-white/40 text-xs">{contactIdentities.length}</span>
+            </div>
+          </div>
+
+          {/* Contact List */}
+          <div className="flex-1 overflow-y-auto">
+            {filteredContacts.map((contact) => (
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                key={contact.id}
+                onClick={() => setSelectedContact(contact.id)}
                 className={cn(
-                  'flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all',
-                  activeTab === tab.id
-                    ? 'bg-white/10 text-white shadow-sm'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                  'w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors outline-none',
+                  selectedContact === contact.id
+                    ? 'bg-blue-500/30'
+                    : 'hover:bg-white/5'
                 )}
               >
-                {tab.icon}
-                <span className="hidden sm:inline">{tab.label}</span>
+                <div className={cn(
+                  'w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium bg-gradient-to-br',
+                  contact.color
+                )}>
+                  {contact.avatar}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className={cn(
+                    'text-sm font-medium truncate',
+                    contact.isPrimary ? 'text-white' : 'text-white/90'
+                  )}>
+                    {contact.name}
+                  </p>
+                  <p className="text-white/50 text-xs truncate">{contact.subtitle}</p>
+                </div>
+                {contact.isPrimary && (
+                  <Star className="w-3 h-3 text-yellow-400 flex-shrink-0" />
+                )}
               </button>
             ))}
           </div>
-        </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-auto p-4">
-          {/* Twitter Tab */}
-          {activeTab === 'twitter' && (
-            <div className="h-full">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-black flex items-center justify-center">
-                    <Twitter className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-medium">X / Twitter</h3>
-                    <p className="text-white/50 text-sm">@{socialProfiles.twitter.handle}</p>
-                  </div>
-                </div>
-                <a
-                  href={socialProfiles.twitter.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1.5 bg-black hover:bg-zinc-800 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
-                >
-                  Follow <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-              
-              <div className="rounded-xl overflow-hidden glass-sm h-[calc(100%-60px)]">
-                {isLoading && (
-                  <div className="flex items-center justify-center h-full">
-                    <RefreshCw className="w-6 h-6 text-white/50 animate-spin" />
-                  </div>
-                )}
-                <div ref={twitterRef} className={cn('h-full overflow-y-auto', isLoading && 'hidden')} />
-              </div>
-            </div>
-          )}
-
-          {/* LinkedIn Tab */}
-          {activeTab === 'linkedin' && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-[#0A66C2] flex items-center justify-center">
-                    <Linkedin className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-medium">LinkedIn</h3>
-                    <p className="text-white/50 text-sm">{professionalInfo.name}</p>
-                  </div>
-                </div>
-                <a
-                  href={socialProfiles.linkedin.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1.5 bg-[#0A66C2] hover:bg-[#0952a0] text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
-                >
-                  Connect <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-
-              {/* LinkedIn Profile Card */}
-              <div className="rounded-xl bg-gradient-to-br from-[#0A66C2]/20 to-[#0A66C2]/5 border border-[#0A66C2]/30 p-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-2xl font-bold">
-                    ZK
-                  </div>
-                  <div className="flex-1">
-                    <h2 className="text-white text-xl font-bold">{professionalInfo.name}</h2>
-                    <p className="text-white/70">{professionalInfo.title} at {professionalInfo.company}</p>
-                    <p className="text-white/50 text-sm mt-1">{professionalInfo.location}</p>
-                    
-                    <p className="text-white/60 text-sm mt-4 leading-relaxed">
-                      {professionalInfo.bio}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="mt-6 flex gap-3">
-                  <a
-                    href={socialProfiles.linkedin.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 py-2 bg-[#0A66C2] hover:bg-[#0952a0] text-white text-sm font-medium rounded-lg transition-colors text-center"
-                  >
-                    View Profile
-                  </a>
-                  <a
-                    href={`mailto:${professionalInfo.email}`}
-                    className="flex-1 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-medium rounded-lg transition-colors text-center"
-                  >
-                    Send Email
-                  </a>
-                </div>
-              </div>
-
-              {/* Experience highlights */}
-              <div className="rounded-xl glass-card p-4">
-                <h4 className="text-white font-medium mb-3 flex items-center gap-2">
-                  <Globe className="w-4 h-4" /> Companies & Projects
-                </h4>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm">
-                      H
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">Hanzo AI</p>
-                      <p className="text-white/50 text-xs">Founder & CTO • Techstars '17</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white font-bold text-sm">
-                      L
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">Lux Network</p>
-                      <p className="text-white/50 text-xs">Blockchain Infrastructure</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center text-white font-bold text-sm">
-                      Z
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">Zoo Labs</p>
-                      <p className="text-white/50 text-xs">DeAI Research Foundation</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Instagram Tab */}
-          {activeTab === 'instagram' && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center">
-                    <Instagram className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-medium">Instagram</h3>
-                    <p className="text-white/50 text-sm">@{socialProfiles.instagram.handle}</p>
-                  </div>
-                </div>
-                <a
-                  href={socialProfiles.instagram.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1.5 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:opacity-90 text-white text-sm font-medium rounded-lg transition-opacity flex items-center gap-2"
-                >
-                  Follow <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-
-              {/* Instagram embed placeholder */}
-              <div className="rounded-xl bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-orange-400/10 border border-pink-500/20 p-8 text-center">
-                <Instagram className="w-16 h-16 mx-auto mb-4 text-pink-400" />
-                <h3 className="text-white text-lg font-medium mb-2">Instagram Feed</h3>
-                <p className="text-white/60 text-sm mb-4">
-                  View photos, stories, and more on Instagram
-                </p>
-                <a
-                  href={socialProfiles.instagram.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white text-sm font-medium rounded-lg hover:opacity-90 transition-opacity"
-                >
-                  Open Instagram <ExternalLink className="w-4 h-4" />
-                </a>
-              </div>
-
-              {/* Quick links */}
-              <div className="grid grid-cols-2 gap-3">
-                <a
-                  href={`${socialProfiles.instagram.url}/reels`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-4 rounded-xl glass-card glass-card-hover transition-all text-center"
-                >
-                  <p className="text-white font-medium">Reels</p>
-                  <p className="text-white/50 text-xs mt-1">Watch short videos</p>
-                </a>
-                <a
-                  href={`${socialProfiles.instagram.url}/tagged`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-4 rounded-xl glass-card glass-card-hover transition-all text-center"
-                >
-                  <p className="text-white font-medium">Tagged</p>
-                  <p className="text-white/50 text-xs mt-1">Tagged photos</p>
-                </a>
-              </div>
-            </div>
-          )}
-
-          {/* YouTube Tab */}
-          {activeTab === 'youtube' && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-red-600 flex items-center justify-center">
-                    <Youtube className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-medium">YouTube</h3>
-                    <p className="text-white/50 text-sm">{socialProfiles.youtube.handle}</p>
-                  </div>
-                </div>
-                <a
-                  href={socialProfiles.youtube.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
-                >
-                  Subscribe <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-
-              {/* YouTube embed placeholder */}
-              <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-8 text-center">
-                <Youtube className="w-16 h-16 mx-auto mb-4 text-red-400" />
-                <h3 className="text-white text-lg font-medium mb-2">YouTube Channel</h3>
-                <p className="text-white/60 text-sm mb-4">
-                  Watch videos, tutorials, and tech content
-                </p>
-                <a
-                  href={socialProfiles.youtube.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
-                >
-                  Visit Channel <ExternalLink className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Footer with all social links */}
-        <div className="border-t border-white/10 glass-sm px-4 py-3">
-          <div className="flex items-center justify-center gap-3">
-            {Object.entries(socialProfiles).slice(0, 8).map(([key, profile]) => (
-              <a
-                key={key}
-                href={profile.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
-                title={profile.platform}
-              >
-                {key === 'github' && <Globe className="w-4 h-4 text-white" />}
-                {key === 'twitter' && <Twitter className="w-4 h-4 text-white" />}
-                {key === 'linkedin' && <Linkedin className="w-4 h-4 text-white" />}
-                {key === 'instagram' && <Instagram className="w-4 h-4 text-white" />}
-                {key === 'youtube' && <Youtube className="w-4 h-4 text-white" />}
-                {key === 'stackoverflow' && <Code2 className="w-4 h-4 text-white" />}
-              </a>
-            ))}
+          {/* Add Contact Button */}
+          <div className="p-3 border-t border-white/10">
+            <button className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-white/60 hover:text-white text-sm transition-colors outline-none">
+              <Plus className="w-4 h-4" />
+              <span>Add Account</span>
+            </button>
           </div>
+        </div>
+
+        {/* Main Content - Contact Details */}
+        <div className="flex-1 overflow-y-auto">
+          {currentContact?.id === 'main' ? (
+            // Main Profile View
+            <div className="p-6">
+              {/* Profile Header */}
+              <div className="text-center mb-6">
+                <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-3xl font-bold mb-3 shadow-lg shadow-purple-500/30">
+                  ZK
+                </div>
+                <h1 className="text-white text-2xl font-semibold">{professionalInfo.fullName}</h1>
+                <p className="text-white/60">{professionalInfo.title}</p>
+                <p className="text-white/40 text-sm mt-1">{professionalInfo.tagline}</p>
+              </div>
+
+              {/* Contact Actions */}
+              <div className="flex justify-center gap-3 mb-6">
+                <a
+                  href={`mailto:${professionalInfo.email}`}
+                  className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+                >
+                  <Mail className="w-5 h-5 text-blue-400" />
+                  <span className="text-white/60 text-xs">email</span>
+                </a>
+                <a
+                  href={professionalInfo.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+                >
+                  <Globe className="w-5 h-5 text-green-400" />
+                  <span className="text-white/60 text-xs">website</span>
+                </a>
+                <button className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors outline-none">
+                  <Share2 className="w-5 h-5 text-orange-400" />
+                  <span className="text-white/60 text-xs">share</span>
+                </button>
+              </div>
+
+              {/* Contact Info Sections */}
+              <div className="space-y-4">
+                {/* Work */}
+                <div className="rounded-xl bg-white/5 overflow-hidden">
+                  <div className="px-4 py-2 border-b border-white/10">
+                    <h3 className="text-white/60 text-xs font-medium uppercase tracking-wider">Work</h3>
+                  </div>
+                  {professionalInfo.roles.map((role, idx) => (
+                    <div key={idx} className="flex items-center gap-3 px-4 py-3 border-b border-white/5 last:border-0">
+                      <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-lg">
+                        {role.icon}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white text-sm font-medium">{role.title} at {role.company}</p>
+                        <p className="text-white/50 text-xs">{role.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Contact Info */}
+                <div className="rounded-xl bg-white/5 overflow-hidden">
+                  <div className="px-4 py-2 border-b border-white/10">
+                    <h3 className="text-white/60 text-xs font-medium uppercase tracking-wider">Contact</h3>
+                  </div>
+                  <div className="divide-y divide-white/5">
+                    <div className="flex items-center gap-3 px-4 py-3">
+                      <Mail className="w-4 h-4 text-white/40" />
+                      <div>
+                        <p className="text-white/40 text-xs">email</p>
+                        <a href={`mailto:${professionalInfo.email}`} className="text-blue-400 text-sm hover:underline">
+                          {professionalInfo.email}
+                        </a>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 px-4 py-3">
+                      <Globe className="w-4 h-4 text-white/40" />
+                      <div>
+                        <p className="text-white/40 text-xs">website</p>
+                        <a href={professionalInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-sm hover:underline">
+                          {professionalInfo.website}
+                        </a>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 px-4 py-3">
+                      <MapPin className="w-4 h-4 text-white/40" />
+                      <div>
+                        <p className="text-white/40 text-xs">location</p>
+                        <p className="text-white text-sm">{professionalInfo.location}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Social Accounts - All Identities */}
+                <div className="rounded-xl bg-white/5 overflow-hidden">
+                  <div className="px-4 py-2 border-b border-white/10">
+                    <h3 className="text-white/60 text-xs font-medium uppercase tracking-wider">Social Accounts</h3>
+                  </div>
+                  <div className="divide-y divide-white/5">
+                    {Object.entries(socialProfiles).map(([key, profile]) => (
+                      <a
+                        key={key}
+                        href={profile.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors group"
+                      >
+                        <div 
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-white"
+                          style={{ backgroundColor: profile.color }}
+                        >
+                          {getIconForPlatform(key)}
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-white/40 text-xs">{profile.platform}</p>
+                          <p className="text-blue-400 text-sm">@{profile.handle}</p>
+                        </div>
+                        <ExternalLink className="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Notes */}
+                <div className="rounded-xl bg-white/5 overflow-hidden">
+                  <div className="px-4 py-2 border-b border-white/10">
+                    <h3 className="text-white/60 text-xs font-medium uppercase tracking-wider">Notes</h3>
+                  </div>
+                  <div className="px-4 py-3">
+                    <p className="text-white/70 text-sm leading-relaxed">{professionalInfo.bio}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            // Individual Platform View
+            <div className="p-6">
+              {currentContact && (
+                <>
+                  {/* Profile Header for Platform */}
+                  <div className="text-center mb-6">
+                    <div className={cn(
+                      'w-20 h-20 mx-auto rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3 shadow-lg bg-gradient-to-br',
+                      currentContact.color
+                    )}>
+                      {currentContact.avatar}
+                    </div>
+                    <h1 className="text-white text-xl font-semibold">{currentContact.name}</h1>
+                    <p className="text-white/60">{currentContact.subtitle}</p>
+                  </div>
+
+                  {/* Platform Profile Link */}
+                  {currentContact.platform && socialProfiles[currentContact.platform] && (
+                    <div className="space-y-4">
+                      <div className="rounded-xl bg-white/5 overflow-hidden">
+                        <div className="px-4 py-2 border-b border-white/10">
+                          <h3 className="text-white/60 text-xs font-medium uppercase tracking-wider">Profile</h3>
+                        </div>
+                        <a
+                          href={socialProfiles[currentContact.platform].url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 px-4 py-4 hover:bg-white/5 transition-colors group"
+                        >
+                          <div 
+                            className="w-12 h-12 rounded-xl flex items-center justify-center text-white"
+                            style={{ backgroundColor: socialProfiles[currentContact.platform].color }}
+                          >
+                            {getIconForPlatform(currentContact.platform)}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-white font-medium">{socialProfiles[currentContact.platform].platform}</p>
+                            <p className="text-blue-400 text-sm">{socialProfiles[currentContact.platform].url}</p>
+                          </div>
+                          <ExternalLink className="w-5 h-5 text-white/30 group-hover:text-white/70 transition-colors" />
+                        </a>
+                      </div>
+
+                      {/* Open Profile Button */}
+                      <a
+                        href={socialProfiles[currentContact.platform].url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-white font-medium transition-colors bg-gradient-to-r hover:opacity-90"
+                        style={{ 
+                          background: `linear-gradient(to right, ${socialProfiles[currentContact.platform].color}, ${socialProfiles[currentContact.platform].color})` 
+                        }}
+                      >
+                        {getIconForPlatform(currentContact.platform)}
+                        <span>Open {socialProfiles[currentContact.platform].platform}</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+
+                      {/* Connected Accounts */}
+                      <div className="rounded-xl bg-white/5 overflow-hidden">
+                        <div className="px-4 py-2 border-b border-white/10">
+                          <h3 className="text-white/60 text-xs font-medium uppercase tracking-wider">Same Person On</h3>
+                        </div>
+                        <div className="divide-y divide-white/5">
+                          {Object.entries(socialProfiles)
+                            .filter(([key]) => key !== currentContact.platform)
+                            .slice(0, 4)
+                            .map(([key, profile]) => (
+                              <a
+                                key={key}
+                                href={profile.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors"
+                              >
+                                <div 
+                                  className="w-6 h-6 rounded flex items-center justify-center text-white"
+                                  style={{ backgroundColor: profile.color }}
+                                >
+                                  {getIconForPlatform(key)}
+                                </div>
+                                <span className="text-white/70 text-sm flex-1">@{profile.handle}</span>
+                                <span className="text-white/40 text-xs">{profile.platform}</span>
+                              </a>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </MacWindow>

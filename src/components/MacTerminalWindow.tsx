@@ -14,9 +14,10 @@ import { Settings } from 'lucide-react';
 
 interface MacTerminalWindowProps {
   onClose: () => void;
+  onFocus?: () => void;
 }
 
-const MacTerminalWindow: React.FC<MacTerminalWindowProps> = ({ onClose }) => {
+const MacTerminalWindow: React.FC<MacTerminalWindowProps> = ({ onClose, onFocus }) => {
   const [customFontSize, setCustomFontSize] = useState(14);
   const [customPadding, setCustomPadding] = useState(16);
   const [customTheme, setCustomTheme] = useState('dark');
@@ -44,6 +45,7 @@ const MacTerminalWindow: React.FC<MacTerminalWindowProps> = ({ onClose }) => {
     <MacWindow
       title="Terminal – bash"
       onClose={onClose}
+      onFocus={onFocus}
       initialPosition={{ x: 50, y: 50 }}
       initialSize={{ width: 700, height: 500 }}
       windowType="terminal"

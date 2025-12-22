@@ -1,41 +1,119 @@
-
-import { LucideIcon, Folder, Mail, Globe, Image, Music, Video, Settings, Calendar, Trash2, FileText, Terminal, Camera, Github, BarChart3, Users, Activity } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
+import React from 'react';
 
 export interface DockItemType {
-  icon: LucideIcon;
+  id: string;
+  icon?: LucideIcon;
+  customIcon?: React.ReactNode;
   label: string;
-  color: string;
+  color?: string;
   onClick?: () => void;
+  bgGradient?: string;
+  useCustomIcon?: boolean; // Flag to indicate this uses a custom SVG icon
 }
 
-export const createDockItems = (callbacks: {
-  onTerminalClick?: () => void;
+export interface DockCallbacks {
+  onFinderClick?: () => void;
   onSafariClick?: () => void;
-  onMusicClick?: () => void;
-  onSocialsClick?: () => void;
-  onSystemPreferencesClick?: () => void;
   onMailClick?: () => void;
-  onCalendarClick?: () => void;
   onPhotosClick?: () => void;
+  onCalendarClick?: () => void;
+  onSocialsClick?: () => void;
   onFaceTimeClick?: () => void;
-  onTextPadClick?: () => void;
-  onGitHubStatsClick?: () => void;
-  onStatsClick?: () => void;
-}): DockItemType[] => {
+  onMusicClick?: () => void;
+  onTerminalClick?: () => void;
+  onHanzoClick?: () => void;
+  onLuxClick?: () => void;
+  onZooClick?: () => void;
+}
+
+// Main dock items - reduced set as per user request
+// Other apps live in the Applications folder
+export const createDockItems = (callbacks: DockCallbacks): DockItemType[] => {
   return [
-    { icon: Folder, label: 'Finder', color: 'text-blue-400' },
-    { icon: Globe, label: 'Safari', onClick: callbacks.onSafariClick, color: 'text-sky-400' },
-    { icon: Terminal, label: 'Terminal', onClick: callbacks.onTerminalClick, color: 'text-green-400' },
-    { icon: BarChart3, label: 'GitHub Stats', onClick: callbacks.onGitHubStatsClick, color: 'text-purple-400' },
-    { icon: Activity, label: 'Stats Dashboard', onClick: callbacks.onStatsClick, color: 'text-emerald-400' },
-    { icon: Users, label: 'Socials', onClick: callbacks.onSocialsClick, color: 'text-blue-400' },
-    { icon: Music, label: 'Music', onClick: callbacks.onMusicClick, color: 'text-pink-400' },
-    { icon: FileText, label: 'TextPad', onClick: callbacks.onTextPadClick, color: 'text-yellow-300' },
-    { icon: Mail, label: 'Mail', onClick: callbacks.onMailClick, color: 'text-red-400' },
-    { icon: Image, label: 'Photos', onClick: callbacks.onPhotosClick, color: 'text-purple-400' },
-    { icon: Camera, label: 'FaceTime', onClick: callbacks.onFaceTimeClick, color: 'text-sky-500' },
-    { icon: Video, label: 'Videos', color: 'text-amber-400' },
-    { icon: Calendar, label: 'Calendar', onClick: callbacks.onCalendarClick, color: 'text-orange-400' },
-    { icon: Settings, label: 'System Preferences', onClick: callbacks.onSystemPreferencesClick, color: 'text-indigo-400' },
+    { 
+      id: 'finder',
+      label: 'Finder', 
+      useCustomIcon: true,
+    },
+    { 
+      id: 'safari',
+      label: 'Safari', 
+      onClick: callbacks.onSafariClick,
+      useCustomIcon: true,
+    },
+    { 
+      id: 'mail',
+      label: 'Mail', 
+      onClick: callbacks.onMailClick,
+      useCustomIcon: true,
+    },
+    { 
+      id: 'photos',
+      label: 'Photos', 
+      onClick: callbacks.onPhotosClick,
+      useCustomIcon: true,
+    },
+    { 
+      id: 'calendar',
+      label: 'Calendar', 
+      onClick: callbacks.onCalendarClick,
+      useCustomIcon: true,
+    },
+    { 
+      id: 'socials',
+      label: 'Messages', 
+      onClick: callbacks.onSocialsClick,
+      useCustomIcon: true,
+    },
+    { 
+      id: 'facetime',
+      label: 'FaceTime', 
+      onClick: callbacks.onFaceTimeClick,
+      useCustomIcon: true,
+    },
+    { 
+      id: 'music',
+      label: 'Music', 
+      onClick: callbacks.onMusicClick,
+      useCustomIcon: true,
+    },
+    { 
+      id: 'terminal',
+      label: 'Terminal', 
+      onClick: callbacks.onTerminalClick,
+      useCustomIcon: true,
+    },
+    // Separator would go here (handled in MacDock)
+    { 
+      id: 'hanzo',
+      label: 'Hanzo AI', 
+      onClick: callbacks.onHanzoClick,
+      bgGradient: 'bg-gradient-to-br from-orange-500 via-red-500 to-purple-600',
+      useCustomIcon: true,
+    },
+    { 
+      id: 'lux',
+      label: 'Lux Wallet', 
+      onClick: callbacks.onLuxClick,
+      bgGradient: 'bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600',
+      useCustomIcon: true,
+    },
+    { 
+      id: 'zoo',
+      label: 'Zoo', 
+      onClick: callbacks.onZooClick,
+      bgGradient: 'bg-gradient-to-br from-emerald-500 via-teal-400 to-cyan-500',
+      useCustomIcon: true,
+    },
   ];
 };
+
+// Apps that live in the Applications folder (not in main dock)
+export const applicationItems = [
+  { id: 'textpad', label: 'Notes', useCustomIcon: true },
+  { id: 'github', label: 'GitHub Stats', useCustomIcon: true },
+  { id: 'stats', label: 'Activity Monitor', useCustomIcon: true },
+  { id: 'videos', label: 'Videos', useCustomIcon: true },
+  { id: 'settings', label: 'System Preferences', useCustomIcon: true },
+];

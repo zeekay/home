@@ -51,25 +51,25 @@ const SystemPreferencesSidebar: React.FC<SystemPreferencesSidebarProps> = ({ act
       <Separator className="mx-0 my-2 bg-gray-200 dark:bg-gray-700" />
       
       {/* Categories list - styled to look like macOS */}
-      <Tabs 
-        value={activeTab} 
-        onValueChange={setActiveTab} 
-        orientation="vertical" 
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        orientation="vertical"
         className="flex-1 overflow-y-auto p-2"
       >
         <TabsList className="flex flex-col h-auto bg-transparent p-0 space-y-1">
           {categories.map((category) => {
             const Icon = category.icon;
             const isActive = activeTab === category.id;
-            
+
             return (
               <div
                 key={category.id}
                 onClick={() => setActiveTab(category.id)}
                 className={`
                   flex items-center space-x-3 px-3 py-2 rounded-lg cursor-pointer text-sm
-                  ${isActive 
-                    ? 'bg-blue-500 text-white' 
+                  ${isActive
+                    ? 'bg-blue-500 text-white'
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800'}
                 `}
               >
@@ -80,6 +80,15 @@ const SystemPreferencesSidebar: React.FC<SystemPreferencesSidebarProps> = ({ act
           })}
         </TabsList>
       </Tabs>
+
+      {/* OS Version info at bottom */}
+      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="text-center text-xs text-gray-500 dark:text-gray-400">
+          <div className="font-medium">ZachOS</div>
+          <div>Version 4.2.0</div>
+          <div className="mt-1 text-[10px]">© 1983-2025 Zach Kelling</div>
+        </div>
+      </div>
     </div>
   );
 };

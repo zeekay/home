@@ -12,9 +12,9 @@ interface MacSafariWindowProps {
   depth?: number;
 }
 
-const MacSafariWindow: React.FC<MacSafariWindowProps> = ({ 
+const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
   onClose,
-  initialUrl = window.location.href, // Set default to current page
+  initialUrl = 'https://www.google.com',
   depth = 0
 }) => {
   const [url, setUrl] = useState(initialUrl);
@@ -63,10 +63,10 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
   };
 
   const handleHome = () => {
-    const currentUrl = window.location.href;
-    setUrl(currentUrl);
-    setInputUrl(currentUrl);
-    setHistory(prev => [...prev.slice(0, historyIndex + 1), currentUrl]);
+    const homeUrl = 'https://www.google.com';
+    setUrl(homeUrl);
+    setInputUrl(homeUrl);
+    setHistory(prev => [...prev.slice(0, historyIndex + 1), homeUrl]);
     setHistoryIndex(prev => prev + 1);
   };
 

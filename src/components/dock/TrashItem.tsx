@@ -1,35 +1,43 @@
-
 import React, { useState } from 'react';
-import { Trash2, Folder } from 'lucide-react';
+import { Folder } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MacTrashIcon } from './icons';
 
 const TrashItem: React.FC = () => {
   const [isTrashOpen, setIsTrashOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleTrashClick = () => {
     setIsTrashOpen(true);
     setTimeout(() => setIsTrashOpen(false), 3000); // Auto-close after 3 seconds
   };
-  
+
+  // Match DockItem sizing
+  const getIconSize = () => {
+    return isMobile ? 'w-11 h-11' : 'w-12 h-12';
+  };
+
   return (
     <>
       <Tooltip>
         <TooltipTrigger asChild>
           <button
-            className="group relative flex flex-col items-center justify-center px-2"
+            className="group relative flex items-center justify-center px-0.5 outline-none focus:outline-none focus:ring-0 active:outline-none"
             onClick={handleTrashClick}
           >
-            <div className="flex items-center justify-center p-2 transition-all duration-200 hover:scale-110">
-              <Trash2 className="w-6 h-6 text-gray-400 group-hover:animate-pulse transition-all duration-300" />
+            <div className={`flex items-center justify-center ${getIconSize()} transition-transform duration-200 group-hover:scale-110 group-active:scale-95`}>
+              <MacTrashIcon className="w-full h-full" />
             </div>
-            <div className="w-1 h-1 rounded-full bg-white mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+            {/* Active indicator dot */}
+            <div className="absolute -bottom-1 w-1 h-1 rounded-full bg-white/80 opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         </TooltipTrigger>
-        <TooltipContent side="top" className="bg-black/80 text-white border-0">
+        <TooltipContent side={isMobile ? "bottom" : "top"} className="bg-black/90 text-white border-0 rounded-md px-3 py-1.5 text-sm">
           Trash
         </TooltipContent>
       </Tooltip>

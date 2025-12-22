@@ -16,7 +16,9 @@ export const initializeWebContainer = async (
       return null;
     }
 
-    const webContainerInstance = await WebContainer.boot();
+    const webContainerInstance = await WebContainer.boot({
+      coep: 'credentialless'
+    });
     
     await webContainerInstance.mount({
       'README.md': {
