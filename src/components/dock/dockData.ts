@@ -1,5 +1,5 @@
 
-import { LucideIcon, Folder, Mail, Globe, Image, Music, Video, Settings, Calendar, Trash2, FileText, Terminal, Camera, Github, BarChart3, Users } from 'lucide-react';
+import { LucideIcon, Folder, Mail, Globe, Image, Music, Video, Settings, Calendar, Trash2, FileText, Terminal, Camera, Github, BarChart3, Users, Activity } from 'lucide-react';
 
 export interface DockItemType {
   icon: LucideIcon;
@@ -20,12 +20,14 @@ export const createDockItems = (callbacks: {
   onFaceTimeClick?: () => void;
   onTextPadClick?: () => void;
   onGitHubStatsClick?: () => void;
+  onStatsClick?: () => void;
 }): DockItemType[] => {
   return [
     { icon: Folder, label: 'Finder', color: 'text-blue-400' },
     { icon: Globe, label: 'Safari', onClick: callbacks.onSafariClick, color: 'text-sky-400' },
     { icon: Terminal, label: 'Terminal', onClick: callbacks.onTerminalClick, color: 'text-green-400' },
     { icon: BarChart3, label: 'GitHub Stats', onClick: callbacks.onGitHubStatsClick, color: 'text-purple-400' },
+    { icon: Activity, label: 'Stats Dashboard', onClick: callbacks.onStatsClick, color: 'text-emerald-400' },
     { icon: Users, label: 'Socials', onClick: callbacks.onSocialsClick, color: 'text-blue-400' },
     { icon: Music, label: 'Music', onClick: callbacks.onMusicClick, color: 'text-pink-400' },
     { icon: FileText, label: 'TextPad', onClick: callbacks.onTextPadClick, color: 'text-yellow-300' },
