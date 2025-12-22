@@ -1,11 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import MacWindow from './MacWindow';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Search, Video, VideoOff, Mic, MicOff, Phone } from 'lucide-react';
+import { Search, Video, VideoOff, Mic, MicOff, Phone, Mail, Bot, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { contacts } from '@/data/socials';
 
 const MacFaceTimeWindow = ({ onClose }: { onClose: () => void }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,22 +13,23 @@ const MacFaceTimeWindow = ({ onClose }: { onClose: () => void }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [callTimer, setCallTimer] = useState(0);
-  
-  // Sample contacts
-  const contacts = [
-    { id: 1, name: 'Sarah Johnson', avatar: '/placeholder.svg', online: true },
-    { id: 2, name: 'Michael Chen', avatar: '/placeholder.svg', online: true },
-    { id: 3, name: 'Emma Wilson', avatar: '/placeholder.svg', online: false },
-    { id: 4, name: 'James Rodriguez', avatar: '/placeholder.svg', online: true },
-  ];
+  const [activeContact, setActiveContact] = useState<typeof contacts[0] | null>(null);
 
   // Filter contacts based on search query
-  const filteredContacts = contacts.filter(contact => 
-    contact.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredContacts = contacts.filter(contact =>
+    contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    contact.role.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const startCall = (contactName: string) => {
-    toast.success(`Starting FaceTime call with ${contactName}`);
+  const startCall = (contact: typeof contacts[0]) => {
+    if (contact.isAI) {
+      toast.success(`Connecting to ${contact.name}...`, {
+        description: 'AI assistant is ready to help',
+      });
+    } else {
+      toast.success(`Starting FaceTime call with ${contact.name}`);
+    }
+    setActiveContact(contact);
     setIsCallActive(true);
     setCallTimer(0);
   };
@@ -39,18 +40,24 @@ const MacFaceTimeWindow = ({ onClose }: { onClose: () => void }) => {
     setCallTimer(0);
     setIsMuted(false);
     setIsVideoOff(false);
+    setActiveContact(null);
+  };
+
+  const sendEmail = (email: string) => {
+    window.open(`mailto:${email}`, '_blank');
+    toast.success('Opening email client...');
   };
 
   // Timer for call duration
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    
+
     if (isCallActive) {
       interval = setInterval(() => {
         setCallTimer(prev => prev + 1);
       }, 1000);
     }
-    
+
     return () => {
       if (interval) clearInterval(interval);
     };
@@ -73,7 +80,7 @@ const MacFaceTimeWindow = ({ onClose }: { onClose: () => void }) => {
       className="bg-gray-100/95 dark:bg-gray-900/95"
     >
       <div className="h-full flex flex-col">
-        {isCallActive ? (
+        {isCallActive && activeContact ? (
           // Active call UI
           <div className="flex-1 flex flex-col bg-black relative">
             {/* Main video area */}
@@ -85,35 +92,42 @@ const MacFaceTimeWindow = ({ onClose }: { onClose: () => void }) => {
                 </div>
               ) : (
                 <div className="relative w-full h-full bg-gradient-to-b from-gray-800 to-gray-900 flex items-center justify-center">
-                  {/* This would be your camera feed in a real app */}
+                  {/* Remote participant */}
                   <div className="text-center text-gray-300">
-                    <Avatar className="h-32 w-32 mx-auto mb-4 border-4 border-purple-500">
-                      <AvatarFallback className="bg-purple-700 text-2xl">ZK</AvatarFallback>
-                    </Avatar>
-                    <h3 className="text-xl font-medium">You</h3>
+                    <div className={`h-32 w-32 mx-auto mb-4 rounded-full bg-gradient-to-br ${activeContact.color} flex items-center justify-center border-4 border-white/20`}>
+                      {activeContact.isAI ? (
+                        <Bot className="w-16 h-16 text-white" />
+                      ) : (
+                        <span className="text-4xl font-bold text-white">{activeContact.avatar}</span>
+                      )}
+                    </div>
+                    <h3 className="text-xl font-medium">{activeContact.name}</h3>
+                    <p className="text-sm text-gray-400">{activeContact.role}</p>
+                    {activeContact.isAI && (
+                      <p className="text-xs text-green-400 mt-2">● AI Assistant Active</p>
+                    )}
                   </div>
-                  
-                  {/* Small preview of the other person */}
-                  <div className="absolute bottom-4 right-4 w-48 h-32 bg-gradient-to-b from-blue-800 to-blue-900 rounded-md shadow-lg flex items-center justify-center">
+
+                  {/* Small preview of yourself */}
+                  <div className="absolute bottom-4 right-4 w-48 h-32 bg-gradient-to-b from-purple-800 to-purple-900 rounded-md shadow-lg flex items-center justify-center">
                     <div className="text-center text-gray-300">
-                      <Avatar className="h-16 w-16 mx-auto mb-2 border-2 border-blue-400">
-                        <AvatarImage src="/placeholder.svg" />
-                        <AvatarFallback className="bg-blue-700">SJ</AvatarFallback>
-                      </Avatar>
-                      <p className="text-sm">Sarah Johnson</p>
+                      <div className="h-16 w-16 mx-auto mb-2 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center border-2 border-purple-400">
+                        <span className="text-lg font-bold">ZK</span>
+                      </div>
+                      <p className="text-sm">You</p>
                     </div>
                   </div>
                 </div>
               )}
             </div>
-            
+
             {/* Call controls */}
             <div className="bg-gray-900 p-3 flex items-center justify-between">
               <div className="text-gray-300 text-sm">
                 {formatTime(callTimer)}
               </div>
               <div className="flex space-x-4">
-                <Button 
+                <Button
                   variant="outline"
                   size="icon"
                   className={`rounded-full ${isMuted ? 'bg-red-600 text-white' : 'bg-gray-800 text-gray-300'}`}
@@ -121,7 +135,7 @@ const MacFaceTimeWindow = ({ onClose }: { onClose: () => void }) => {
                 >
                   {isMuted ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
                   size="icon"
                   className={`rounded-full ${isVideoOff ? 'bg-red-600 text-white' : 'bg-gray-800 text-gray-300'}`}
@@ -129,7 +143,7 @@ const MacFaceTimeWindow = ({ onClose }: { onClose: () => void }) => {
                 >
                   {isVideoOff ? <VideoOff className="h-5 w-5" /> : <Video className="h-5 w-5" />}
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
                   size="icon"
                   className="rounded-full bg-red-600 text-white hover:bg-red-700"
@@ -138,7 +152,7 @@ const MacFaceTimeWindow = ({ onClose }: { onClose: () => void }) => {
                   <Phone className="h-5 w-5 rotate-135" />
                 </Button>
               </div>
-              <div className="w-16"></div> {/* Spacer to center the control buttons */}
+              <div className="w-16"></div>
             </div>
           </div>
         ) : (
@@ -157,39 +171,64 @@ const MacFaceTimeWindow = ({ onClose }: { onClose: () => void }) => {
             </div>
 
             <div className="flex-1 overflow-auto p-4">
-              <h3 className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Recent Contacts</h3>
+              <h3 className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Contacts</h3>
               <div className="space-y-2">
                 {filteredContacts.map(contact => (
-                  <div 
+                  <div
                     key={contact.id}
-                    className="flex items-center justify-between p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors cursor-pointer"
-                    onClick={() => startCall(contact.name)}
+                    className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors cursor-pointer border border-transparent hover:border-gray-300 dark:hover:border-gray-700"
                   >
-                    <div className="flex items-center">
-                      <Avatar className="h-10 w-10 mr-3">
-                        <AvatarImage src={contact.avatar} />
-                        <AvatarFallback className="bg-blue-600">
-                          {contact.name.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
+                    <div className="flex items-center" onClick={() => startCall(contact)}>
+                      <div className={`h-12 w-12 mr-3 rounded-full bg-gradient-to-br ${contact.color} flex items-center justify-center`}>
+                        {contact.isAI ? (
+                          <Bot className="w-6 h-6 text-white" />
+                        ) : (
+                          <span className="text-lg font-bold text-white">{contact.avatar}</span>
+                        )}
+                      </div>
                       <div>
                         <p className="font-medium text-gray-800 dark:text-gray-200">{contact.name}</p>
-                        <p className="text-xs text-gray-500">
-                          {contact.online ? 
-                            <span className="text-green-500">● Online</span> : 
-                            'Offline'}
+                        <p className="text-xs text-gray-500 flex items-center gap-1">
+                          {contact.isAI && <Bot className="w-3 h-3" />}
+                          {contact.role}
                         </p>
+                        <p className="text-xs text-gray-400">{contact.email}</p>
                       </div>
                     </div>
-                    <Button size="sm" variant="ghost" className="text-gray-700 dark:text-gray-300">
-                      <Video className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="text-gray-700 dark:text-gray-300"
+                        onClick={() => sendEmail(contact.email)}
+                      >
+                        <Mail className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="text-gray-700 dark:text-gray-300"
+                        onClick={() => startCall(contact)}
+                      >
+                        <Video className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
-              
-              <div className="mt-8 text-center text-sm text-gray-500">
-                <p>FaceTime allows you to make video calls to anyone with a Mac, iPhone, iPad, or iPod touch.</p>
+
+              {/* AI Assistants Section */}
+              <div className="mt-6 p-4 rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20">
+                <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                  <Bot className="w-4 h-4" /> AI Assistants
+                </h4>
+                <p className="text-xs text-gray-500">
+                  Hanzo Dev and Z AI are AI assistants available 24/7 to help with development, questions, and more.
+                </p>
+              </div>
+
+              <div className="mt-6 text-center text-sm text-gray-500">
+                <p>Click on a contact to start a video call or send an email.</p>
               </div>
             </div>
           </>

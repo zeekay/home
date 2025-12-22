@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import MacWindow from './MacWindow';
 import { cn } from '@/lib/utils';
-import { Music, Radio, Heart, ListMusic, Play, Pause, SkipForward, SkipBack, Volume2 } from 'lucide-react';
+import { Music, Radio, Heart, ListMusic, Play, Pause, SkipForward, SkipBack, Volume2, ExternalLink, User } from 'lucide-react';
+import { socialProfiles } from '@/data/socials';
 
 interface MacMusicWindowProps {
   onClose: () => void;
@@ -9,21 +10,12 @@ interface MacMusicWindowProps {
 
 type TabType = 'spotify' | 'soundcloud';
 
-// Spotify playlist embeds - replace with your actual playlist IDs
-const spotifyPlaylists = [
-  { id: '37i9dQZF1DXcBWIGoYBM5M', name: "Today's Top Hits" },
-  { id: '37i9dQZF1DX4sWSpwq3LiO', name: 'Peaceful Piano' },
-  { id: '37i9dQZF1DX5Ejj0EkURtP', name: 'All Out 2010s' },
-  { id: '37i9dQZF1DWXRqgorJj26U', name: 'Rock Classics' },
-];
-
-// SoundCloud username - replace with your actual username
-const soundcloudUsername = 'zeekay';
-
 const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState<TabType>('spotify');
-  const [selectedPlaylist, setSelectedPlaylist] = useState(spotifyPlaylists[0]);
   const [isPlaying, setIsPlaying] = useState(false);
+  
+  const spotifyProfile = socialProfiles.spotify;
+  const soundcloudProfile = socialProfiles.soundcloud;
 
   const tabs: { id: TabType; label: string; icon: React.ReactNode }[] = [
     { id: 'spotify', label: 'Spotify', icon: <Music className="w-4 h-4" /> },
@@ -35,7 +27,7 @@ const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose }) => {
       title="Music"
       onClose={onClose}
       defaultWidth={900}
-      defaultHeight={600}
+      defaultHeight={650}
       minWidth={700}
       minHeight={500}
       defaultPosition={{ x: 180, y: 100 }}
@@ -76,65 +68,57 @@ const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose }) => {
         {/* Content */}
         <div className="flex-1 overflow-hidden">
           {activeTab === 'spotify' && (
-            <div className="flex h-full">
-              {/* Playlist sidebar */}
-              <div className="w-64 border-r border-white/10 bg-black/20 p-4 overflow-y-auto">
-                <h3 className="text-white/70 text-xs font-semibold uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <ListMusic className="w-4 h-4" />
-                  Playlists
-                </h3>
-                <div className="space-y-1">
-                  {spotifyPlaylists.map((playlist) => (
-                    <button
-                      key={playlist.id}
-                      onClick={() => setSelectedPlaylist(playlist)}
-                      className={cn(
-                        'w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all',
-                        selectedPlaylist.id === playlist.id
-                          ? 'bg-gradient-to-r from-green-500/20 to-green-500/10 text-green-400 border border-green-500/30'
-                          : 'text-white/70 hover:bg-white/5 hover:text-white'
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={cn(
-                          'w-8 h-8 rounded-md flex items-center justify-center',
-                          selectedPlaylist.id === playlist.id
-                            ? 'bg-green-500'
-                            : 'bg-white/10'
-                        )}>
-                          <Music className="w-4 h-4 text-white" />
-                        </div>
-                        <span className="truncate">{playlist.name}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-white/10">
-                  <h3 className="text-white/70 text-xs font-semibold uppercase tracking-wider mb-3 flex items-center gap-2">
-                    <Heart className="w-4 h-4" />
-                    Your Library
-                  </h3>
-                  <div className="text-white/50 text-xs">
-                    Connect your Spotify to see your saved music
+            <div className="flex flex-col h-full p-4">
+              {/* Spotify header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-[#1DB954] flex items-center justify-center shadow-lg">
+                    <Music className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-semibold">Spotify Profile</h3>
+                    <p className="text-white/50 text-sm">@{spotifyProfile.handle}</p>
                   </div>
                 </div>
+                <a
+                  href={spotifyProfile.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-[#1DB954] hover:bg-[#1ed760] text-white text-sm font-medium rounded-full transition-colors flex items-center gap-2"
+                >
+                  Open Spotify <ExternalLink className="w-4 h-4" />
+                </a>
               </div>
 
-              {/* Spotify embed */}
-              <div className="flex-1 p-4">
-                <div className="h-full rounded-xl overflow-hidden bg-black/30 border border-white/10">
-                  <iframe
-                    src={`https://open.spotify.com/embed/playlist/${selectedPlaylist.id}?utm_source=generator&theme=0`}
-                    width="100%"
-                    height="100%"
-                    frameBorder="0"
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                    loading="lazy"
-                    className="rounded-xl"
-                  />
-                </div>
+              {/* Spotify Follow Button Embed */}
+              <div className="mb-4 p-4 rounded-xl bg-black/30 border border-white/10">
+                <iframe 
+                  src={`https://open.spotify.com/follow/1/?uri=spotify:user:${spotifyProfile.handle}&size=detail&theme=dark`}
+                  width="300" 
+                  height="56" 
+                  scrolling="no" 
+                  frameBorder="0" 
+                  style={{ border: 'none', overflow: 'hidden' }} 
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                />
               </div>
+
+              {/* Spotify Playlist Embed - Using a featured playlist */}
+              <div className="flex-1 rounded-xl overflow-hidden bg-black/30 border border-white/10">
+                <iframe
+                  src="https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator&theme=0"
+                  width="100%"
+                  height="100%"
+                  frameBorder="0"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                  className="rounded-xl"
+                />
+              </div>
+
+              <p className="text-white/40 text-xs mt-2 text-center">
+                💡 Follow @{spotifyProfile.handle} on Spotify to see their playlists
+              </p>
             </div>
           )}
 
@@ -147,45 +131,42 @@ const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose }) => {
                     <Radio className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-white font-semibold">SoundCloud Likes</h3>
-                    <p className="text-white/50 text-sm">@{soundcloudUsername}</p>
+                    <h3 className="text-white font-semibold">SoundCloud</h3>
+                    <p className="text-white/50 text-sm">@{soundcloudProfile.handle}</p>
                   </div>
                 </div>
                 <a
-                  href={`https://soundcloud.com/${soundcloudUsername}`}
+                  href={soundcloudProfile.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-lg transition-colors"
+                  className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium rounded-full transition-colors flex items-center gap-2"
                 >
-                  Open in SoundCloud
+                  Open SoundCloud <ExternalLink className="w-4 h-4" />
                 </a>
               </div>
 
-              {/* SoundCloud embed - Likes */}
-              <div className="flex-1 rounded-xl overflow-hidden bg-black/30 border border-white/10">
+              {/* SoundCloud Likes embed */}
+              <div className="flex-1 rounded-xl overflow-hidden bg-black/30 border border-white/10 mb-4">
                 <iframe
                   width="100%"
                   height="100%"
                   scrolling="no"
                   frameBorder="no"
                   allow="autoplay"
-                  src={`https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/${soundcloudUsername}/likes&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true`}
+                  src={`https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/${soundcloudProfile.handle}/likes&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true`}
                 />
               </div>
 
-              {/* Alternative: Track embed for a specific popular track */}
-              <div className="mt-4">
-                <h4 className="text-white/70 text-sm font-medium mb-2">Recent Uploads</h4>
-                <div className="h-32 rounded-xl overflow-hidden bg-black/30 border border-white/10">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    scrolling="no"
-                    frameBorder="no"
-                    allow="autoplay"
-                    src={`https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/${soundcloudUsername}/tracks&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false`}
-                  />
-                </div>
+              {/* SoundCloud Tracks */}
+              <div className="h-32 rounded-xl overflow-hidden bg-black/30 border border-white/10">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  scrolling="no"
+                  frameBorder="no"
+                  allow="autoplay"
+                  src={`https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/${soundcloudProfile.handle}/tracks&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false`}
+                />
               </div>
             </div>
           )}
@@ -200,7 +181,7 @@ const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose }) => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-white text-sm font-medium truncate">Select a track</p>
-              <p className="text-white/50 text-xs truncate">From your playlist</p>
+              <p className="text-white/50 text-xs truncate">From {activeTab === 'spotify' ? 'Spotify' : 'SoundCloud'}</p>
             </div>
             <button className="text-white/50 hover:text-pink-400 transition-colors">
               <Heart className="w-5 h-5" />
