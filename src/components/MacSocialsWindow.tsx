@@ -20,6 +20,7 @@ import {
   Building2,
   Star,
   Share2,
+  Video,
 } from 'lucide-react';
 import { socialProfiles, professionalInfo, pinnedProjects } from '@/data/socials';
 
@@ -113,6 +114,7 @@ const getIconForPlatform = (platform: string) => {
     case 'spotify': return <Music className="w-4 h-4" />;
     case 'soundcloud': return <Radio className="w-4 h-4" />;
     case 'stackoverflow': return <Code2 className="w-4 h-4" />;
+    case 'sora': return <Video className="w-4 h-4" />;
     default: return <Globe className="w-4 h-4" />;
   }
 };
