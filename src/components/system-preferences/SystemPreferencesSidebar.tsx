@@ -84,7 +84,7 @@ const SystemPreferencesSidebar: React.FC<SystemPreferencesSidebarProps> = ({ act
       {/* OS Version info at bottom */}
       <div className="p-4 border-t border-gray-200 dark:border-gray-700">
         <div className="text-center text-xs text-gray-500 dark:text-gray-400">
-          <div className="font-medium">ZachOS</div>
+          <div className="font-medium">zOS</div>
           <div>Version 4.2.0</div>
           <div className="mt-1 text-[10px]">© 1983-2025 Zach Kelling</div>
         </div>

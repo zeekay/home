@@ -34,11 +34,17 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
 
   const handleNavigate = (e: React.FormEvent) => {
     e.preventDefault();
-    const currentUrl = window.location.href;
-    setUrl(currentUrl);
-    setInputUrl(currentUrl);
-    setHistory(prev => [...prev.slice(0, historyIndex + 1), currentUrl]);
-    setHistoryIndex(prev => prev + 1);
+    // Normalize the URL - add https:// if no protocol specified
+    let navigateUrl = inputUrl.trim();
+    if (navigateUrl && !navigateUrl.match(/^https?:\/\//i)) {
+      navigateUrl = 'https://' + navigateUrl;
+    }
+    if (navigateUrl) {
+      setUrl(navigateUrl);
+      setInputUrl(navigateUrl);
+      setHistory(prev => [...prev.slice(0, historyIndex + 1), navigateUrl]);
+      setHistoryIndex(prev => prev + 1);
+    }
   };
 
   const handleBack = () => {
