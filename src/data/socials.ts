@@ -73,6 +73,14 @@ export const socialProfiles: Record<string, SocialProfile> = {
     color: '#F48024',
     icon: 'StackOverflow',
   },
+  sora: {
+    platform: 'Sora',
+    handle: 'zeekayai',
+    url: 'https://sora.chatgpt.com/profile/zeekayai',
+    displayName: 'Z',
+    color: '#10A37F',
+    icon: 'Video',
+  },
 };
 
 // Professional info
