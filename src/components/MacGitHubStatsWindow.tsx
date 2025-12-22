@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import MacWindow from './MacWindow';
 import { useGitHubStats } from '@/hooks/useGitHubStats';
+import { useStackOverflow } from '@/hooks/useStackOverflow';
 import { formatNumber, formatLargeNumber } from '@/types/stats';
-import { Github, GitCommit, Code, Calendar, TrendingUp, BarChart3, Activity, Flame, Clock, Star } from 'lucide-react';
+import { Github, GitCommit, Code, Calendar, TrendingUp, BarChart3, Activity, Flame, Clock, Star, Award, MessageSquare, HelpCircle } from 'lucide-react';
 import {
   AreaChart,
   Area,
@@ -32,7 +33,7 @@ const StatCard: React.FC<{
   subtext?: string;
   color?: string;
 }> = ({ icon, label, value, subtext, color = 'text-primary' }) => (
-  <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:border-white/20 transition-all hover:scale-[1.02]">
+  <div className="glass-card p-4 hover:border-white/20 transition-all hover:scale-[1.02]">
     <div className="flex items-center gap-3 mb-2">
       <div className={`p-2 rounded-lg bg-white/5 ${color}`}>
         {icon}
@@ -46,7 +47,8 @@ const StatCard: React.FC<{
 
 const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) => {
   const { stats, loading, error } = useGitHubStats();
-  const [activeTab, setActiveTab] = useState<'overview' | 'activity' | 'repos'>('overview');
+  const { data: soData, loading: soLoading } = useStackOverflow('641766');
+  const [activeTab, setActiveTab] = useState<'overview' | 'activity' | 'repos' | 'stackoverflow'>('overview');
 
   if (loading) {
     return (
@@ -112,9 +114,9 @@ const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) 
       windowType="default"
       className="z-50"
     >
-      <div className="h-full bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 text-white overflow-hidden flex flex-col">
+      <div className="h-full bg-transparent text-white overflow-hidden flex flex-col">
         {/* Header with avatar and primary stats */}
-        <div className="p-4 border-b border-white/10 bg-black/30">
+        <div className="p-4 border-b border-white/10 glass-sm">
           <div className="flex items-center gap-4">
             <div className="relative">
               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-2xl font-bold border-2 border-white/20">
@@ -145,8 +147,8 @@ const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) 
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-white/10 px-4 bg-black/20">
-          {(['overview', 'activity', 'repos'] as const).map((tab) => (
+        <div className="flex border-b border-white/10 px-4 glass-sm">
+          {(['overview', 'activity', 'repos', 'stackoverflow'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -201,7 +203,7 @@ const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) 
               </div>
 
               {/* Commit Activity Chart */}
-              <div className="bg-gray-800/50 rounded-xl p-4 border border-white/10">
+              <div className="glass-card p-4">
                 <div className="flex items-center gap-2 mb-4">
                   <Activity size={18} className="text-purple-400" />
                   <h3 className="font-medium">Commit Activity (Last 24 Months)</h3>
@@ -234,7 +236,7 @@ const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) 
               </div>
 
               {/* LOC Growth Chart */}
-              <div className="bg-gray-800/50 rounded-xl p-4 border border-white/10">
+              <div className="glass-card p-4">
                 <div className="flex items-center gap-2 mb-4">
                   <TrendingUp size={18} className="text-green-400" />
                   <h3 className="font-medium">Lines of Code Growth (Millions)</h3>
@@ -271,7 +273,7 @@ const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) 
           {activeTab === 'activity' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Day of Week Activity */}
-              <div className="bg-gray-800/50 rounded-xl p-4 border border-white/10">
+              <div className="glass-card p-4">
                 <div className="flex items-center gap-2 mb-4">
                   <Clock size={18} className="text-cyan-400" />
                   <h3 className="font-medium">Commits by Day of Week</h3>
@@ -294,7 +296,7 @@ const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) 
               </div>
 
               {/* Yearly Breakdown */}
-              <div className="bg-gray-800/50 rounded-xl p-4 border border-white/10">
+              <div className="glass-card p-4">
                 <div className="flex items-center gap-2 mb-4">
                   <Calendar size={18} className="text-orange-400" />
                   <h3 className="font-medium">Yearly Summary</h3>
@@ -326,7 +328,7 @@ const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) 
           {activeTab === 'repos' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Top Repos Pie Chart */}
-              <div className="bg-gray-800/50 rounded-xl p-4 border border-white/10">
+              <div className="glass-card p-4">
                 <div className="flex items-center gap-2 mb-4">
                   <Star size={18} className="text-yellow-400" />
                   <h3 className="font-medium">Top Repositories by Commits</h3>
@@ -359,7 +361,7 @@ const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) 
               </div>
 
               {/* Top Repos List */}
-              <div className="bg-gray-800/50 rounded-xl p-4 border border-white/10">
+              <div className="glass-card p-4">
                 <div className="flex items-center gap-2 mb-4">
                   <Github size={18} className="text-purple-400" />
                   <h3 className="font-medium">Repository Breakdown</h3>
@@ -391,6 +393,100 @@ const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) 
                     </a>
                   ))}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'stackoverflow' && (
+            <div className="space-y-4">
+              {/* StackOverflow Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-[#F48024] flex items-center justify-center">
+                    <svg viewBox="0 0 24 24" className="w-6 h-6 text-white" fill="currentColor">
+                      <path d="M15 21h-10v-2h10v2zm6-11.665l-1.621-9.335-1.993.346 1.62 9.335 1.994-.346zm-5.964 6.937l-9.746-.975-.186 2.016 9.755.879.177-1.92zm.538-2.587l-9.276-2.608-.526 1.954 9.306 2.5.496-1.846zm1.204-2.413l-8.297-4.864-1.029 1.743 8.298 4.865 1.028-1.744zm1.866-1.467l-5.339-7.829-1.672 1.14 5.339 7.829 1.672-1.14zm-2.644 4.195v8h-12v-8h-2v10h16v-10h-2z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-white font-semibold text-lg">Stack Overflow</h3>
+                    <p className="text-gray-400 text-sm">zach-kelling</p>
+                  </div>
+                </div>
+                <a
+                  href="https://stackoverflow.com/users/641766/zach-kelling"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-[#F48024] hover:bg-[#da7020] text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  View Profile
+                </a>
+              </div>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-3 gap-4">
+                <StatCard
+                  icon={<Award size={18} />}
+                  label="Reputation"
+                  value={soLoading ? '...' : formatNumber(soData?.reputation || 0)}
+                  color="text-[#F48024]"
+                />
+                <StatCard
+                  icon={<MessageSquare size={18} />}
+                  label="Answers"
+                  value={soLoading ? '...' : formatNumber(soData?.answer_count || 0)}
+                  color="text-green-400"
+                />
+                <StatCard
+                  icon={<HelpCircle size={18} />}
+                  label="Questions"
+                  value={soLoading ? '...' : formatNumber(soData?.question_count || 0)}
+                  color="text-blue-400"
+                />
+              </div>
+
+              {/* Badges */}
+              <div className="bg-gray-800/50 rounded-xl p-6 border border-white/10">
+                <h3 className="font-medium mb-4 flex items-center gap-2">
+                  <Award size={18} className="text-yellow-400" />
+                  Badges Earned
+                </h3>
+                <div className="flex justify-center gap-8">
+                  <div className="text-center">
+                    <div className="w-16 h-16 rounded-full bg-yellow-500/20 flex items-center justify-center mb-2 mx-auto">
+                      <span className="text-2xl">🥇</span>
+                    </div>
+                    <div className="text-2xl font-bold text-yellow-400">
+                      {soLoading ? '-' : soData?.badge_counts?.gold || 0}
+                    </div>
+                    <div className="text-xs text-gray-400">Gold</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-16 h-16 rounded-full bg-gray-400/20 flex items-center justify-center mb-2 mx-auto">
+                      <span className="text-2xl">🥈</span>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-300">
+                      {soLoading ? '-' : soData?.badge_counts?.silver || 0}
+                    </div>
+                    <div className="text-xs text-gray-400">Silver</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-16 h-16 rounded-full bg-orange-700/20 flex items-center justify-center mb-2 mx-auto">
+                      <span className="text-2xl">🥉</span>
+                    </div>
+                    <div className="text-2xl font-bold text-orange-400">
+                      {soLoading ? '-' : soData?.badge_counts?.bronze || 0}
+                    </div>
+                    <div className="text-xs text-gray-400">Bronze</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Info */}
+              <div className="bg-gradient-to-br from-[#F48024]/10 to-[#F48024]/5 rounded-xl p-4 border border-[#F48024]/20">
+                <p className="text-gray-300 text-sm">
+                  Active member since 2011. Helping developers solve problems and sharing knowledge
+                  about JavaScript, Python, React, and more.
+                </p>
               </div>
             </div>
           )}

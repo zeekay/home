@@ -32,7 +32,7 @@ const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose }) => {
       minHeight={500}
       defaultPosition={{ x: 180, y: 100 }}
     >
-      <div className="flex flex-col h-full bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-800">
+      <div className="flex flex-col h-full bg-transparent">
         {/* Header with tabs */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/30">
           <div className="flex items-center gap-2">
@@ -46,7 +46,7 @@ const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose }) => {
           </div>
           
           {/* Tab buttons */}
-          <div className="flex gap-1 bg-white/5 rounded-lg p-1">
+          <div className="flex gap-1 glass-sm rounded-lg p-1">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -91,7 +91,7 @@ const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose }) => {
               </div>
 
               {/* Spotify Follow Button Embed */}
-              <div className="mb-4 p-4 rounded-xl bg-black/30 border border-white/10">
+              <div className="mb-4 p-4 rounded-xl glass-sm">
                 <iframe 
                   src={`https://open.spotify.com/follow/1/?uri=spotify:user:${spotifyProfile.handle}&size=detail&theme=dark`}
                   width="300" 
@@ -104,7 +104,7 @@ const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose }) => {
               </div>
 
               {/* Spotify Playlist Embed - Using a featured playlist */}
-              <div className="flex-1 rounded-xl overflow-hidden bg-black/30 border border-white/10">
+              <div className="flex-1 rounded-xl overflow-hidden glass-sm">
                 <iframe
                   src="https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator&theme=0"
                   width="100%"
@@ -146,7 +146,7 @@ const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose }) => {
               </div>
 
               {/* SoundCloud Likes embed */}
-              <div className="flex-1 rounded-xl overflow-hidden bg-black/30 border border-white/10 mb-4">
+              <div className="flex-1 rounded-xl overflow-hidden glass-sm mb-4">
                 <iframe
                   width="100%"
                   height="100%"
@@ -158,7 +158,7 @@ const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose }) => {
               </div>
 
               {/* SoundCloud Tracks */}
-              <div className="h-32 rounded-xl overflow-hidden bg-black/30 border border-white/10">
+              <div className="h-32 rounded-xl overflow-hidden glass-sm">
                 <iframe
                   width="100%"
                   height="100%"
@@ -173,7 +173,7 @@ const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose }) => {
         </div>
 
         {/* Bottom player bar */}
-        <div className="h-20 border-t border-white/10 bg-black/40 backdrop-blur-sm px-4 flex items-center justify-between">
+        <div className="h-20 border-t border-white/10 glass-sm px-4 flex items-center justify-between">
           {/* Now playing */}
           <div className="flex items-center gap-3 w-64">
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
