@@ -83,13 +83,13 @@ const MacDock: React.FC<MacDockProps> = ({
           'fixed left-1/2 transform -translate-x-1/2',
           'inline-flex items-center justify-center',
           'px-2 py-2',
-          'bg-black/80 backdrop-blur-md',
+          'glass-lg',
           'rounded-2xl',
-          'shadow-xl',
+          
           className
         )}
         style={{ 
-          border: '1px solid rgba(255, 255, 255, 0.2)',
+          
           maxWidth: 'calc(100% - 16px)',
           width: 'max-content',
           bottom: isMobile ? '10px' : '16px',

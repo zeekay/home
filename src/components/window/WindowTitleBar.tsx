@@ -26,15 +26,15 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
   const getTitleBarStyle = () => {
     switch (windowType) {
       case 'terminal':
-        return 'bg-black text-gray-300';
+        return 'glass-titlebar text-gray-300';
       case 'safari':
-        return 'bg-black text-gray-300';
+        return 'glass-titlebar text-gray-300';
       case 'itunes':
-        return 'bg-black text-white';
+        return 'glass-titlebar text-white';
       case 'textpad':
-        return 'bg-black text-gray-300'; 
+        return 'glass-titlebar text-gray-300'; 
       default:
-        return 'bg-black text-gray-300';
+        return 'glass-titlebar text-gray-300';
     }
   };
 

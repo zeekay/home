@@ -152,7 +152,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
   return (
     <div
       className={cn(
-        'fixed overflow-hidden shadow-xl border border-gray-300/30 dark:border-gray-700/30 backdrop-blur-md rounded-lg',
+        'fixed overflow-hidden glass-window',
         getWindowStyle(windowType),
         isMobile ? 'transition-all duration-300' : '',
         className

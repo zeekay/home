@@ -106,7 +106,7 @@ const MacSocialsWindow: React.FC<MacSocialsWindowProps> = ({ onClose }) => {
       href={profile.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all group"
+      className="flex items-center gap-4 p-4 rounded-xl glass-card glass-card-hover transition-all group"
     >
       <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: profile.color }}>
         {icon}
@@ -129,7 +129,7 @@ const MacSocialsWindow: React.FC<MacSocialsWindowProps> = ({ onClose }) => {
       minHeight={450}
       defaultPosition={{ x: 220, y: 120 }}
     >
-      <div className="flex flex-col h-full bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-800">
+      <div className="flex flex-col h-full bg-transparent">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/30">
           <div className="flex items-center gap-3">
@@ -187,7 +187,7 @@ const MacSocialsWindow: React.FC<MacSocialsWindowProps> = ({ onClose }) => {
                 </a>
               </div>
               
-              <div className="rounded-xl overflow-hidden bg-black/30 border border-white/10 h-[calc(100%-60px)]">
+              <div className="rounded-xl overflow-hidden glass-sm h-[calc(100%-60px)]">
                 {isLoading && (
                   <div className="flex items-center justify-center h-full">
                     <RefreshCw className="w-6 h-6 text-white/50 animate-spin" />
@@ -257,7 +257,7 @@ const MacSocialsWindow: React.FC<MacSocialsWindowProps> = ({ onClose }) => {
               </div>
 
               {/* Experience highlights */}
-              <div className="rounded-xl bg-white/5 border border-white/10 p-4">
+              <div className="rounded-xl glass-card p-4">
                 <h4 className="text-white font-medium mb-3 flex items-center gap-2">
                   <Globe className="w-4 h-4" /> Companies & Projects
                 </h4>
@@ -340,7 +340,7 @@ const MacSocialsWindow: React.FC<MacSocialsWindowProps> = ({ onClose }) => {
                   href={`${socialProfiles.instagram.url}/reels`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-center"
+                  className="p-4 rounded-xl glass-card glass-card-hover transition-all text-center"
                 >
                   <p className="text-white font-medium">Reels</p>
                   <p className="text-white/50 text-xs mt-1">Watch short videos</p>
@@ -349,7 +349,7 @@ const MacSocialsWindow: React.FC<MacSocialsWindowProps> = ({ onClose }) => {
                   href={`${socialProfiles.instagram.url}/tagged`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-center"
+                  className="p-4 rounded-xl glass-card glass-card-hover transition-all text-center"
                 >
                   <p className="text-white font-medium">Tagged</p>
                   <p className="text-white/50 text-xs mt-1">Tagged photos</p>
@@ -402,7 +402,7 @@ const MacSocialsWindow: React.FC<MacSocialsWindowProps> = ({ onClose }) => {
         </div>
 
         {/* Footer with all social links */}
-        <div className="border-t border-white/10 bg-black/20 px-4 py-3">
+        <div className="border-t border-white/10 glass-sm px-4 py-3">
           <div className="flex items-center justify-center gap-3">
             {Object.entries(socialProfiles).slice(0, 8).map(([key, profile]) => (
               <a
