@@ -18,6 +18,23 @@ export default {
 				'2xl': '1400px'
 			}
 		},
+		fontFamily: {
+			sans: [
+				'-apple-system',
+				'BlinkMacSystemFont',
+				'"SF Pro Display"',
+				'"SF Pro Text"',
+				'Geist',
+				'system-ui',
+				'sans-serif'
+			],
+			mono: [
+				'"SF Mono"',
+				'"Geist Mono"',
+				'ui-monospace',
+				'monospace'
+			],
+		},
 		extend: {
 			colors: {
 				border: 'hsl(var(--border))',

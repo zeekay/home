@@ -10,6 +10,7 @@ export interface MacWindowProps {
   title: string;
   className?: string;
   onClose: () => void;
+  onFocus?: () => void;
   initialPosition?: { x: number; y: number };
   initialSize?: { width: number; height: number };
   children: ReactNode;
@@ -22,6 +23,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
   title,
   className,
   onClose,
+  onFocus,
   initialPosition = { x: 100, y: 100 },
   initialSize = { width: 700, height: 500 },
   children,
@@ -101,6 +103,7 @@ const MacWindow: React.FC<MacWindowProps> = ({
   const bringToFront = () => {
     const newZIndex = getNextZIndex();
     setZIndex(newZIndex);
+    onFocus?.();
   };
 
   useEffect(() => {

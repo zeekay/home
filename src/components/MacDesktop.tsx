@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import MacDock from './MacDock';
+import MacMenuBar from './MacMenuBar';
 import MacTerminalWindow from './MacTerminalWindow';
 import MacSafariWindow from './MacSafariWindow';
 import MacMusicWindow from './MacMusicWindow';
@@ -12,14 +13,42 @@ import MacTextPadWindow from './MacTextPadWindow';
 import MacGitHubStatsWindow from './MacGitHubStatsWindow';
 import MacSocialsWindow from './MacSocialsWindow';
 import MacStatsWindow from './MacStatsWindow';
+import HanzoAIWindow from './HanzoAIWindow';
+import LuxWalletWindow from './LuxWalletWindow';
+import ZooAssistantWindow from './ZooAssistantWindow';
+import ApplicationsPopover from './dock/ApplicationsPopover';
+import DownloadsPopover from './dock/DownloadsPopover';
 import AnimatedBackground from './AnimatedBackground';
-import DesktopSettings from './DesktopSettings';
+import {
+  Image,
+  FolderOpen,
+  Info,
+  Trash2,
+  Monitor,
+  Layout,
+  SortAsc,
+  Eye,
+  Grid3X3,
+  ChevronRight,
+} from 'lucide-react';
 
 interface MacDesktopProps {
   children: React.ReactNode;
 }
 
+interface ContextMenuPosition {
+  x: number;
+  y: number;
+}
+
+// App type for tracking active application
+type AppType = 'Finder' | 'Terminal' | 'Safari' | 'Music' | 'Mail' | 'Calendar' | 
+               'System Preferences' | 'Photos' | 'FaceTime' | 'Notes' | 
+               'GitHub Stats' | 'Messages' | 'Activity Monitor' | 'Hanzo AI' | 
+               'Lux Wallet' | 'Zoo';
+
 const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
+  // Window visibility states
   const [showTerminal, setShowTerminal] = useState(false);
   const [showSafari, setShowSafari] = useState(false);
   const [showMusic, setShowMusic] = useState(false);
@@ -32,10 +61,21 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   const [showTextPad, setShowTextPad] = useState(false);
   const [showGitHubStats, setShowGitHubStats] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showHanzoAI, setShowHanzoAI] = useState(false);
+  const [showLuxWallet, setShowLuxWallet] = useState(false);
+  const [showZooAssistant, setShowZooAssistant] = useState(false);
+  const [showApplications, setShowApplications] = useState(false);
+  const [showDownloads, setShowDownloads] = useState(false);
+
+  // Active app for menu bar
+  const [activeApp, setActiveApp] = useState<AppType>('Finder');
+
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState<ContextMenuPosition | null>(null);
+  const [showSortSubmenu, setShowSortSubmenu] = useState(false);
+  const [showViewSubmenu, setShowViewSubmenu] = useState(false);
 
   // Desktop customization settings
-  const [padding, setPadding] = useState(1);
-  const [opacity, setOpacity] = useState(0.7);
   const [theme, setTheme] = useState('wireframe');
   const [customBgUrl, setCustomBgUrl] = useState('');
 
@@ -43,153 +83,365 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowTextPad(true);
+      setActiveApp('Notes');
     }, 1000);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
-  const handleToggleTerminal = () => {
-    setShowTerminal(!showTerminal);
+  // Handle right-click context menu
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY });
+    setShowSortSubmenu(false);
+    setShowViewSubmenu(false);
+  }, []);
+
+  // Close context menu when clicking elsewhere
+  useEffect(() => {
+    const handleClick = () => {
+      setContextMenu(null);
+      setShowSortSubmenu(false);
+      setShowViewSubmenu(false);
+    };
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, []);
+
+  // App toggle handlers with active app tracking
+  const handleOpenApp = (setter: React.Dispatch<React.SetStateAction<boolean>>, appName: AppType) => {
+    setter(true);
+    setActiveApp(appName);
   };
 
-  const handleToggleSafari = () => {
-    setShowSafari(!showSafari);
+  const handleCloseApp = (setter: React.Dispatch<React.SetStateAction<boolean>>) => {
+    setter(false);
+    setActiveApp('Finder');
   };
 
-  const handleToggleMusic = () => {
-    setShowMusic(!showMusic);
+  const handleFocusApp = (appName: AppType) => {
+    setActiveApp(appName);
   };
 
-  const handleToggleSocials = () => {
-    setShowSocials(!showSocials);
+  // Background theme handlers
+  const handleChangeBackground = (newTheme: string) => {
+    setTheme(newTheme);
+    setContextMenu(null);
   };
 
-  const handleToggleEmail = () => {
-    setShowEmail(!showEmail);
-  };
-
-  const handleToggleCalendar = () => {
-    setShowCalendar(!showCalendar);
-  };
-  
-  const handleToggleSystemPreferences = () => {
-    setShowSystemPreferences(!showSystemPreferences);
-  };
-  
-  const handleTogglePhotos = () => {
-    setShowPhotos(!showPhotos);
-  };
-  
-  const handleToggleFaceTime = () => {
-    setShowFaceTime(!showFaceTime);
-  };
-
-  const handleToggleTextPad = () => {
-    setShowTextPad(!showTextPad);
-  };
-
-  const handleToggleGitHubStats = () => {
-    setShowGitHubStats(!showGitHubStats);
-  };
-
-  const handleToggleStats = () => {
-    setShowStats(!showStats);
-  };
-
-  // Apply custom document styles for padding
-  React.useEffect(() => {
-    document.documentElement.style.setProperty('--window-padding', `${padding * 16}px`);
-    document.documentElement.style.setProperty('--window-opacity', opacity.toString());
-    
-    // Force dark mode by default
+  // Apply custom document styles
+  useEffect(() => {
     document.documentElement.classList.add('dark');
-  }, [padding, opacity]);
+  }, []);
+
+  // Context menu item component
+  const ContextMenuItem: React.FC<{
+    icon?: React.ReactNode;
+    label: string;
+    shortcut?: string;
+    onClick?: () => void;
+    hasSubmenu?: boolean;
+    onMouseEnter?: () => void;
+    disabled?: boolean;
+  }> = ({ icon, label, shortcut, onClick, hasSubmenu, onMouseEnter, disabled }) => (
+    <div
+      className={`flex items-center justify-between mx-1.5 px-3 py-[6px] rounded-[5px] cursor-pointer transition-colors ${
+        disabled ? 'opacity-40 cursor-default' : 'hover:bg-blue-500'
+      }`}
+      onClick={disabled ? undefined : onClick}
+      onMouseEnter={onMouseEnter}
+    >
+      <span className="flex items-center gap-2.5">
+        {icon && <span className="w-4 h-4 flex items-center justify-center opacity-70">{icon}</span>}
+        <span>{label}</span>
+      </span>
+      {shortcut && <span className="text-white/50 ml-6 text-xs">{shortcut}</span>}
+      {hasSubmenu && <ChevronRight className="w-3 h-3 opacity-50 ml-2" />}
+    </div>
+  );
+
+  const ContextMenuSeparator = () => (
+    <div className="h-[1px] bg-white/10 my-[6px] mx-3" />
+  );
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full h-screen overflow-hidden" onContextMenu={handleContextMenu}>
+      {/* Mac Menu Bar - always on top */}
+      <MacMenuBar appName={activeApp} />
+
       {/* Animated Background */}
       <AnimatedBackground theme={theme} customImageUrl={customBgUrl} />
-      
+
       {/* Content Area */}
-      <div className="relative z-10 w-full h-full pb-24 overflow-auto">
+      <div className="relative z-10 w-full h-full pt-[25px] pb-24 overflow-auto">
         {children}
       </div>
-      
+
       {/* Application Windows */}
       {showTerminal && (
-        <MacTerminalWindow onClose={() => setShowTerminal(false)} />
+        <MacTerminalWindow 
+          onClose={() => handleCloseApp(setShowTerminal)} 
+          onFocus={() => handleFocusApp('Terminal')}
+        />
       )}
-      
+
       {showSafari && (
-        <MacSafariWindow onClose={() => setShowSafari(false)} />
+        <MacSafariWindow 
+          onClose={() => handleCloseApp(setShowSafari)}
+          onFocus={() => handleFocusApp('Safari')}
+        />
       )}
-      
+
       {showMusic && (
-        <MacMusicWindow onClose={() => setShowMusic(false)} />
+        <MacMusicWindow 
+          onClose={() => handleCloseApp(setShowMusic)}
+          onFocus={() => handleFocusApp('Music')}
+        />
       )}
-      
+
       {showEmail && (
-        <MacEmailWindow onClose={() => setShowEmail(false)} />
+        <MacEmailWindow 
+          onClose={() => handleCloseApp(setShowEmail)}
+          onFocus={() => handleFocusApp('Mail')}
+        />
       )}
-      
+
       {showCalendar && (
-        <MacCalendarWindow onClose={() => setShowCalendar(false)} />
+        <MacCalendarWindow 
+          onClose={() => handleCloseApp(setShowCalendar)}
+          onFocus={() => handleFocusApp('Calendar')}
+        />
       )}
-      
+
       {showSystemPreferences && (
-        <MacSystemPreferencesWindow onClose={() => setShowSystemPreferences(false)} />
+        <MacSystemPreferencesWindow 
+          onClose={() => handleCloseApp(setShowSystemPreferences)}
+          onFocus={() => handleFocusApp('System Preferences')}
+        />
       )}
-      
+
       {showPhotos && (
-        <MacPhotosWindow onClose={() => setShowPhotos(false)} />
+        <MacPhotosWindow 
+          onClose={() => handleCloseApp(setShowPhotos)}
+          onFocus={() => handleFocusApp('Photos')}
+        />
       )}
-      
+
       {showFaceTime && (
-        <MacFaceTimeWindow onClose={() => setShowFaceTime(false)} />
+        <MacFaceTimeWindow 
+          onClose={() => handleCloseApp(setShowFaceTime)}
+          onFocus={() => handleFocusApp('FaceTime')}
+        />
       )}
-      
+
       {showTextPad && (
-        <MacTextPadWindow onClose={() => setShowTextPad(false)} />
+        <MacTextPadWindow 
+          onClose={() => handleCloseApp(setShowTextPad)}
+          onFocus={() => handleFocusApp('Notes')}
+        />
       )}
 
       {showGitHubStats && (
-        <MacGitHubStatsWindow onClose={() => setShowGitHubStats(false)} />
+        <MacGitHubStatsWindow 
+          onClose={() => handleCloseApp(setShowGitHubStats)}
+          onFocus={() => handleFocusApp('GitHub Stats')}
+        />
       )}
 
       {showSocials && (
-        <MacSocialsWindow onClose={() => setShowSocials(false)} />
+        <MacSocialsWindow 
+          onClose={() => handleCloseApp(setShowSocials)}
+          onFocus={() => handleFocusApp('Messages')}
+        />
       )}
 
-        {showStats && (
-          <MacStatsWindow onClose={() => setShowStats(false)} />
-        )}
+      {showStats && (
+        <MacStatsWindow 
+          onClose={() => handleCloseApp(setShowStats)}
+          onFocus={() => handleFocusApp('Activity Monitor')}
+        />
+      )}
 
-      {/* Desktop Settings */}
-      <DesktopSettings 
-        onPaddingChange={setPadding}
-        onOpacityChange={setOpacity}
-        onThemeChange={setTheme}
-        onCustomBgChange={setCustomBgUrl}
-        currentPadding={padding}
-        currentOpacity={opacity}
-        currentTheme={theme}
-        currentBgUrl={customBgUrl}
+      {showHanzoAI && (
+        <HanzoAIWindow 
+          onClose={() => handleCloseApp(setShowHanzoAI)}
+          onFocus={() => handleFocusApp('Hanzo AI')}
+        />
+      )}
+
+      {showLuxWallet && (
+        <LuxWalletWindow 
+          onClose={() => handleCloseApp(setShowLuxWallet)}
+          onFocus={() => handleFocusApp('Lux Wallet')}
+        />
+      )}
+
+      {showZooAssistant && (
+        <ZooAssistantWindow 
+          onClose={() => handleCloseApp(setShowZooAssistant)}
+          onFocus={() => handleFocusApp('Zoo')}
+        />
+      )}
+
+      {/* Applications Popover */}
+      <ApplicationsPopover
+        isOpen={showApplications}
+        onClose={() => setShowApplications(false)}
+        onOpenNotes={() => handleOpenApp(setShowTextPad, 'Notes')}
+        onOpenGitHub={() => handleOpenApp(setShowGitHubStats, 'GitHub Stats')}
+        onOpenStats={() => handleOpenApp(setShowStats, 'Activity Monitor')}
+        onOpenSettings={() => handleOpenApp(setShowSystemPreferences, 'System Preferences')}
+        onOpenHanzo={() => handleOpenApp(setShowHanzoAI, 'Hanzo AI')}
+        onOpenLux={() => handleOpenApp(setShowLuxWallet, 'Lux Wallet')}
+        onOpenZoo={() => handleOpenApp(setShowZooAssistant, 'Zoo')}
       />
-      
-      {/* Mac Dock - now positioned with its own styles */}
+
+      {/* Downloads Popover */}
+      <DownloadsPopover
+        isOpen={showDownloads}
+        onClose={() => setShowDownloads(false)}
+      />
+
+      {/* Right-click Context Menu */}
+      {contextMenu && (
+        <div
+          className="fixed z-[20000] min-w-[220px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl text-white/90 text-[13px] py-1.5 font-medium"
+          style={{
+            left: contextMenu.x,
+            top: contextMenu.y,
+            transform: `translate(${contextMenu.x + 220 > window.innerWidth ? '-100%' : '0'}, ${contextMenu.y + 400 > window.innerHeight ? '-100%' : '0'})`,
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <ContextMenuItem
+            icon={<FolderOpen className="w-4 h-4" />}
+            label="New Folder"
+            shortcut="⇧⌘N"
+          />
+          <ContextMenuSeparator />
+          <ContextMenuItem
+            icon={<Info className="w-4 h-4" />}
+            label="Get Info"
+            shortcut="⌘I"
+          />
+          <ContextMenuItem
+            icon={<Image className="w-4 h-4" />}
+            label="Change Desktop Background..."
+            onClick={() => setShowSystemPreferences(true)}
+          />
+          <ContextMenuSeparator />
+          <div
+            className="relative"
+            onMouseEnter={() => {
+              setShowSortSubmenu(true);
+              setShowViewSubmenu(false);
+            }}
+          >
+            <ContextMenuItem
+              icon={<SortAsc className="w-4 h-4" />}
+              label="Sort By"
+              hasSubmenu
+            />
+            {showSortSubmenu && (
+              <div
+                className="absolute left-full top-0 ml-1 min-w-[180px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl text-white/90 text-[13px] py-1.5"
+              >
+                <ContextMenuItem label="Name" />
+                <ContextMenuItem label="Kind" />
+                <ContextMenuItem label="Date Last Opened" />
+                <ContextMenuItem label="Date Added" />
+                <ContextMenuItem label="Date Modified" />
+                <ContextMenuItem label="Date Created" />
+                <ContextMenuItem label="Size" />
+                <ContextMenuItem label="Tags" />
+              </div>
+            )}
+          </div>
+          <ContextMenuItem
+            icon={<Trash2 className="w-4 h-4" />}
+            label="Clean Up"
+          />
+          <ContextMenuItem
+            icon={<Grid3X3 className="w-4 h-4" />}
+            label="Clean Up By"
+            hasSubmenu
+          />
+          <ContextMenuSeparator />
+          <div
+            className="relative"
+            onMouseEnter={() => {
+              setShowViewSubmenu(true);
+              setShowSortSubmenu(false);
+            }}
+          >
+            <ContextMenuItem
+              icon={<Eye className="w-4 h-4" />}
+              label="View Options"
+              hasSubmenu
+            />
+            {showViewSubmenu && (
+              <div
+                className="absolute left-full top-0 ml-1 min-w-[180px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl text-white/90 text-[13px] py-1.5"
+              >
+                <ContextMenuItem label="as Icons" />
+                <ContextMenuItem label="as List" />
+                <ContextMenuItem label="as Columns" />
+                <ContextMenuItem label="as Gallery" />
+              </div>
+            )}
+          </div>
+          <ContextMenuSeparator />
+          <ContextMenuItem
+            icon={<Layout className="w-4 h-4" />}
+            label="Use Stacks"
+          />
+          <ContextMenuItem
+            icon={<Monitor className="w-4 h-4" />}
+            label="Show View Options"
+            shortcut="⌘J"
+          />
+          <ContextMenuSeparator />
+          <div className="px-3 py-1.5 text-white/40 text-xs uppercase tracking-wider">
+            Background Theme
+          </div>
+          <ContextMenuItem
+            label="Wireframe"
+            onClick={() => handleChangeBackground('wireframe')}
+          />
+          <ContextMenuItem
+            label="Gradient"
+            onClick={() => handleChangeBackground('gradient')}
+          />
+          <ContextMenuItem
+            label="Particles"
+            onClick={() => handleChangeBackground('particles')}
+          />
+          <ContextMenuItem
+            label="Matrix"
+            onClick={() => handleChangeBackground('matrix')}
+          />
+          <ContextMenuItem
+            label="Solid Black"
+            onClick={() => handleChangeBackground('black')}
+          />
+        </div>
+      )}
+
+      {/* Mac Dock */}
       <MacDock
-        onTerminalClick={handleToggleTerminal}
-        onSafariClick={handleToggleSafari}
-        onMusicClick={handleToggleMusic}
-        onSocialsClick={handleToggleSocials}
-        onMailClick={handleToggleEmail}
-        onCalendarClick={handleToggleCalendar}
-        onSystemPreferencesClick={handleToggleSystemPreferences}
-        onPhotosClick={handleTogglePhotos}
-        onFaceTimeClick={handleToggleFaceTime}
-        onTextPadClick={handleToggleTextPad}
-        onGitHubStatsClick={handleToggleGitHubStats}
-        onStatsClick={handleToggleStats}
+        onTerminalClick={() => handleOpenApp(setShowTerminal, 'Terminal')}
+        onSafariClick={() => handleOpenApp(setShowSafari, 'Safari')}
+        onMusicClick={() => handleOpenApp(setShowMusic, 'Music')}
+        onSocialsClick={() => handleOpenApp(setShowSocials, 'Messages')}
+        onMailClick={() => handleOpenApp(setShowEmail, 'Mail')}
+        onCalendarClick={() => handleOpenApp(setShowCalendar, 'Calendar')}
+        onPhotosClick={() => handleOpenApp(setShowPhotos, 'Photos')}
+        onFaceTimeClick={() => handleOpenApp(setShowFaceTime, 'FaceTime')}
+        onHanzoClick={() => handleOpenApp(setShowHanzoAI, 'Hanzo AI')}
+        onLuxClick={() => handleOpenApp(setShowLuxWallet, 'Lux Wallet')}
+        onZooClick={() => handleOpenApp(setShowZooAssistant, 'Zoo')}
+        onApplicationsClick={() => setShowApplications(!showApplications)}
+        onDownloadsClick={() => setShowDownloads(!showDownloads)}
       />
     </div>
   );

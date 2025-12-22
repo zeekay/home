@@ -136,14 +136,25 @@ const Terminal: React.FC<TerminalProps> = ({
               </div>
             )}
             {entry.output && (
-              <div 
+              <div
                 className={cn(
                   'whitespace-pre-wrap font-mono mt-1',
                   entry.isError ? 'text-red-500' : 'text-foreground'
                 )}
                 style={{ fontSize: `${customFontSize}px` }}
-                dangerouslySetInnerHTML={{ __html: entry.output.replace(/\n/g, '<br />') }}
-              />
+              >
+                {/* Strip ANSI escape codes and render clean output */}
+                {entry.output
+                  .replace(/\x1b\[[0-9;?]*[a-zA-Z]/g, '') // Remove ANSI escape codes including ? sequences
+                  .replace(/\x1b\][^\x07]*\x07/g, '') // Remove OSC sequences
+                  .replace(/\[[\d;?]*[a-zA-Z]/g, '') // Remove remaining bracket sequences
+                  .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '') // Remove control chars
+                  .split('\n')
+                  .map((line, i) => (
+                    <div key={i}>{line || '\u00A0'}</div>
+                  ))
+                }
+              </div>
             )}
           </div>
         ))}
