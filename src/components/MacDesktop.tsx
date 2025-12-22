@@ -11,6 +11,7 @@ import MacFaceTimeWindow from './MacFaceTimeWindow';
 import MacTextPadWindow from './MacTextPadWindow';
 import MacGitHubStatsWindow from './MacGitHubStatsWindow';
 import MacSocialsWindow from './MacSocialsWindow';
+import MacStatsWindow from './MacStatsWindow';
 import AnimatedBackground from './AnimatedBackground';
 import DesktopSettings from './DesktopSettings';
 
@@ -30,6 +31,7 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   const [showFaceTime, setShowFaceTime] = useState(false);
   const [showTextPad, setShowTextPad] = useState(false);
   const [showGitHubStats, setShowGitHubStats] = useState(false);
+  const [showStats, setShowStats] = useState(false);
 
   // Desktop customization settings
   const [padding, setPadding] = useState(1);
@@ -88,6 +90,10 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
 
   const handleToggleGitHubStats = () => {
     setShowGitHubStats(!showGitHubStats);
+  };
+
+  const handleToggleStats = () => {
+    setShowStats(!showStats);
   };
 
   // Apply custom document styles for padding
@@ -154,6 +160,10 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         <MacSocialsWindow onClose={() => setShowSocials(false)} />
       )}
 
+        {showStats && (
+          <MacStatsWindow onClose={() => setShowStats(false)} />
+        )}
+
       {/* Desktop Settings */}
       <DesktopSettings 
         onPaddingChange={setPadding}
@@ -179,6 +189,7 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         onFaceTimeClick={handleToggleFaceTime}
         onTextPadClick={handleToggleTextPad}
         onGitHubStatsClick={handleToggleGitHubStats}
+        onStatsClick={handleToggleStats}
       />
     </div>
   );
