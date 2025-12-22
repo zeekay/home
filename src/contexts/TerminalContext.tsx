@@ -14,10 +14,11 @@ interface TerminalProviderProps {
 
 export const TerminalProvider: React.FC<TerminalProviderProps> = ({ children }) => {
   const [entries, setEntries] = useState<TerminalEntry[]>([
-    { 
-      command: '', 
-      output: "Welcome to Zach's Terminal! Type 'help' for available commands or wait for WebContainer to load...", 
-      id: 0 
+    {
+      command: '',
+      output: `Welcome to zOS v4.2.0
+Type 'help' for commands, 'neofetch' for system info, or 'cat .zshrc' for config.`,
+      id: 0
     }
   ]);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);

@@ -131,7 +131,9 @@ const Terminal: React.FC<TerminalProps> = ({
           <div key={entry.id} className="mb-2">
             {entry.command && (
               <div className="flex">
-                <span className="text-green-600 dark:text-green-400 mr-2">$</span>
+                <span className="text-cyan-400 mr-1">z@zOS</span>
+          <span className="text-blue-400 mr-1">~</span>
+          <span className="text-purple-400 mr-2">❯</span>
                 <span style={{ fontSize: `${customFontSize}px` }}>{entry.command}</span>
               </div>
             )}
@@ -160,7 +162,9 @@ const Terminal: React.FC<TerminalProps> = ({
         ))}
         
         <div className="flex mt-2">
-          <span className="text-green-600 dark:text-green-400 mr-2">$</span>
+          <span className="text-cyan-400 mr-1">z@zOS</span>
+          <span className="text-blue-400 mr-1">~</span>
+          <span className="text-purple-400 mr-2">❯</span>
           <form onSubmit={handleSubmit} className="flex-1">
             <input
               ref={inputRef}
