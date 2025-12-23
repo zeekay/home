@@ -32,14 +32,14 @@ import {
 } from 'lucide-react';
 import { Slider } from "@/components/ui/slider";
 
-// Lux Logo - upside down white triangle
-const LuxLogo: React.FC<{ className?: string }> = ({ className }) => (
+// Z Logo for menu bar
+const ZMenuLogo: React.FC<{ className?: string }> = ({ className }) => (
   <svg
     viewBox="0 0 100 100"
     className={cn("w-4 h-4", className)}
     fill="currentColor"
   >
-    <path d="M50 85 L15 25 L85 25 Z" />
+    <path d="M 15 15 H 85 V 30 L 35 70 H 85 V 85 H 15 V 70 L 65 30 H 15 Z" />
   </svg>
 );
 
@@ -382,6 +382,9 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
   const [isCmdPressed, setIsCmdPressed] = useState(false);
   const [draggedMenuIndex, setDraggedMenuIndex] = useState<number | null>(null);
   const [menuOrder, setMenuOrder] = useState<number[]>([]);
+  const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
+  const dragStartX = useRef<number>(0);
+  const isDragging = useRef<boolean>(false);
 
   // Get app-specific menus
   const menuItems = getAppMenus(appName);
@@ -391,7 +394,7 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
     setMenuOrder(menuItems.map((_, i) => i));
   }, [menuItems.length]);
 
-  // Track Cmd key state
+  // Track Cmd key state and handle global keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey) {
@@ -402,6 +405,8 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
       if (!e.metaKey && !e.ctrlKey) {
         setIsCmdPressed(false);
         setDraggedMenuIndex(null);
+        setDropTargetIndex(null);
+        isDragging.current = false;
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -411,6 +416,50 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
       window.removeEventListener('keyup', handleKeyUp);
     };
   }, []);
+
+  // Drag handlers for menu reordering
+  const handleMenuDragStart = (e: React.MouseEvent, orderIndex: number) => {
+    if (!isCmdPressed) return;
+    e.preventDefault();
+    setDraggedMenuIndex(orderIndex);
+    dragStartX.current = e.clientX;
+    isDragging.current = true;
+  };
+
+  const handleMenuDragMove = (e: React.MouseEvent) => {
+    if (!isDragging.current || draggedMenuIndex === null) return;
+    
+    // Find the element we're hovering over
+    const menuButtons = menuBarRef.current?.querySelectorAll('[data-menu-index]');
+    if (!menuButtons) return;
+    
+    let targetIndex: number | null = null;
+    menuButtons.forEach((button) => {
+      const rect = button.getBoundingClientRect();
+      const idx = parseInt(button.getAttribute('data-menu-index') || '-1');
+      if (e.clientX >= rect.left && e.clientX <= rect.right) {
+        targetIndex = idx;
+      }
+    });
+    
+    if (targetIndex !== null && targetIndex !== draggedMenuIndex) {
+      setDropTargetIndex(targetIndex);
+    }
+  };
+
+  const handleMenuDragEnd = () => {
+    if (draggedMenuIndex !== null && dropTargetIndex !== null && draggedMenuIndex !== dropTargetIndex) {
+      // Reorder the menu
+      const newOrder = [...menuOrder];
+      const draggedItem = newOrder[draggedMenuIndex];
+      newOrder.splice(draggedMenuIndex, 1);
+      newOrder.splice(dropTargetIndex, 0, draggedItem);
+      setMenuOrder(newOrder);
+    }
+    setDraggedMenuIndex(null);
+    setDropTargetIndex(null);
+    isDragging.current = false;
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -458,7 +507,7 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
   };
 
   const luxMenuItems: MenuItemType[] = [
-    { label: 'About This Mac' },
+    { label: 'About zOS' },
     { type: 'separator' },
     { label: 'System Settings...' },
     { label: 'App Store...' },
@@ -513,7 +562,7 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
       onOpenSettings();
     } else if (label === 'System Settings...' && onOpenSettings) {
       onOpenSettings();
-    } else if (label === 'About This Mac' && onAboutMac) {
+    } else if (label === 'About zOS' && onAboutMac) {
       onAboutMac();
     } else if (label === 'Minimize' && onMinimize) {
       onMinimize();
@@ -590,14 +639,14 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
     >
       {/* Left side - Logo and menus */}
       <div className="flex items-center h-full">
-        {/* Lux Logo (replacing Apple logo) */}
+        {/* Z Logo (system menu) */}
         <div className="relative h-full">
           <button
             className={cn(menuButtonClass, "px-[8px]", activeMenu === -1 && "bg-white/20")}
             onClick={() => handleMenuClick(-1)}
             onMouseEnter={() => handleMenuHover(-1)}
           >
-            <LuxLogo className="w-[14px] h-[14px] text-white opacity-90" />
+            <ZMenuLogo className="w-[14px] h-[14px] text-white opacity-90" />
           </button>
           {activeMenu === -1 && (
             <div className="absolute top-full left-0 mt-[5px] min-w-[230px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1">
@@ -606,27 +655,47 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
           )}
         </div>
 
-        {/* App menus */}
-        {menuItems.map((menu, index) => (
-          <div key={index} className="relative h-full">
-            <button
-              className={cn(
-                menuButtonClass,
-                menu.bold && "font-bold",
-                activeMenu === index && "bg-white/20"
-              )}
-              onClick={() => handleMenuClick(index)}
-              onMouseEnter={() => handleMenuHover(index)}
+        {/* App menus - rendered in menuOrder */}
+        {menuOrder.map((originalIndex, orderIndex) => {
+          const menu = menuItems[originalIndex];
+          if (!menu) return null;
+          
+          return (
+            <div 
+              key={originalIndex} 
+              className="relative h-full"
+              onMouseMove={handleMenuDragMove}
+              onMouseUp={handleMenuDragEnd}
+              onMouseLeave={() => {
+                if (isDragging.current) {
+                  handleMenuDragEnd();
+                }
+              }}
             >
-              {menu.label}
-            </button>
-            {activeMenu === index && (
-              <div className="absolute top-full left-0 mt-[5px] min-w-[230px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1 max-h-[80vh] overflow-y-auto">
-                {menu.items.map((item, itemIndex) => renderMenuItem(item, itemIndex))}
-              </div>
-            )}
-          </div>
-        ))}
+              <button
+                data-menu-index={orderIndex}
+                className={cn(
+                  menuButtonClass,
+                  menu.bold && "font-bold",
+                  activeMenu === originalIndex && "bg-white/20",
+                  isCmdPressed && "cursor-grab",
+                  draggedMenuIndex === orderIndex && "opacity-50 cursor-grabbing",
+                  dropTargetIndex === orderIndex && draggedMenuIndex !== null && "ring-2 ring-blue-500 ring-opacity-50"
+                )}
+                onClick={() => !isDragging.current && handleMenuClick(originalIndex)}
+                onMouseEnter={() => !isDragging.current && handleMenuHover(originalIndex)}
+                onMouseDown={(e) => handleMenuDragStart(e, orderIndex)}
+              >
+                {menu.label}
+              </button>
+              {activeMenu === originalIndex && !isDragging.current && (
+                <div className="absolute top-full left-0 mt-[5px] min-w-[230px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1 max-h-[80vh] overflow-y-auto">
+                  {menu.items.map((item, itemIndex) => renderMenuItem(item, itemIndex))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Right side - System tray */}

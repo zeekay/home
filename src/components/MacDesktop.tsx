@@ -23,6 +23,7 @@ import LuxWalletWindow from './LuxWalletWindow';
 import ZooAssistantWindow from './ZooAssistantWindow';
 import ApplicationsPopover from './dock/ApplicationsPopover';
 import DownloadsPopover from './dock/DownloadsPopover';
+import AboutZosWindow from './AboutZosWindow';
 import AnimatedBackground from './AnimatedBackground';
 import {
   Image,
@@ -76,6 +77,7 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   const [showStickies, setShowStickies] = useState(false);
   const [showApplications, setShowApplications] = useState(false);
   const [showDownloads, setShowDownloads] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
   // Active app for menu bar
   const [activeApp, setActiveApp] = useState<AppType>('Finder');
@@ -165,6 +167,10 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
     handleOpenApp(setShowSystemPreferences, 'System Preferences');
   }, []);
 
+  const handleOpenAbout = useCallback(() => {
+    setShowAbout(true);
+  }, []);
+
   // Background theme handlers
   const handleChangeBackground = (newTheme: string) => {
     setTheme(newTheme);
@@ -213,6 +219,7 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         appName={activeApp} 
         onQuitApp={handleQuitCurrentApp}
         onOpenSettings={handleOpenSettings}
+        onAboutMac={handleOpenAbout}
       />
 
       {/* Animated Background */}
@@ -382,6 +389,11 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         isOpen={showDownloads}
         onClose={() => setShowDownloads(false)}
       />
+
+      {/* About zOS Window */}
+      {showAbout && (
+        <AboutZosWindow onClose={() => setShowAbout(false)} />
+      )}
 
       {/* Right-click Context Menu */}
       {contextMenu && (
