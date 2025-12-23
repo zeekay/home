@@ -14,9 +14,10 @@ interface DockItemProps {
   color?: string;
   onClick?: () => void;
   bgGradient?: string;
+  isActive?: boolean;
 }
 
-const DockItem: React.FC<DockItemProps> = ({ icon: Icon, customIcon, label, color, onClick, bgGradient }) => {
+const DockItem: React.FC<DockItemProps> = ({ icon: Icon, customIcon, label, color, onClick, bgGradient, isActive = false }) => {
   const isMobile = useIsMobile();
 
   // Get dynamic icon size based on device
@@ -44,7 +45,7 @@ const DockItem: React.FC<DockItemProps> = ({ icon: Icon, customIcon, label, colo
             ) : null}
           </div>
           {/* Active indicator dot */}
-          <div className="absolute -bottom-1 w-1 h-1 rounded-full bg-white/80 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className={`absolute -bottom-1 w-1 h-1 rounded-full bg-white/80 transition-opacity ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
         </button>
       </TooltipTrigger>
       <TooltipContent side={isMobile ? "bottom" : "top"} className="bg-black/90 text-white border-0 rounded-md px-3 py-1.5 text-sm">

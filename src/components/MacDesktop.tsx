@@ -524,6 +524,20 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         onZooClick={() => handleOpenApp(setShowZooAssistant, 'Zoo')}
         onApplicationsClick={() => setShowApplications(!showApplications)}
         onDownloadsClick={() => setShowDownloads(!showDownloads)}
+        activeApps={[
+          showFinder && 'finder',
+          showTerminal && 'terminal',
+          showSafari && 'safari',
+          showMusic && 'music',
+          showSocials && 'socials',
+          showEmail && 'mail',
+          showCalendar && 'calendar',
+          showPhotos && 'photos',
+          showFaceTime && 'facetime',
+          showHanzoAI && 'hanzo',
+          showLuxWallet && 'lux',
+          showZooAssistant && 'zoo',
+        ].filter(Boolean) as string[]}
       />
     </div>
   );
