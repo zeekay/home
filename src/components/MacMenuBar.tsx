@@ -378,8 +378,39 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
   const menuBarRef = useRef<HTMLDivElement>(null);
   const [activeSystemMenu, setActiveSystemMenu] = useState<string | null>(null);
 
+  // Cmd+drag reordering state
+  const [isCmdPressed, setIsCmdPressed] = useState(false);
+  const [draggedMenuIndex, setDraggedMenuIndex] = useState<number | null>(null);
+  const [menuOrder, setMenuOrder] = useState<number[]>([]);
+
   // Get app-specific menus
   const menuItems = getAppMenus(appName);
+
+  // Initialize menu order when menuItems change
+  useEffect(() => {
+    setMenuOrder(menuItems.map((_, i) => i));
+  }, [menuItems.length]);
+
+  // Track Cmd key state
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey) {
+        setIsCmdPressed(true);
+      }
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (!e.metaKey && !e.ctrlKey) {
+        setIsCmdPressed(false);
+        setDraggedMenuIndex(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
