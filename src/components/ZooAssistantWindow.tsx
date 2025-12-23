@@ -100,6 +100,7 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
   // Drag state
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
+  const [isMetaDragging, setIsMetaDragging] = useState(false); // Cmd+drag for desktop repositioning
   const dragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const resizeStartRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -237,6 +238,32 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
     };
   }, [isResizing, handleResizeMove, handleResizeEnd]);
 
+  // Cmd+drag handler for desktop repositioning
+  useEffect(() => {
+    if (!isMetaDragging) return;
+
+    const handleMetaDragMove = (e: MouseEvent) => {
+      if (!dragStartRef.current) return;
+      const deltaX = e.clientX - dragStartRef.current.x;
+      const deltaY = e.clientY - dragStartRef.current.y;
+      const newX = Math.max(0, Math.min(window.innerWidth - size.width, dragStartRef.current.posX + deltaX));
+      const newY = Math.max(0, Math.min(window.innerHeight - size.height - 80, dragStartRef.current.posY + deltaY));
+      setPosition({ x: newX, y: newY });
+    };
+
+    const handleMetaDragEnd = () => {
+      setIsMetaDragging(false);
+      dragStartRef.current = null;
+    };
+
+    window.addEventListener('mousemove', handleMetaDragMove);
+    window.addEventListener('mouseup', handleMetaDragEnd);
+    return () => {
+      window.removeEventListener('mousemove', handleMetaDragMove);
+      window.removeEventListener('mouseup', handleMetaDragEnd);
+    };
+  }, [isMetaDragging, size]);
+
   const CurrentIcon = ZOO_TIPS[currentTip].icon;
 
   return (
@@ -249,11 +276,11 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
         width: size.width,
       }}
     >
-      {/* Speech Bubble - positioned absolutely so giraffe doesn't move */}
+      {/* Speech Bubble - positioned to the left so it doesn't cover giraffe */}
       {showBubble && (
       <div
-        className={`absolute bottom-full mb-2 right-0 max-w-[280px] transition-all duration-300 ${
-          isAnimating ? 'opacity-0 transform -translate-y-2' : 'opacity-100'
+        className={`absolute right-full mr-3 top-0 w-[220px] sm:w-[260px] transition-all duration-300 ${
+          isAnimating ? 'opacity-0 transform -translate-x-2' : 'opacity-100'
         }`}
       >
         <div className="bg-white rounded-2xl p-3 sm:p-4 shadow-2xl relative">
@@ -302,8 +329,8 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
           </div>
         </div>
 
-        {/* Speech bubble pointer */}
-        <div className="absolute -bottom-2 right-8 sm:right-12 w-4 h-4 bg-white transform rotate-45 shadow-lg" />
+        {/* Speech bubble pointer - pointing right towards giraffe */}
+        <div className="absolute top-8 -right-2 w-4 h-4 bg-white transform rotate-45 shadow-lg" />
       </div>
       )}
 
@@ -327,15 +354,15 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
           <model-viewer
             src="/models/GIRAFFE_ADULT.glb"
             alt="Zoo Giraffe"
-            camera-controls
-            camera-orbit="15deg 75deg 6m"
-            camera-target="0m 1.8m 0m"
-            field-of-view="40deg"
+            camera-controls={!isMetaDragging}
+            camera-orbit="0deg 65deg 12m"
+            camera-target="0m 2.8m 0m"
+            field-of-view="35deg"
             auto-rotate
             auto-rotate-delay="3000"
             rotation-per-second="15deg"
-            touch-action="pan-y"
-            interaction-prompt="auto"
+            touch-action={isMetaDragging ? "none" : "pan-y"}
+            interaction-prompt="none"
             shadow-intensity="0"
             autoplay
             loading="eager"
@@ -344,8 +371,23 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
               height: '100%',
               backgroundColor: 'transparent',
               '--poster-color': 'transparent',
+              cursor: isMetaDragging ? 'move' : 'grab',
             } as React.CSSProperties}
+            onMouseDown={(e: React.MouseEvent) => {
+              if (e.metaKey || e.ctrlKey) {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsMetaDragging(true);
+                dragStartRef.current = {
+                  x: e.clientX,
+                  y: e.clientY,
+                  posX: position.x,
+                  posY: position.y,
+                };
+              }
+            }}
             onClick={() => {
+              if (isMetaDragging) return;
               if (!showBubble) {
                 setShowBubble(true);
               } else {
@@ -367,7 +409,7 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
 
       {/* Click hint */}
       <p className="text-center text-white/40 text-[9px] sm:text-[10px] mt-1 sm:mt-2">
-        {isDragging ? 'Release to place' : isResizing ? 'Release to resize' : showBubble ? 'Drag to rotate • Pinch to zoom' : 'Click me to chat!'}
+        {isDragging || isMetaDragging ? 'Release to place' : isResizing ? 'Release to resize' : showBubble ? '⌘+drag to move • Drag to rotate' : 'Click me to chat!'}
       </p>
     </div>
   );

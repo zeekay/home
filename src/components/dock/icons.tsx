@@ -208,7 +208,7 @@ export const ZooLogo: React.FC<{ className?: string; mono?: boolean }> = ({ clas
     return (
       <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={className}>
         <rect width="64" height="64" rx="12" fill="#000000" />
-        <g transform="translate(10, 10) scale(0.043)">
+        <g transform="translate(4, 6) scale(0.055)">
           <defs>
             <clipPath id="outerCircleMono">
               <circle cx="508" cy="510" r="283"/>
@@ -228,7 +228,7 @@ export const ZooLogo: React.FC<{ className?: string; mono?: boolean }> = ({ clas
   return (
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={className}>
       <rect width="64" height="64" rx="12" fill="#000000" />
-      <g transform="translate(10, 10) scale(0.043)">
+      <g transform="translate(4, 6) scale(0.055)">
       <defs>
         <clipPath id="outerCircleColor">
           <circle cx="512" cy="511" r="270"/>
@@ -340,31 +340,31 @@ export const DownloadsBadge: React.FC<{ className?: string }> = ({ className = "
   </svg>
 );
 
-// macOS Trash Icon
+// macOS Trash Icon - taller to match folder top
 export const MacTrashIcon: React.FC<{ className?: string; full?: boolean }> = ({ className = "w-12 h-12", full = false }) => (
   <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={className}>
     <defs>
-      <linearGradient id="trashBodyGrad" x1="32" y1="18" x2="32" y2="60" gradientUnits="userSpaceOnUse">
+      <linearGradient id="trashBodyGrad" x1="32" y1="14" x2="32" y2="60" gradientUnits="userSpaceOnUse">
         <stop stopColor="#D8D8DA"/>
         <stop offset="0.5" stopColor="#C0C0C2"/>
         <stop offset="1" stopColor="#A8A8AA"/>
       </linearGradient>
-      <linearGradient id="trashLidGrad" x1="32" y1="12" x2="32" y2="18" gradientUnits="userSpaceOnUse">
+      <linearGradient id="trashLidGrad" x1="32" y1="8" x2="32" y2="14" gradientUnits="userSpaceOnUse">
         <stop stopColor="#E0E0E2"/>
         <stop offset="1" stopColor="#C8C8CA"/>
       </linearGradient>
     </defs>
-    <path d="M16 18H48V56C48 58.2091 46.2091 60 44 60H20C17.7909 60 16 58.2091 16 56V18Z" fill="url(#trashBodyGrad)"/>
-    <rect x="22" y="24" width="2" height="30" rx="1" fill="rgba(0,0,0,0.15)"/>
-    <rect x="31" y="24" width="2" height="30" rx="1" fill="rgba(0,0,0,0.15)"/>
-    <rect x="40" y="24" width="2" height="30" rx="1" fill="rgba(0,0,0,0.15)"/>
-    <path d="M12 14C12 12.8954 12.8954 12 14 12H50C51.1046 12 52 12.8954 52 14V18H12V14Z" fill="url(#trashLidGrad)"/>
-    <rect x="26" y="8" width="12" height="4" rx="2" fill="#8A8A8C"/>
+    <path d="M16 14H48V56C48 58.2091 46.2091 60 44 60H20C17.7909 60 16 58.2091 16 56V14Z" fill="url(#trashBodyGrad)"/>
+    <rect x="22" y="20" width="2" height="34" rx="1" fill="rgba(0,0,0,0.15)"/>
+    <rect x="31" y="20" width="2" height="34" rx="1" fill="rgba(0,0,0,0.15)"/>
+    <rect x="40" y="20" width="2" height="34" rx="1" fill="rgba(0,0,0,0.15)"/>
+    <path d="M12 10C12 8.89543 12.8954 8 14 8H50C51.1046 8 52 8.89543 52 10V14H12V10Z" fill="url(#trashLidGrad)"/>
+    <rect x="26" y="4" width="12" height="4" rx="2" fill="#8A8A8C"/>
     {full && (
       <>
-        <circle cx="28" cy="12" r="6" fill="#F0E6D3"/>
-        <circle cx="36" cy="10" r="5" fill="#E8DCC8"/>
-        <circle cx="32" cy="6" r="4" fill="#F5EDE0"/>
+        <circle cx="28" cy="8" r="6" fill="#F0E6D3"/>
+        <circle cx="36" cy="6" r="5" fill="#E8DCC8"/>
+        <circle cx="32" cy="2" r="4" fill="#F5EDE0"/>
       </>
     )}
   </svg>
