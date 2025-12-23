@@ -137,6 +137,9 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
   }
 
   // Desktop: Stack layout - documents stack upward from downloads icon
+  // Downloads icon is 2nd from right in dock (before trash)
+  // Dock icons are ~48px wide with ~8px gaps, trash is ~56px from right edge
+  // Downloads icon center is approximately: 56 (trash) + 48 (downloads) / 2 = ~80px from right
   const totalItems = documents.length;
 
   return (
@@ -147,12 +150,13 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
         onClick={onClose}
       />
 
-      {/* Stack Container - positioned above downloads icon */}
-      <div 
-        className="fixed z-[9999] flex flex-col-reverse gap-2 p-2"
-        style={{ 
-          bottom: '80px',
-          right: '60px',
+      {/* Stack Container - positioned precisely above downloads icon */}
+      {/* Downloads is 2nd from right: trash (~56px) + downloads center (~24px) = ~80px from right */}
+      <div
+        className="fixed z-[9999] flex flex-col-reverse gap-1"
+        style={{
+          bottom: '85px',
+          right: '72px',
         }}
       >
         {documents.map((doc, index) => {

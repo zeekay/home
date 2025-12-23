@@ -50,6 +50,10 @@ interface ZMenuBarProps {
   onOpenSettings?: () => void;
   onAboutMac?: () => void;
   onMinimize?: () => void;
+  onSleep?: () => void;
+  onRestart?: () => void;
+  onShutdown?: () => void;
+  onLockScreen?: () => void;
 }
 
 interface MenuItemType {
@@ -360,6 +364,10 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
   onOpenSettings,
   onAboutMac,
   onMinimize,
+  onSleep,
+  onRestart,
+  onShutdown,
+  onLockScreen,
 }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState(87);
@@ -568,6 +576,17 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
       onMinimize();
     } else if (label === `Hide ${appName}`) {
       // Could implement hide functionality
+    } else if (label === 'Sleep' && onSleep) {
+      onSleep();
+    } else if (label === 'Restart...' && onRestart) {
+      onRestart();
+    } else if (label === 'Shut Down...' && onShutdown) {
+      onShutdown();
+    } else if (label === 'Lock Screen' && onLockScreen) {
+      onLockScreen();
+    } else if (label === 'Log Out Z...' && onLockScreen) {
+      // Log out goes to lock screen
+      onLockScreen();
     }
   };
 

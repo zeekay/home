@@ -76,12 +76,12 @@ Say hi: curl -sL zeekay.chat | sh`;
     >
       <div className="h-full p-2 bg-gradient-to-br from-zinc-900 to-black border border-white/10 overflow-auto">
         {isTyping ? (
-          <div className="w-full h-full p-3 sm:p-4 font-mono text-sm sm:text-base text-gray-300 whitespace-pre-wrap leading-relaxed">
+          <div className="w-full h-full p-3 sm:p-4 font-mono text-xs sm:text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">
             {text}
             <span className="terminal-cursor animate-blink bg-gray-300">|</span>
           </div>
         ) : (
-          <div className="w-full h-full p-3 sm:p-4 font-mono text-sm sm:text-base text-gray-300 whitespace-pre-wrap leading-relaxed">
+          <div className="w-full h-full p-3 sm:p-4 font-mono text-xs sm:text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">
             {renderTextWithLinks()}
           </div>
         )}
