@@ -16,8 +16,9 @@ export const TerminalProvider: React.FC<TerminalProviderProps> = ({ children }) 
   const [entries, setEntries] = useState<TerminalEntry[]>([
     {
       command: '',
-      output: `Welcome to zOS v4.2.0
-Type 'help' for commands, 'neofetch' for system info, or 'cat .zshrc' for config.`,
+      output: `Welcome to zOS v4.2.0 - z@zeekay.ai
+Type 'help' for commands, 'neofetch' for system info
+Try 'cd Documents' for GitHub projects, 'ellipsis' for dotfiles`,
       id: 0
     }
   ]);

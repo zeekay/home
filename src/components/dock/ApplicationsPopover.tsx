@@ -9,14 +9,10 @@ import {
   StatsIcon,
   SettingsIcon,
   FinderIcon,
-  SafariIcon,
-  MailIcon,
-  PhotosIcon,
-  CalendarIcon,
-  MusicIcon,
-  TerminalIcon,
-  PhoneIcon,
-  SocialsIcon,
+  CalculatorIcon,
+  ClockIcon,
+  WeatherIcon,
+  StickiesIcon,
 } from './icons';
 
 interface ApplicationsPopoverProps {
@@ -29,6 +25,10 @@ interface ApplicationsPopoverProps {
   onOpenHanzo?: () => void;
   onOpenLux?: () => void;
   onOpenZoo?: () => void;
+  onOpenCalculator?: () => void;
+  onOpenClock?: () => void;
+  onOpenWeather?: () => void;
+  onOpenStickies?: () => void;
 }
 
 const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
@@ -41,20 +41,24 @@ const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
   onOpenHanzo,
   onOpenLux,
   onOpenZoo,
+  onOpenCalculator,
+  onOpenClock,
+  onOpenWeather,
+  onOpenStickies,
 }) => {
   if (!isOpen) return null;
 
   return (
     <>
       {/* Backdrop */}
-      <div 
-        className="fixed inset-0 z-[9998]" 
+      <div
+        className="fixed inset-0 z-[9998]"
         onClick={onClose}
       />
-      
+
       {/* Popover */}
-      <div 
-        className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[9999] w-[420px] bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-4 animate-in slide-in-from-bottom-4"
+      <div
+        className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[9999] w-[480px] bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-4 animate-in slide-in-from-bottom-4"
       >
         {/* Hanzo AI Section */}
         <div className="mb-4">
@@ -140,7 +144,47 @@ const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
         {/* System Apps */}
         <div className="border-t border-white/10 pt-4">
           <div className="text-xs text-white/50 uppercase tracking-wider mb-2 px-1">Applications</div>
-          <div className="grid grid-cols-5 gap-1">
+          <div className="grid grid-cols-6 gap-1">
+            <button
+              onClick={() => { onOpenCalculator?.(); onClose(); }}
+              className="flex flex-col items-center p-2 hover:bg-white/10 rounded-xl transition-colors"
+            >
+              <div className="w-11 h-11 mb-1">
+                <CalculatorIcon className="w-full h-full" />
+              </div>
+              <span className="text-[10px] text-white/90">Calculator</span>
+            </button>
+
+            <button
+              onClick={() => { onOpenClock?.(); onClose(); }}
+              className="flex flex-col items-center p-2 hover:bg-white/10 rounded-xl transition-colors"
+            >
+              <div className="w-11 h-11 mb-1">
+                <ClockIcon className="w-full h-full" />
+              </div>
+              <span className="text-[10px] text-white/90">Clock</span>
+            </button>
+
+            <button
+              onClick={() => { onOpenWeather?.(); onClose(); }}
+              className="flex flex-col items-center p-2 hover:bg-white/10 rounded-xl transition-colors"
+            >
+              <div className="w-11 h-11 mb-1">
+                <WeatherIcon className="w-full h-full" />
+              </div>
+              <span className="text-[10px] text-white/90">Weather</span>
+            </button>
+
+            <button
+              onClick={() => { onOpenStickies?.(); onClose(); }}
+              className="flex flex-col items-center p-2 hover:bg-white/10 rounded-xl transition-colors"
+            >
+              <div className="w-11 h-11 mb-1">
+                <StickiesIcon className="w-full h-full" />
+              </div>
+              <span className="text-[10px] text-white/90">Stickies</span>
+            </button>
+
             <button
               onClick={() => { onOpenNotes?.(); onClose(); }}
               className="flex flex-col items-center p-2 hover:bg-white/10 rounded-xl transition-colors"
@@ -151,6 +195,19 @@ const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
               <span className="text-[10px] text-white/90">Notes</span>
             </button>
 
+            <button
+              onClick={() => { onOpenSettings?.(); onClose(); }}
+              className="flex flex-col items-center p-2 hover:bg-white/10 rounded-xl transition-colors"
+            >
+              <div className="w-11 h-11 mb-1">
+                <SettingsIcon className="w-full h-full" />
+              </div>
+              <span className="text-[10px] text-white/90">Settings</span>
+            </button>
+          </div>
+
+          {/* Second row */}
+          <div className="grid grid-cols-6 gap-1 mt-1">
             <button
               onClick={() => { onOpenGitHub?.(); onClose(); }}
               className="flex flex-col items-center p-2 hover:bg-white/10 rounded-xl transition-colors"
@@ -171,17 +228,7 @@ const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
               <span className="text-[10px] text-white/90">Activity</span>
             </button>
 
-            <button
-              onClick={() => { onOpenSettings?.(); onClose(); }}
-              className="flex flex-col items-center p-2 hover:bg-white/10 rounded-xl transition-colors"
-            >
-              <div className="w-11 h-11 mb-1">
-                <SettingsIcon className="w-full h-full" />
-              </div>
-              <span className="text-[10px] text-white/90">Settings</span>
-            </button>
-
-            <div className="flex flex-col items-center p-2 opacity-50">
+            <div className="flex flex-col items-center p-2 opacity-40 cursor-not-allowed">
               <div className="w-11 h-11 mb-1">
                 <FinderIcon className="w-full h-full" />
               </div>

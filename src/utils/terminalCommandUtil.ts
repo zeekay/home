@@ -2,6 +2,7 @@
 import { TerminalEntry } from '@/types/terminal';
 import { WebContainer } from '@webcontainer/api';
 import { executeWebContainerCommand } from './webContainerUtil';
+import { readFile } from './terminalFileSystem';
 
 // Alias mappings (like .zshrc aliases)
 const aliases: Record<string, string> = {
@@ -10,10 +11,31 @@ const aliases: Record<string, string> = {
   'l': 'ls',
   '..': 'cd ..',
   '...': 'cd ../..',
+  '....': 'cd ../../..',
   'g': 'git',
   'gs': 'git status',
+  'gc': 'git commit',
+  'gp': 'git push',
+  'gpl': 'git pull',
+  'gco': 'git checkout',
+  'gd': 'git diff',
+  'gl': 'git log --oneline --graph',
   'v': 'vim',
+  'vi': 'vim',
   'nvim': 'vim',
+  'nano': 'vim',
+  'pico': 'vim',
+  'ed': 'vim',
+  'emacs': 'vim',
+  'k': 'kubectl',
+  'd': 'docker',
+  'dc': 'docker-compose',
+  'py': 'python3',
+  'n': 'node',
+  'nr': 'npm run',
+  'ni': 'npm install',
+  'c': 'code',
+  'cls': 'clear',
 };
 
 export const executeHelpCommand = (
@@ -26,32 +48,54 @@ export const executeHelpCommand = (
 
 Navigation:
   ls, ll, la         List files (-a shows hidden, -l long format)
-  cd [dir]           Change directory (.. to go up)
+  cd [dir]           Change directory (.. up, ~ home, - previous)
   pwd                Print working directory
+  tree               Show directory structure
 
 File Operations:
   cat [file]         View file contents
-  vim [file]         Open file in vim (simulated)
+  vim/nano/pico      Edit file (simulated)
   touch [file]       Create empty file
   mkdir [dir]        Create directory
   rm [file]          Remove file
   echo [text]        Print text (> file to write)
 
+Editors:
+  vim [file]         Open in Vim (display mode)
+  nano [file]        Open in Nano (alias to vim)
+  pico [file]        Open in Pico (alias to vim)
+  ed [file]          Open in Ed (alias to vim)
+
+Runtime:
+  node [file.js]     Run JavaScript file
+  npx [pkg]          Run npm package
+  npm [cmd]          npm commands
+
 System:
   clear              Clear terminal
   history            Command history
   whoami             Current user
-  uname              System info
-  neofetch           System summary
+  uname [-a]         System info
+  neofetch / info    System summary
+  env                Environment variables
+
+Git:
+  git status/log/diff/branch
+
+Ellipsis (Dotfiles):
+  ellipsis           Show ellipsis info
+  dots               List installed packages
 
 Aliases (from .zshrc):
-  ll → ls -la    la → ls -a    .. → cd ..
-  g → git        gs → git status    v → vim
+  ll → ls -la        la → ls -a       .. → cd ..
+  g → git            gs → git status  v → vim
+  n → node           py → python3     cls → clear
 
 Theme:
   theme [name]       Change theme (dracula, nord, matrix, monokai...)
 
-Type 'cat .zshrc' to see your shell configuration.`,
+Type 'cat .zshrc' or 'cat .vimrc' to see your configs.
+Type 'cd Documents' to see GitHub project links.`,
     id: Date.now()
   });
 };
@@ -59,53 +103,246 @@ Type 'cat .zshrc' to see your shell configuration.`,
 export const executeVimCommand = (
   args: string[],
   addEntry: (entry: Omit<TerminalEntry, 'id'> & { id?: number }) => void,
-  command: string
+  command: string,
+  editorName: string = 'vim'
 ): void => {
   const file = args[0];
 
   if (!file) {
+    const editorInfo: Record<string, string> = {
+      vim: `Neovim v0.10.0 - Managed by Vice
+github.com/zeekay/vice | github.com/zeekay/dot-vim`,
+      nano: `GNU nano 7.2 - Aliased to vim in zOS`,
+      pico: `Pstrstrstr pico 5.07 - Aliased to vim in zOS`,
+      ed: `GNU Ed 1.19 - The standard Unix text editor`,
+    };
+
     addEntry({
       command,
-      output: `vim: Neovim v0.9.5
-Usage: vim [file]
+      output: `${editorInfo[editorName] || editorInfo.vim}
 
-In zOS, vim displays file contents.
-For full editing, use: echo "content" > file`,
+Usage: ${editorName} [file]
+
+In zOS, editors display file contents.
+For editing, use: echo "content" > file`,
       id: Date.now()
     });
     return;
   }
 
-  // This will be handled by the simulated file system
-  // Just show a vim-style header
-  addEntry({
-    command,
-    output: `Opening ${file} in vim... (simulated - showing contents)`,
-    id: Date.now()
-  });
+  // Try to read the file
+  const content = readFile(file);
+  if (content !== null) {
+    addEntry({
+      command,
+      output: `╭─────────────────────────────────────────────────────────────╮
+│ ${editorName.toUpperCase()} - ${file.padEnd(50)} │
+╰─────────────────────────────────────────────────────────────╯
+
+${content}
+
+───────────────────────────────────────────────────────────────
+[Read-only] Press :q to exit (simulated)`,
+      id: Date.now()
+    });
+  } else {
+    addEntry({
+      command,
+      output: `${editorName}: ${file}: New file
+
+╭─────────────────────────────────────────────────────────────╮
+│ ${editorName.toUpperCase()} - ${file.padEnd(50)} │
+╰─────────────────────────────────────────────────────────────╯
+
+~
+~
+~
+
+[New File] Use 'echo "content" > ${file}' to create`,
+      id: Date.now()
+    });
+  }
 };
 
 export const executeNeofetch = (
   addEntry: (entry: Omit<TerminalEntry, 'id'> & { id?: number }) => void,
   command: string
 ): void => {
+  const uptime = Math.floor((Date.now() - performance.timeOrigin) / 1000);
+  const uptimeStr = uptime > 60 ? `${Math.floor(uptime / 60)}m ${uptime % 60}s` : `${uptime}s`;
+
   addEntry({
     command,
     output: `
-       ████████████           z@zOS
-     ██            ██         ──────────────────
-    ██   ██    ██   ██        OS: zOS 4.2.0
+       ████████████           z@zeekay.ai
+     ██            ██         ──────────────────────────
+    ██   ██    ██   ██        OS: zOS 4.2.0 (WebContainer)
    ██                 ██      Host: zeekay.ai
-   ██   Z   A   C   H ██      Kernel: WebContainer
-   ██                 ██      Shell: zsh 5.9
-    ██   ██    ██   ██        Terminal: zOS Terminal
-     ██            ██         Theme: Dracula
-       ████████████
-                              Packages: hanzo, lux, zoo
-   █▀▀▀▀▀█ █▀▀▀▀▀█           GitHub: @zeekay
-   █     █ █     █           Twitter: @zeekay
-   █▀▀▀▀▀█ █▀▀▀▀▀█
+   ██   Z   A   C   H ██      Kernel: WebContainer 1.0
+   ██                 ██      Uptime: ${uptimeStr}
+    ██   ██    ██   ██        Shell: zsh 5.9 + starship
+     ██            ██         Terminal: zOS Terminal
+       ████████████           Theme: Dracula / Muon
+
+   ███ ███ ███ ███ ███        Dotfiles: ellipsis.sh
+                              Packages: dot-zsh, dot-vim
+   ◦◦◦ ellipsis.sh ◦◦◦        Editor: Neovim + Vice
+
+GitHub: @zeekay                Twitter: @zeekay
+Hanzo: hanzo.ai                Lux: lux.network
+Zoo: zoo.ngo
+
                               © 1983-2025 Zach Kelling`,
+    id: Date.now()
+  });
+};
+
+export const executeEllipsisCommand = (
+  args: string[],
+  addEntry: (entry: Omit<TerminalEntry, 'id'> & { id?: number }) => void,
+  command: string
+): void => {
+  const subCmd = args[0];
+
+  if (!subCmd || subCmd === 'help' || subCmd === '-h') {
+    addEntry({
+      command,
+      output: `◦◦◦ ellipsis v1.9.5
+
+Package manager for dotfiles.
+https://ellipsis.sh | github.com/zeekay/ellipsis
+
+Usage: ellipsis <command>
+
+Commands:
+  install <pkg>     Install a package
+  uninstall <pkg>   Remove a package
+  list              List installed packages
+  search <query>    Search for packages
+  update            Update all packages
+  status            Show package status
+
+Installed packages:
+  zeekay/dot-zsh    Shell configuration
+  zeekay/dot-vim    Vim/Neovim configuration
+  zeekay/dot-git    Git configuration
+  zeekay/dot-tmux   Tmux configuration`,
+      id: Date.now()
+    });
+    return;
+  }
+
+  if (subCmd === 'list' || subCmd === 'ls') {
+    addEntry({
+      command,
+      output: `Installed packages:
+
+  zeekay/dot-zsh    🐚  Zsh configuration
+  zeekay/dot-vim    💉  Vim/Neovim + Vice
+  zeekay/dot-git    📝  Git configuration
+  zeekay/dot-tmux   🖥️   Tmux configuration
+
+4 packages installed`,
+      id: Date.now()
+    });
+    return;
+  }
+
+  if (subCmd === 'status') {
+    addEntry({
+      command,
+      output: `◦◦◦ Package status
+
+zeekay/dot-zsh    ✓ up to date
+zeekay/dot-vim    ✓ up to date
+zeekay/dot-git    ✓ up to date
+zeekay/dot-tmux   ✓ up to date
+
+All packages are up to date.`,
+      id: Date.now()
+    });
+    return;
+  }
+
+  addEntry({
+    command,
+    output: `ellipsis: '${subCmd}' is simulated in zOS. See 'ellipsis help'`,
+    id: Date.now()
+  });
+};
+
+export const executeDotsCommand = (
+  addEntry: (entry: Omit<TerminalEntry, 'id'> & { id?: number }) => void,
+  command: string
+): void => {
+  addEntry({
+    command,
+    output: `Dotfiles managed by ellipsis.sh:
+
+~/.zshrc      → zeekay/dot-zsh
+~/.vimrc      → zeekay/dot-vim
+~/.gitconfig  → zeekay/dot-git
+~/.tmux.conf  → zeekay/dot-tmux
+~/.inputrc    → zeekay/dot-vim
+
+Use 'cat <file>' to view configuration.
+Use 'cd Documents/dotfiles' for GitHub links.`,
+    id: Date.now()
+  });
+};
+
+export const executeEnvCommand = (
+  addEntry: (entry: Omit<TerminalEntry, 'id'> & { id?: number }) => void,
+  command: string
+): void => {
+  addEntry({
+    command,
+    output: `USER=z
+HOME=/home/z
+SHELL=/bin/zsh
+TERM=xterm-256color
+EDITOR=nvim
+VISUAL=nvim
+LANG=en_US.UTF-8
+PATH=/home/z/.local/bin:/home/z/go/bin:/home/z/.cargo/bin:/usr/local/bin:/usr/bin:/bin
+ELLIPSIS_PATH=/home/z/.ellipsis
+ZSH=/home/z/.oh-my-zsh
+NVM_DIR=/home/z/.nvm
+STARSHIP_SHELL=zsh`,
+    id: Date.now()
+  });
+};
+
+export const executeTreeCommand = (
+  addEntry: (entry: Omit<TerminalEntry, 'id'> & { id?: number }) => void,
+  command: string
+): void => {
+  addEntry({
+    command,
+    output: `.
+├── .zshrc
+├── .vimrc
+├── .gitconfig
+├── .inputrc
+├── .tmux.conf
+├── README.md
+├── hello.js
+├── hello.ts
+├── Documents/
+│   ├── README.md
+│   ├── dotfiles/
+│   ├── tools/
+│   ├── web/
+│   └── misc/
+├── projects/
+│   ├── hanzo/
+│   ├── lux/
+│   └── zoo/
+├── bin/
+├── .ssh/
+└── .ellipsis/
+
+8 directories, 8 files`,
     id: Date.now()
   });
 };
@@ -143,21 +380,25 @@ export const executeThemeCommand = (
   command: string
 ): void => {
   const validThemes = [
-    'dark', 'light', 'blue', 'green', 'purple', 'neon', 'retro', 
+    'dark', 'light', 'blue', 'green', 'purple', 'neon', 'retro',
     'sunset', 'ocean', 'midnight', 'matrix', 'monokai', 'dracula', 'nord', 'pastel'
   ];
-  
+
   const theme = args[0];
-  
+
   if (!theme) {
     addEntry({
       command,
-      output: `Current available themes: ${validThemes.join(', ')}`,
+      output: `Current theme: dracula
+
+Available themes: ${validThemes.join(', ')}
+
+Use the settings gear ⚙️ in the window title bar to change themes.`,
       id: Date.now()
     });
     return;
   }
-  
+
   if (!validThemes.includes(theme)) {
     addEntry({
       command,
@@ -167,12 +408,10 @@ export const executeThemeCommand = (
     });
     return;
   }
-  
-  // In a real implementation, this would set the theme
-  // For now we'll just show a message
+
   addEntry({
     command,
-    output: `Theme changed to '${theme}'. Note: This is just a simulation. Use the settings gear in the window title bar to actually change the theme.`,
+    output: `Theme '${theme}' selected. Use the settings gear ⚙️ in the title bar to apply.`,
     id: Date.now()
   });
 };
@@ -200,7 +439,7 @@ export const processCommand = async (
   });
 
   // Built-in commands
-  if (cmd === 'clear') {
+  if (cmd === 'clear' || cmd === 'cls') {
     clearEntries();
     return;
   }
@@ -215,8 +454,28 @@ export const processCommand = async (
     return;
   }
 
-  if (cmd === 'neofetch') {
+  if (cmd === 'neofetch' || cmd === 'info') {
     executeNeofetch(addEntry, command);
+    return;
+  }
+
+  if (cmd === 'ellipsis') {
+    executeEllipsisCommand(args, addEntry, command);
+    return;
+  }
+
+  if (cmd === 'dots') {
+    executeDotsCommand(addEntry, command);
+    return;
+  }
+
+  if (cmd === 'env' || cmd === 'printenv') {
+    executeEnvCommand(addEntry, command);
+    return;
+  }
+
+  if (cmd === 'tree') {
+    executeTreeCommand(addEntry, command);
     return;
   }
 
@@ -225,10 +484,17 @@ export const processCommand = async (
     return;
   }
 
+  if (cmd === 'id') {
+    addEntry({ command: '', output: 'uid=1000(z) gid=1000(z) groups=1000(z),27(sudo),100(users)', id: Date.now() });
+    return;
+  }
+
   if (cmd === 'uname') {
     const flag = args[0];
     if (flag === '-a') {
-      addEntry({ command: '', output: 'zOS 4.2.0 WebContainer aarch64', id: Date.now() });
+      addEntry({ command: '', output: 'zOS 4.2.0 zeekay.ai WebContainer aarch64 GNU/Linux', id: Date.now() });
+    } else if (flag === '-r') {
+      addEntry({ command: '', output: '4.2.0-webcontainer', id: Date.now() });
     } else {
       addEntry({ command: '', output: 'zOS', id: Date.now() });
     }
@@ -246,7 +512,47 @@ export const processCommand = async (
   }
 
   if (cmd === 'uptime') {
-    addEntry({ command: '', output: 'up since you loaded this page', id: Date.now() });
+    const uptime = Math.floor((Date.now() - performance.timeOrigin) / 1000);
+    const uptimeStr = uptime > 60 ? `${Math.floor(uptime / 60)} min` : `${uptime} sec`;
+    addEntry({ command: '', output: `up ${uptimeStr}, 1 user, load average: 0.00, 0.00, 0.00`, id: Date.now() });
+    return;
+  }
+
+  if (cmd === 'which') {
+    const prog = args[0];
+    if (prog) {
+      const paths: Record<string, string> = {
+        'zsh': '/bin/zsh',
+        'vim': '/usr/bin/vim',
+        'nvim': '/usr/local/bin/nvim',
+        'node': '/usr/local/bin/node',
+        'npm': '/usr/local/bin/npm',
+        'git': '/usr/bin/git',
+        'python': '/usr/bin/python3',
+        'python3': '/usr/bin/python3',
+      };
+      addEntry({ command: '', output: paths[prog] || `${prog} not found`, id: Date.now() });
+    }
+    return;
+  }
+
+  if (cmd === 'type') {
+    const prog = args[0];
+    if (prog) {
+      if (aliases[prog]) {
+        addEntry({ command: '', output: `${prog} is aliased to '${aliases[prog]}'`, id: Date.now() });
+      } else {
+        addEntry({ command: '', output: `${prog} is /usr/bin/${prog}`, id: Date.now() });
+      }
+    }
+    return;
+  }
+
+  if (cmd === 'alias') {
+    const aliasOutput = Object.entries(aliases)
+      .map(([k, v]) => `${k}='${v}'`)
+      .join('\n');
+    addEntry({ command: '', output: aliasOutput, id: Date.now() });
     return;
   }
 
@@ -256,13 +562,10 @@ export const processCommand = async (
     return;
   }
 
-  // Handle vim command
-  if (cmd === 'vim' || cmd === 'nvim' || cmd === 'vi') {
-    if (!args[0]) {
-      executeVimCommand(args, addEntry, command);
-      return;
-    }
-    // For vim with a file, fall through to the file system handler
+  // Handle editor commands (vim, nano, pico, ed)
+  if (['vim', 'nvim', 'vi', 'nano', 'pico', 'ed', 'emacs'].includes(cmd)) {
+    executeVimCommand(args, addEntry, command, cmd);
+    return;
   }
 
   // Git commands (simulated)
@@ -279,9 +582,136 @@ nothing to commit, working tree clean`,
       });
       return;
     }
+    if (subCmd === 'log') {
+      addEntry({
+        command: '',
+        output: `* a1b2c3d (HEAD -> main, origin/main) Update terminal features
+* e4f5g6h Add zsh configuration
+* i7j8k9l Initial commit`,
+        id: Date.now()
+      });
+      return;
+    }
+    if (subCmd === 'branch') {
+      addEntry({
+        command: '',
+        output: `* main
+  develop
+  feature/terminal`,
+        id: Date.now()
+      });
+      return;
+    }
+    if (subCmd === 'remote') {
+      addEntry({
+        command: '',
+        output: `origin  git@github.com:zeekay/zos.git (fetch)
+origin  git@github.com:zeekay/zos.git (push)`,
+        id: Date.now()
+      });
+      return;
+    }
     addEntry({
       command: '',
-      output: `git: simulated in zOS. Try 'git status'`,
+      output: `git: simulated in zOS. Try 'git status', 'git log', or 'git branch'`,
+      id: Date.now()
+    });
+    return;
+  }
+
+  // NPM commands
+  if (cmd === 'npm') {
+    const subCmd = args[0];
+    if (subCmd === 'version' || subCmd === '-v') {
+      addEntry({ command: '', output: '10.2.0', id: Date.now() });
+      return;
+    }
+    // Fall through to WebContainer
+  }
+
+  // Node.js - try WebContainer first
+  if (cmd === 'node') {
+    if (args[0] === '-v' || args[0] === '--version') {
+      addEntry({ command: '', output: 'v20.10.0', id: Date.now() });
+      return;
+    }
+
+    // If we have a file argument and WebContainer isn't ready, simulate
+    if (args[0] && !isWebContainerReady) {
+      const content = readFile(args[0]);
+      if (content) {
+        addEntry({
+          command: '',
+          output: `[Simulated Node.js output for ${args[0]}]\n\n${content.split('\n').filter(l => l.includes('console.log')).map(l => {
+            const match = l.match(/console\.log\(['"](.+)['"]\)/);
+            return match ? match[1] : '';
+          }).filter(Boolean).join('\n')}`,
+          id: Date.now()
+        });
+        return;
+      }
+    }
+    // Fall through to WebContainer
+  }
+
+  // Python
+  if (cmd === 'python' || cmd === 'python3') {
+    if (args[0] === '--version' || args[0] === '-V') {
+      addEntry({ command: '', output: 'Python 3.12.0', id: Date.now() });
+      return;
+    }
+    addEntry({
+      command: '',
+      output: 'Python is simulated. WebContainer runs Node.js natively.',
+      id: Date.now()
+    });
+    return;
+  }
+
+  // Open command
+  if (cmd === 'open') {
+    const target = args[0];
+    if (target) {
+      if (target.startsWith('http')) {
+        addEntry({ command: '', output: `Opening ${target} in browser...`, id: Date.now() });
+        window.open(target, '_blank');
+      } else {
+        addEntry({ command: '', output: `open: cannot open '${target}': Use cat to view files`, id: Date.now() });
+      }
+    }
+    return;
+  }
+
+  // Cowsay
+  if (cmd === 'cowsay') {
+    const message = args.join(' ') || 'moo!';
+    addEntry({
+      command: '',
+      output: ` ${'_'.repeat(message.length + 2)}
+< ${message} >
+ ${'-'.repeat(message.length + 2)}
+        \\   ^__^
+         \\  (oo)\\_______
+            (__)\\       )\\/\\
+                ||----w |
+                ||     ||`,
+      id: Date.now()
+    });
+    return;
+  }
+
+  // Fortune
+  if (cmd === 'fortune') {
+    const fortunes = [
+      "You will be fortunate in everything you put your hands to.",
+      "A journey of a thousand miles begins with a single step.",
+      "The best time to plant a tree was 20 years ago. The second best time is now.",
+      "Simplicity is the ultimate sophistication.",
+      "Code is poetry.",
+    ];
+    addEntry({
+      command: '',
+      output: fortunes[Math.floor(Math.random() * fortunes.length)],
       id: Date.now()
     });
     return;

@@ -446,3 +446,98 @@ export const VideosIcon: React.FC<{ className?: string }> = ({ className = "w-12
     <path d="M26 22 L46 32 L26 42 Z" fill="white"/>
   </svg>
 );
+
+// Calculator Icon
+export const CalculatorIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
+  <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="calcGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#4A4A4A" />
+        <stop offset="100%" stopColor="#2A2A2A" />
+      </linearGradient>
+    </defs>
+    <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#calcGrad)" />
+    {/* Display */}
+    <rect x="10" y="10" width="44" height="16" rx="4" fill="#1c1c1c" />
+    <text x="48" y="22" textAnchor="end" fill="#FF9F0A" fontSize="10" fontWeight="300">1,234</text>
+    {/* Buttons */}
+    <circle cx="16" cy="34" r="5" fill="#A5A5A5" />
+    <circle cx="28" cy="34" r="5" fill="#505050" />
+    <circle cx="40" cy="34" r="5" fill="#505050" />
+    <circle cx="52" cy="34" r="5" fill="#FF9F0A" />
+    <circle cx="16" cy="46" r="5" fill="#505050" />
+    <circle cx="28" cy="46" r="5" fill="#505050" />
+    <circle cx="40" cy="46" r="5" fill="#505050" />
+    <circle cx="52" cy="46" r="5" fill="#FF9F0A" />
+  </svg>
+);
+
+// Clock Icon
+export const ClockIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
+  <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="clockGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#2A2A2A" />
+        <stop offset="100%" stopColor="#1A1A1A" />
+      </linearGradient>
+    </defs>
+    <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#clockGrad)" />
+    {/* Clock face */}
+    <circle cx="32" cy="32" r="22" fill="white" />
+    {/* Hour markers */}
+    <rect x="31" y="12" width="2" height="4" fill="#333" />
+    <rect x="31" y="48" width="2" height="4" fill="#333" />
+    <rect x="12" y="31" width="4" height="2" fill="#333" />
+    <rect x="48" y="31" width="4" height="2" fill="#333" />
+    {/* Hour hand */}
+    <rect x="31" y="22" width="2" height="12" rx="1" fill="#333" />
+    {/* Minute hand */}
+    <rect x="31" y="17" width="1.5" height="15" rx="0.75" fill="#666" transform="rotate(90 32 32)" />
+    {/* Second hand */}
+    <rect x="31.5" y="14" width="1" height="18" rx="0.5" fill="#FF3B30" />
+    {/* Center dot */}
+    <circle cx="32" cy="32" r="2" fill="#333" />
+  </svg>
+);
+
+// Weather Icon
+export const WeatherIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
+  <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="weatherGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#5AB3FF" />
+        <stop offset="100%" stopColor="#1E90FF" />
+      </linearGradient>
+    </defs>
+    <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#weatherGrad)" />
+    {/* Sun */}
+    <circle cx="42" cy="22" r="8" fill="#FFD426" />
+    {/* Sun rays */}
+    <line x1="42" y1="10" x2="42" y2="14" stroke="#FFD426" strokeWidth="2" strokeLinecap="round" />
+    <line x1="54" y1="22" x2="50" y2="22" stroke="#FFD426" strokeWidth="2" strokeLinecap="round" />
+    <line x1="50" y1="14" x2="48" y2="16" stroke="#FFD426" strokeWidth="2" strokeLinecap="round" />
+    {/* Cloud */}
+    <ellipse cx="28" cy="38" rx="14" ry="10" fill="white" />
+    <ellipse cx="20" cy="42" rx="10" ry="8" fill="white" />
+    <ellipse cx="38" cy="42" rx="12" ry="8" fill="white" />
+    <rect x="16" y="42" width="28" height="10" fill="white" />
+  </svg>
+);
+
+// Stickies Icon
+export const StickiesIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
+  <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
+    {/* Yellow note background */}
+    <rect x="4" y="4" width="56" height="56" rx="12" fill="#FFF59D" />
+    {/* Shadow/fold effect */}
+    <path d="M48 4 L60 4 L60 16 Z" fill="#FBC02D" />
+    {/* Pink note behind */}
+    <rect x="8" y="8" width="36" height="36" rx="4" fill="#F48FB1" transform="rotate(-6 26 26)" />
+    {/* Yellow note on top */}
+    <rect x="14" y="14" width="40" height="40" rx="4" fill="#FFF176" />
+    {/* Lines on yellow note */}
+    <line x1="20" y1="26" x2="48" y2="26" stroke="#E6C34F" strokeWidth="1" />
+    <line x1="20" y1="34" x2="48" y2="34" stroke="#E6C34F" strokeWidth="1" />
+    <line x1="20" y1="42" x2="40" y2="42" stroke="#E6C34F" strokeWidth="1" />
+  </svg>
+);
