@@ -44,6 +44,7 @@ const BootSequence: React.FC<BootSequenceProps> = ({ onComplete, skipDelay = 350
   const [visibleLines, setVisibleLines] = useState<number>(0);
   const [isExiting, setIsExiting] = useState(false);
   const [cursorVisible, setCursorVisible] = useState(true);
+  const [isComplete, setIsComplete] = useState(false);
 
   // Cursor blink effect
   useEffect(() => {
@@ -64,35 +65,30 @@ const BootSequence: React.FC<BootSequenceProps> = ({ onComplete, skipDelay = 350
       }, Math.max(delay, 50));
 
       return () => clearTimeout(timer);
+    } else {
+      // Mark as complete when all lines are shown
+      setIsComplete(true);
     }
   }, [visibleLines]);
 
-  // Auto-complete after all lines shown
-  useEffect(() => {
-    if (visibleLines >= bootLines.length) {
-      const exitTimer = setTimeout(() => {
-        setIsExiting(true);
-        setTimeout(onComplete, 500);
-      }, 800);
-      return () => clearTimeout(exitTimer);
-    }
-  }, [visibleLines, onComplete]);
-
-  // Allow click/key to skip
+  // Allow click/key to skip - but ONLY proceed when complete or explicitly skipping
   const handleSkip = useCallback(() => {
-    setIsExiting(true);
-    setTimeout(onComplete, 300);
-  }, [onComplete]);
+    if (isComplete || visibleLines >= bootLines.length) {
+      setIsExiting(true);
+      setTimeout(onComplete, 300);
+    }
+  }, [onComplete, isComplete, visibleLines]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
+      // Only allow skip when boot sequence is complete
+      if (isComplete) {
         handleSkip();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleSkip]);
+  }, [handleSkip, isComplete]);
 
   return (
     <div
@@ -100,7 +96,7 @@ const BootSequence: React.FC<BootSequenceProps> = ({ onComplete, skipDelay = 350
         'fixed inset-0 z-[99999] bg-black flex items-center justify-center transition-opacity duration-500',
         isExiting ? 'opacity-0' : 'opacity-100'
       )}
-      onClick={handleSkip}
+      onClick={isComplete ? handleSkip : undefined}
     >
       <div className="w-full max-w-2xl px-8 font-mono text-sm">
         <div className="space-y-0">
@@ -125,9 +121,14 @@ const BootSequence: React.FC<BootSequenceProps> = ({ onComplete, skipDelay = 350
           )}
         </div>
 
-        <div className="mt-8 text-center text-gray-600 text-xs">
-          Press any key or click to continue
-        </div>
+        {isComplete && (
+          <div className={cn(
+            "mt-8 text-center text-xs transition-all duration-300",
+            cursorVisible ? "text-cyan-400 scale-105" : "text-gray-600 scale-100"
+          )}>
+            ▶ Press any key or click to continue ◀
+          </div>
+        )}
       </div>
     </div>
   );

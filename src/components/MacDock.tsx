@@ -7,6 +7,7 @@ import DockItem from './dock/DockItem';
 import TrashItem from './dock/TrashItem';
 import MobileOverflow from './dock/MobileOverflow';
 import { createDockItems, DockItemType, DockCallbacks } from './dock/dockData';
+import { useDock } from '@/contexts/DockContext';
 import {
   FinderIcon,
   SafariIcon,
@@ -52,9 +53,9 @@ const getIconComponent = (id: string): React.ReactNode => {
     case 'terminal':
       return <TerminalIcon className="w-full h-full" />;
     case 'hanzo':
-      return <HanzoLogo className="w-8 h-8 text-white" />;
+      return <HanzoLogo className="w-full h-full text-white" />;
     case 'lux':
-      return <LuxLogo className="w-9 h-9 text-white" />;
+      return <LuxLogo className="w-full h-full text-white" />;
     case 'zoo':
       return <ZooLogo className="w-full h-full" />;
     default:
@@ -81,6 +82,7 @@ const MacDock: React.FC<MacDockProps> = ({
   activeApps = []
 }) => {
   const isMobile = useIsMobile();
+  const { dockOrder, isItemInDock } = useDock();
 
   // Create all dock items
   const allDockItems = createDockItems({
@@ -98,11 +100,24 @@ const MacDock: React.FC<MacDockProps> = ({
     onZooClick
   });
 
-  // Split items into main apps and hanzo/lux/zoo
-  const mainApps = allDockItems.filter(item => 
+  // Create a map of items by ID for quick lookup
+  const itemsById = new Map(allDockItems.map(item => [item.id, item]));
+
+  // Get ordered dock items based on dockOrder from context
+  const getOrderedItems = () => {
+    return dockOrder
+      .filter(orderItem => itemsById.has(orderItem.id))
+      .map(orderItem => itemsById.get(orderItem.id)!)
+      .filter(item => isItemInDock(item.id));
+  };
+
+  const orderedItems = getOrderedItems();
+
+  // Split items into main apps and hanzo/lux/zoo for separator placement
+  const mainApps = orderedItems.filter(item =>
     !['hanzo', 'lux', 'zoo'].includes(item.id)
   );
-  const customApps = allDockItems.filter(item => 
+  const customApps = orderedItems.filter(item =>
     ['hanzo', 'lux', 'zoo'].includes(item.id)
   );
 
@@ -148,6 +163,7 @@ const MacDock: React.FC<MacDockProps> = ({
           {dockItems.map((item: DockItemType) => (
             <DockItem
               key={item.id}
+              id={item.id}
               label={item.label}
               onClick={item.onClick}
               customIcon={item.useCustomIcon ? getIconComponent(item.id) : undefined}
@@ -166,12 +182,13 @@ const MacDock: React.FC<MacDockProps> = ({
           )}
 
           {/* Separator before Hanzo/Lux/Zoo apps */}
-          {!isMobile && <Separator orientation="vertical" className="h-10 bg-white/20 mx-1" />}
+          {!isMobile && customApps.length > 0 && <Separator orientation="vertical" className="h-10 bg-white/20 mx-1" />}
 
           {/* Hanzo, Lux, Zoo apps */}
           {!isMobile && customApps.map((item: DockItemType) => (
             <DockItem
               key={item.id}
+              id={item.id}
               label={item.label}
               onClick={item.onClick}
               customIcon={item.useCustomIcon ? getIconComponent(item.id) : undefined}
@@ -186,18 +203,22 @@ const MacDock: React.FC<MacDockProps> = ({
           {/* Applications Folder */}
           {!isMobile && (
             <DockItem
+              id="applications"
               label="Applications"
               onClick={onApplicationsClick}
               customIcon={<MacFolderIcon className="w-full h-full" badgeType="apps" />}
+              isDraggable={false}
             />
           )}
 
           {/* Downloads Folder */}
           {!isMobile && (
             <DockItem
+              id="downloads"
               label="Downloads"
               onClick={onDownloadsClick}
               customIcon={<MacFolderIcon className="w-full h-full" badgeType="downloads" />}
+              isDraggable={false}
             />
           )}
 

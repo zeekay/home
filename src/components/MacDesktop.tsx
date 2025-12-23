@@ -398,17 +398,28 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
             icon={<FolderOpen className="w-4 h-4" />}
             label="New Folder"
             shortcut="⇧⌘N"
+            onClick={() => {
+              setContextMenu(null);
+              alert('Folder creation not available in demo');
+            }}
           />
           <ContextMenuSeparator />
           <ContextMenuItem
             icon={<Info className="w-4 h-4" />}
             label="Get Info"
             shortcut="⌘I"
+            onClick={() => {
+              setContextMenu(null);
+              alert('Desktop Info\n\nThis is a virtual macOS-style desktop.\nBuilt with React + TypeScript.');
+            }}
           />
           <ContextMenuItem
             icon={<Image className="w-4 h-4" />}
             label="Change Desktop Background..."
-            onClick={() => setShowSystemPreferences(true)}
+            onClick={() => {
+              setContextMenu(null);
+              handleOpenApp(setShowSystemPreferences, 'System Preferences');
+            }}
           />
           <ContextMenuSeparator />
           <div
@@ -427,25 +438,27 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
               <div
                 className="absolute left-full top-0 ml-1 min-w-[180px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl text-white/90 text-[13px] py-1.5"
               >
-                <ContextMenuItem label="Name" />
-                <ContextMenuItem label="Kind" />
-                <ContextMenuItem label="Date Last Opened" />
-                <ContextMenuItem label="Date Added" />
-                <ContextMenuItem label="Date Modified" />
-                <ContextMenuItem label="Date Created" />
-                <ContextMenuItem label="Size" />
-                <ContextMenuItem label="Tags" />
+                <ContextMenuItem label="Name" onClick={() => setContextMenu(null)} />
+                <ContextMenuItem label="Kind" onClick={() => setContextMenu(null)} />
+                <ContextMenuItem label="Date Last Opened" onClick={() => setContextMenu(null)} />
+                <ContextMenuItem label="Date Added" onClick={() => setContextMenu(null)} />
+                <ContextMenuItem label="Date Modified" onClick={() => setContextMenu(null)} />
+                <ContextMenuItem label="Date Created" onClick={() => setContextMenu(null)} />
+                <ContextMenuItem label="Size" onClick={() => setContextMenu(null)} />
+                <ContextMenuItem label="Tags" onClick={() => setContextMenu(null)} />
               </div>
             )}
           </div>
           <ContextMenuItem
             icon={<Trash2 className="w-4 h-4" />}
             label="Clean Up"
+            onClick={() => setContextMenu(null)}
           />
           <ContextMenuItem
             icon={<Grid3X3 className="w-4 h-4" />}
             label="Clean Up By"
             hasSubmenu
+            onClick={() => setContextMenu(null)}
           />
           <ContextMenuSeparator />
           <div
@@ -464,10 +477,10 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
               <div
                 className="absolute left-full top-0 ml-1 min-w-[180px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl text-white/90 text-[13px] py-1.5"
               >
-                <ContextMenuItem label="as Icons" />
-                <ContextMenuItem label="as List" />
-                <ContextMenuItem label="as Columns" />
-                <ContextMenuItem label="as Gallery" />
+                <ContextMenuItem label="as Icons" onClick={() => setContextMenu(null)} />
+                <ContextMenuItem label="as List" onClick={() => setContextMenu(null)} />
+                <ContextMenuItem label="as Columns" onClick={() => setContextMenu(null)} />
+                <ContextMenuItem label="as Gallery" onClick={() => setContextMenu(null)} />
               </div>
             )}
           </div>
@@ -475,11 +488,16 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
           <ContextMenuItem
             icon={<Layout className="w-4 h-4" />}
             label="Use Stacks"
+            onClick={() => setContextMenu(null)}
           />
           <ContextMenuItem
             icon={<Monitor className="w-4 h-4" />}
             label="Show View Options"
             shortcut="⌘J"
+            onClick={() => {
+              setContextMenu(null);
+              handleOpenApp(setShowSystemPreferences, 'System Preferences');
+            }}
           />
           <ContextMenuSeparator />
           <div className="px-3 py-1.5 text-white/40 text-xs uppercase tracking-wider">

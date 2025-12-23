@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import MacDesktop from "./components/MacDesktop";
 import TerminalContent from "./components/TerminalContent";
 import { TerminalProvider } from "./contexts/TerminalContext";
+import { DockProvider } from "./contexts/DockContext";
 import BootSequence from "./components/BootSequence";
 
 const queryClient = new QueryClient();
@@ -30,10 +31,11 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <TerminalProvider>
-          {showBootSequence && <BootSequence onComplete={handleBootComplete} />}
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+          <DockProvider>
+            {showBootSequence && <BootSequence onComplete={handleBootComplete} />}
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
             <Routes>
               <Route path="/" element={
                 <MacDesktop>
@@ -46,7 +48,8 @@ const App = () => {
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </BrowserRouter>
+            </BrowserRouter>
+          </DockProvider>
         </TerminalProvider>
       </TooltipProvider>
     </QueryClientProvider>
