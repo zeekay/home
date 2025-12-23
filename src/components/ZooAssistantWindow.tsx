@@ -603,11 +603,9 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
             }}
             onClick={() => {
               if (isMetaDragging) return;
-              // Cycle animation if available, otherwise open chat
-              if (availableAnimations.length > 1) {
+              // Only cycle animation on click - chat opens via speech bubble
+              if (availableAnimations.length > 0) {
                 cycleAnimation();
-              } else {
-                openChat();
               }
             }}
           />
