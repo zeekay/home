@@ -647,131 +647,57 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
           )}
         </div>
 
-        {/* WiFi */}
+        {/* Battery */}
         <div className="relative h-full">
           <button
-            className={cn(systemTrayButtonClass, activeSystemMenu === 'wifi' && "bg-white/20")}
-            onClick={() => setActiveSystemMenu(activeSystemMenu === 'wifi' ? null : 'wifi')}
+            className={cn(systemTrayButtonClass, activeSystemMenu === 'battery' && "bg-white/20")}
+            onClick={() => setActiveSystemMenu(activeSystemMenu === 'battery' ? null : 'battery')}
           >
-            {wifiEnabled ? (
-              <Wifi className="w-[15px] h-[15px] opacity-90" />
-            ) : (
-              <WifiOff className="w-[15px] h-[15px] opacity-50" />
-            )}
-          </button>
-          {activeSystemMenu === 'wifi' && (
-            <div className="absolute top-full right-0 mt-[5px] min-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1">
-              <div className="px-3 py-2 flex items-center justify-between">
-                <span className="font-semibold">Wi-Fi</span>
-                <button
-                  onClick={() => setWifiEnabled(!wifiEnabled)}
-                  className={cn(
-                    "w-10 h-6 rounded-full transition-colors relative",
-                    wifiEnabled ? "bg-blue-500" : "bg-white/20"
-                  )}
-                >
-                  <div className={cn(
-                    "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
-                    wifiEnabled ? "left-5" : "left-1"
-                  )} />
-                </button>
-              </div>
-              {wifiEnabled && (
-                <>
-                  <div className="h-[1px] bg-white/10 my-1" />
-                  <div className="px-3 py-1 text-white/50 text-xs">Known Networks</div>
-                  <div className="px-3 py-2 flex items-center gap-3 rounded-md hover:bg-blue-500 cursor-pointer">
-                    <Wifi className="w-4 h-4" />
-                    <span className="flex-1">{wifiNetwork}</span>
-                    <Check className="w-4 h-4 text-blue-400" />
-                  </div>
-                  <div className="h-[1px] bg-white/10 my-1" />
-                  <div className="px-3 py-1 text-white/50 text-xs">Other Networks</div>
-                  <div className="px-3 py-2 flex items-center gap-3 rounded-md hover:bg-blue-500 cursor-pointer">
-                    <Wifi className="w-4 h-4 opacity-70" />
-                    <span className="flex-1">Neighbor's WiFi</span>
-                  </div>
-                </>
+            <div className="flex items-center gap-1">
+              {isCharging ? (
+                <BatteryCharging className="w-[18px] h-[18px] opacity-90" />
+              ) : (
+                <Battery className="w-[18px] h-[18px] opacity-90" />
               )}
+            </div>
+          </button>
+          {activeSystemMenu === 'battery' && (
+            <div className="absolute top-full right-0 mt-[5px] min-w-[200px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1">
+              <div className="px-3 py-2">
+                <p className="font-semibold">Battery</p>
+                <p className="text-white/60">{batteryLevel}% {isCharging ? '(Charging)' : ''}</p>
+              </div>
               <div className="h-[1px] bg-white/10 my-1" />
               <div className="px-3 py-1.5 rounded-md hover:bg-blue-500 cursor-pointer">
-                Wi-Fi Settings...
+                Battery Settings...
               </div>
             </div>
           )}
         </div>
 
-        {/* Focus */}
+        {/* Volume */}
         <div className="relative h-full">
           <button
-            className={cn(systemTrayButtonClass, activeSystemMenu === 'focus' && "bg-white/20")}
-            onClick={() => setActiveSystemMenu(activeSystemMenu === 'focus' ? null : 'focus')}
+            className={cn(systemTrayButtonClass, activeSystemMenu === 'volume' && "bg-white/20")}
+            onClick={() => setActiveSystemMenu(activeSystemMenu === 'volume' ? null : 'volume')}
           >
-            {focusEnabled ? (
-              <Moon className="w-[15px] h-[15px] text-purple-400" />
-            ) : (
-              <Bell className="w-[15px] h-[15px] opacity-90" />
-            )}
+            <VolumeIcon />
           </button>
-          {activeSystemMenu === 'focus' && (
-            <div className="absolute top-full right-0 mt-[5px] min-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1">
-              <div className="px-3 py-2 flex items-center justify-between">
-                <span className="font-semibold">Focus</span>
-                <button
-                  onClick={() => setFocusEnabled(!focusEnabled)}
-                  className={cn(
-                    "w-10 h-6 rounded-full transition-colors relative",
-                    focusEnabled ? "bg-purple-500" : "bg-white/20"
-                  )}
-                >
-                  <div className={cn(
-                    "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
-                    focusEnabled ? "left-5" : "left-1"
-                  )} />
-                </button>
-              </div>
-              <div className="h-[1px] bg-white/10 my-1" />
-              <div className="px-3 py-2 flex items-center gap-3 rounded-md hover:bg-blue-500 cursor-pointer">
-                <Moon className="w-4 h-4 text-purple-400" />
-                <span>Do Not Disturb</span>
-              </div>
-              <div className="px-3 py-2 flex items-center gap-3 rounded-md hover:bg-blue-500 cursor-pointer">
-                <Focus className="w-4 h-4 text-cyan-400" />
-                <span>Work</span>
-              </div>
-              <div className="px-3 py-2 flex items-center gap-3 rounded-md hover:bg-blue-500 cursor-pointer">
-                <Sun className="w-4 h-4 text-yellow-400" />
-                <span>Personal</span>
+          {activeSystemMenu === 'volume' && (
+            <div className="absolute top-full right-0 mt-[5px] min-w-[200px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1">
+              <div className="px-3 py-2">
+                <p className="font-semibold mb-2">Sound</p>
+                <Slider
+                  value={volume}
+                  onValueChange={setVolume}
+                  max={100}
+                  step={1}
+                  className="w-full"
+                />
               </div>
               <div className="h-[1px] bg-white/10 my-1" />
               <div className="px-3 py-1.5 rounded-md hover:bg-blue-500 cursor-pointer">
-                Focus Settings...
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Date/Time */}
-        <div className="relative h-full">
-          <button
-            className={cn(systemTrayButtonClass, "px-[10px]", activeSystemMenu === 'datetime' && "bg-white/20")}
-            onClick={() => setActiveSystemMenu(activeSystemMenu === 'datetime' ? null : 'datetime')}
-          >
-            <span className="text-[13px] opacity-90">{formatTime(currentTime)}</span>
-          </button>
-          {activeSystemMenu === 'datetime' && (
-            <div className="absolute top-full right-0 mt-[5px] min-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1">
-              <div className="px-3 py-2 text-center">
-                <p className="text-2xl font-light">
-                  {currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
-                </p>
-                <p className="text-white/60">
-                  {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
-                </p>
-              </div>
-              <div className="h-[1px] bg-white/10 my-1" />
-              <div className="px-3 py-1.5 rounded-md hover:bg-blue-500 cursor-pointer">
-                Open Date & Time Settings...
+                Sound Settings...
               </div>
             </div>
           )}
@@ -783,14 +709,14 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
             className={cn(systemTrayButtonClass, activeSystemMenu === 'control' && "bg-white/20")}
             onClick={() => setActiveSystemMenu(activeSystemMenu === 'control' ? null : 'control')}
           >
-            <div className="flex flex-col gap-[2px]">
-              {/* Top slider - dot on right */}
-              <div className="w-[14px] h-[4px] bg-current/30 rounded-full relative">
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[4px] h-[4px] bg-current rounded-full" />
+            <div className="flex flex-col gap-[3px]">
+              {/* Top slider - knob on right */}
+              <div className="w-[16px] h-[5px] bg-current/40 rounded-full relative">
+                <div className="absolute right-[0px] top-1/2 -translate-y-1/2 w-[5px] h-[5px] bg-current rounded-full" />
               </div>
-              {/* Bottom slider - dot on left */}
-              <div className="w-[14px] h-[4px] bg-current/30 rounded-full relative">
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[4px] h-[4px] bg-current rounded-full" />
+              {/* Bottom slider - knob on left */}
+              <div className="w-[16px] h-[5px] bg-current/40 rounded-full relative">
+                <div className="absolute left-[0px] top-1/2 -translate-y-1/2 w-[5px] h-[5px] bg-current rounded-full" />
               </div>
             </div>
           </button>
@@ -935,10 +861,31 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
           )}
         </div>
 
-        {/* Spotlight Search */}
-        <button className={systemTrayButtonClass}>
-          <Search className="w-[15px] h-[15px] opacity-90" />
-        </button>
+        {/* Date/Time - far right */}
+        <div className="relative h-full">
+          <button
+            className={cn(systemTrayButtonClass, "px-[10px]", activeSystemMenu === 'datetime' && "bg-white/20")}
+            onClick={() => setActiveSystemMenu(activeSystemMenu === 'datetime' ? null : 'datetime')}
+          >
+            <span className="text-[13px] opacity-90">{formatTime(currentTime)}</span>
+          </button>
+          {activeSystemMenu === 'datetime' && (
+            <div className="absolute top-full right-0 mt-[5px] min-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1">
+              <div className="px-3 py-2 text-center">
+                <p className="text-2xl font-light">
+                  {currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                </p>
+                <p className="text-white/60">
+                  {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                </p>
+              </div>
+              <div className="h-[1px] bg-white/10 my-1" />
+              <div className="px-3 py-1.5 rounded-md hover:bg-blue-500 cursor-pointer">
+                Open Date & Time Settings...
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Click outside handler overlay when menus are active */}
