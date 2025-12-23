@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, File, ExternalLink } from 'lucide-react';
+import { FileText, File, ExternalLink, FolderOpen } from 'lucide-react';
 import { HanzoLogo, LuxLogo, ZooLogo } from './icons';
 import { cn } from '@/lib/utils';
 
 interface DownloadsPopoverProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenFinder?: () => void;
 }
 
 // Whitepaper and document links
@@ -13,7 +14,8 @@ const documents = [
   {
     title: 'Lux Whitepaper',
     shortTitle: 'Lux',
-    icon: <LuxLogo className="w-10 h-10" />,
+    description: 'Quantum-safe blockchain',
+    icon: <LuxLogo className="w-8 h-8" />,
     url: 'https://lux.network/whitepaper',
     type: 'PDF',
     bgColor: 'bg-gradient-to-br from-cyan-500 to-blue-600',
@@ -21,7 +23,8 @@ const documents = [
   {
     title: 'Hanzo Docs',
     shortTitle: 'Hanzo',
-    icon: <HanzoLogo className="w-10 h-10 text-white" />,
+    description: 'AI platform docs',
+    icon: <HanzoLogo className="w-8 h-8 text-white" />,
     url: 'https://docs.hanzo.ai',
     type: 'Docs',
     bgColor: 'bg-gradient-to-br from-orange-500 via-red-500 to-purple-600',
@@ -29,7 +32,8 @@ const documents = [
   {
     title: 'Zoo Research',
     shortTitle: 'Zoo',
-    icon: <ZooLogo className="w-10 h-10" />,
+    description: 'DeAI research',
+    icon: <ZooLogo className="w-8 h-8" />,
     url: 'https://zoo.ngo/research',
     type: 'Research',
     bgColor: 'bg-gradient-to-br from-emerald-500 to-teal-600',
@@ -37,7 +41,8 @@ const documents = [
   {
     title: 'ZIPs',
     shortTitle: 'ZIPs',
-    icon: <File className="w-6 h-6 text-white" />,
+    description: 'Improvement proposals',
+    icon: <File className="w-5 h-5 text-white" />,
     url: 'https://zips.zoo.ngo',
     type: 'Proposals',
     bgColor: 'bg-gradient-to-br from-green-500 to-emerald-600',
@@ -45,7 +50,8 @@ const documents = [
   {
     title: 'Lux Genesis',
     shortTitle: 'Genesis',
-    icon: <FileText className="w-6 h-6 text-white" />,
+    description: 'Network genesis',
+    icon: <FileText className="w-5 h-5 text-white" />,
     url: 'https://docs.lux.network/genesis',
     type: 'Technical',
     bgColor: 'bg-gradient-to-br from-blue-500 to-indigo-600',
@@ -53,7 +59,8 @@ const documents = [
   {
     title: 'ACI Architecture',
     shortTitle: 'ACI',
-    icon: <HanzoLogo className="w-8 h-8 text-white" />,
+    description: 'AI chain infra',
+    icon: <HanzoLogo className="w-6 h-6 text-white" />,
     url: 'https://docs.hanzo.ai/aci',
     type: 'Architecture',
     bgColor: 'bg-gradient-to-br from-violet-500 to-purple-600',
@@ -63,6 +70,7 @@ const documents = [
 const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
   isOpen,
   onClose,
+  onOpenFinder,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -118,6 +126,17 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
               </a>
             ))}
           </div>
+
+          {/* Open in Finder link */}
+          {onOpenFinder && (
+            <button
+              onClick={() => { onOpenFinder(); onClose(); }}
+              className="w-full mt-2 pt-2 border-t border-white/10 flex items-center justify-center gap-1.5 text-[10px] text-white/50 hover:text-white/80 transition-colors"
+            >
+              <FolderOpen className="w-3 h-3" />
+              Open in Finder
+            </button>
+          )}
         </div>
 
         <style>{`
@@ -136,10 +155,7 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
     );
   }
 
-  // Desktop: Stack layout - documents stack upward from downloads icon
-  // Downloads icon is 2nd from right in dock (before trash)
-  // Dock icons are ~48px wide with ~8px gaps, trash is ~56px from right edge
-  // Downloads icon center is approximately: 56 (trash) + 48 (downloads) / 2 = ~80px from right
+  // Desktop: Fan layout - documents fan upward with arc spread
   const totalItems = documents.length;
 
   return (
@@ -150,17 +166,20 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
         onClick={onClose}
       />
 
-      {/* Stack Container - positioned precisely above downloads icon */}
-      {/* Downloads is 2nd from right: trash (~56px) + downloads center (~24px) = ~80px from right */}
+      {/* Fan Container - centered above downloads icon (2nd from right in dock) */}
       <div
-        className="fixed z-[9999] flex flex-col-reverse gap-1"
+        className="fixed z-[9999]"
         style={{
           bottom: '85px',
-          right: '72px',
+          right: '130px', // Center above downloads icon
+          transformOrigin: 'bottom center',
         }}
       >
         {documents.map((doc, index) => {
-          // Stagger animation delay - first item appears last (stack from bottom)
+          // Calculate fan angle - spread outward from center (alternating left/right)
+          const centerIndex = (totalItems - 1) / 2;
+          const fanAngle = (index - centerIndex) * 6; // 6 degrees spread per item
+          const yOffset = index * 65; // Vertical spacing for readability
           const delay = (totalItems - 1 - index) * 40;
 
           return (
@@ -169,57 +188,75 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
               href={doc.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group"
+              className="absolute group"
               style={{
-                animation: `stack-in 0.2s ease-out ${delay}ms both`,
+                bottom: `${yOffset}px`,
+                right: '0px',
+                transform: `rotate(${fanAngle}deg)`,
+                transformOrigin: 'bottom center',
+                animation: `fan-in 0.25s ease-out ${delay}ms both`,
+                zIndex: totalItems - index,
               }}
             >
-              {/* Document card */}
+              {/* Document card - wider with more info */}
               <div
                 className={cn(
-                  "w-16 h-20 rounded-xl shadow-2xl flex flex-col items-center justify-center p-2",
+                  "w-48 h-14 rounded-xl shadow-2xl flex items-center gap-3 px-3",
                   "border border-white/20 backdrop-blur-sm",
                   "transition-all duration-200 cursor-pointer",
-                  "hover:scale-110 hover:z-50 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:-translate-x-2",
+                  "hover:scale-105 hover:z-[100] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:-translate-x-2",
                   doc.bgColor
                 )}
               >
                 {/* Icon */}
-                <div className="flex-1 flex items-center justify-center">
+                <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
                   {doc.icon}
                 </div>
 
-                {/* Label */}
-                <span className="text-[9px] font-medium text-white/90 text-center leading-tight truncate w-full">
-                  {doc.shortTitle}
-                </span>
-              </div>
-
-              {/* Tooltip on hover */}
-              <div className="absolute right-full top-1/2 -translate-y-1/2 mr-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                <div className="bg-black/90 backdrop-blur-sm px-3 py-1.5 rounded-lg whitespace-nowrap border border-white/10">
-                  <div className="text-xs font-medium text-white">{doc.title}</div>
-                  <div className="text-[10px] text-white/50 flex items-center gap-1">
-                    {doc.type}
-                    <ExternalLink className="w-2.5 h-2.5" />
+                {/* Text info */}
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-semibold text-white truncate">
+                    {doc.title}
                   </div>
+                  <div className="text-[10px] text-white/70 truncate">
+                    {doc.description}
+                  </div>
+                </div>
+
+                {/* Type badge */}
+                <div className="flex items-center gap-1 text-[9px] text-white/50">
+                  <ExternalLink className="w-2.5 h-2.5" />
                 </div>
               </div>
             </a>
           );
         })}
+
+        {/* Open in Finder button at bottom */}
+        {onOpenFinder && (
+          <button
+            onClick={() => { onOpenFinder(); onClose(); }}
+            className="absolute flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-sm border border-white/20 text-[10px] text-white/70 hover:text-white hover:bg-black/80 transition-all"
+            style={{
+              bottom: '-35px',
+              right: '50px',
+              animation: `fan-in 0.25s ease-out ${totalItems * 40 + 100}ms both`,
+            }}
+          >
+            <FolderOpen className="w-3 h-3" />
+            Open Downloads
+          </button>
+        )}
       </div>
 
-      {/* CSS for stack animation */}
+      {/* CSS for fan animation - uses opacity only, transform handled by inline styles */}
       <style>{`
-        @keyframes stack-in {
+        @keyframes fan-in {
           0% {
             opacity: 0;
-            transform: translateY(20px) scale(0.8);
           }
           100% {
             opacity: 1;
-            transform: translateY(0) scale(1);
           }
         }
       `}</style>

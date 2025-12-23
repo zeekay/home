@@ -110,9 +110,9 @@ const RestartScreen: React.FC<RestartScreenProps> = ({ onComplete, mode = 'resta
         </div>
       )}
 
-      {/* Off phase - just black */}
+      {/* Off phase - just black (placeholder to maintain layout) */}
       {phase === 'off' && mode === 'restart' && (
-        <div className="w-24 h-24" /> {/* Placeholder to maintain layout */}
+        <div className="w-24 h-24" />
       )}
     </div>
   );

@@ -671,6 +671,7 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
       <DownloadsPopover
         isOpen={showDownloads}
         onClose={() => setShowDownloads(false)}
+        onOpenFinder={() => { setShowFinder(true); handleFocusApp('Finder'); }}
       />
 
       {/* About zOS Window */}
