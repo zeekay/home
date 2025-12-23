@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import { useGitHubStats } from '@/hooks/useGitHubStats';
 import { useStackOverflow } from '@/hooks/useStackOverflow';
 import { formatNumber, formatLargeNumber } from '@/types/stats';
@@ -20,7 +20,7 @@ import {
   Legend
 } from 'recharts';
 
-interface MacGitHubStatsWindowProps {
+interface ZGitHubStatsWindowProps {
   onClose: () => void;
 }
 
@@ -45,14 +45,14 @@ const StatCard: React.FC<{
   </div>
 );
 
-const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) => {
+const ZGitHubStatsWindow: React.FC<ZGitHubStatsWindowProps> = ({ onClose }) => {
   const { stats, loading, error } = useGitHubStats();
   const { data: soData, loading: soLoading } = useStackOverflow('641766');
   const [activeTab, setActiveTab] = useState<'overview' | 'activity' | 'repos' | 'stackoverflow'>('overview');
 
   if (loading) {
     return (
-      <MacWindow
+      <ZWindow
         title="GitHub Stats"
         onClose={onClose}
         initialPosition={{ x: 100, y: 50 }}
@@ -61,13 +61,13 @@ const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) 
         <div className="flex items-center justify-center h-full bg-gray-900">
           <div className="animate-pulse text-gray-400">Loading stats...</div>
         </div>
-      </MacWindow>
+      </ZWindow>
     );
   }
 
   if (error || !stats) {
     return (
-      <MacWindow
+      <ZWindow
         title="GitHub Stats"
         onClose={onClose}
         initialPosition={{ x: 100, y: 50 }}
@@ -76,7 +76,7 @@ const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) 
         <div className="flex items-center justify-center h-full bg-gray-900 text-red-400">
           Error loading stats
         </div>
-      </MacWindow>
+      </ZWindow>
     );
   }
 
@@ -106,7 +106,7 @@ const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) 
   }));
 
   return (
-    <MacWindow
+    <ZWindow
       title="GitHub Stats - @zeekay"
       onClose={onClose}
       initialPosition={{ x: 80, y: 40 }}
@@ -492,8 +492,8 @@ const MacGitHubStatsWindow: React.FC<MacGitHubStatsWindowProps> = ({ onClose }) 
           )}
         </div>
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacGitHubStatsWindow;
+export default ZGitHubStatsWindow;

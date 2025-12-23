@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import InstagramProfileEmbed from './InstagramProfileEmbed';
 
-const MacEmailWindow = ({ onClose }: { onClose: () => void }) => {
+const ZEmailWindow = ({ onClose }: { onClose: () => void }) => {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [showInstagram, setShowInstagram] = useState(false);
@@ -46,7 +46,7 @@ const MacEmailWindow = ({ onClose }: { onClose: () => void }) => {
   };
 
   return (
-    <MacWindow
+    <ZWindow
       title="Mail"
       onClose={onClose}
       initialPosition={{ x: 100, y: 80 }}
@@ -113,8 +113,8 @@ const MacEmailWindow = ({ onClose }: { onClose: () => void }) => {
           </form>
         </div>
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacEmailWindow;
+export default ZEmailWindow;

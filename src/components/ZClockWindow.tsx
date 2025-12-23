@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import { Plus, X, Globe } from 'lucide-react';
 
-interface MacClockWindowProps {
+interface ZClockWindowProps {
   onClose: () => void;
 }
 
@@ -38,7 +38,7 @@ const availableTimezones = [
   { city: 'Auckland', timezone: 'Pacific/Auckland' },
 ];
 
-const MacClockWindow: React.FC<MacClockWindowProps> = ({ onClose }) => {
+const ZClockWindow: React.FC<ZClockWindowProps> = ({ onClose }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [clocks, setClocks] = useState<WorldClock[]>(defaultClocks);
   const [showAddMenu, setShowAddMenu] = useState(false);
@@ -172,7 +172,7 @@ const MacClockWindow: React.FC<MacClockWindowProps> = ({ onClose }) => {
   };
 
   return (
-    <MacWindow
+    <ZWindow
       title="Clock"
       onClose={onClose}
       initialPosition={{ x: 180, y: 80 }}
@@ -263,8 +263,8 @@ const MacClockWindow: React.FC<MacClockWindowProps> = ({ onClose }) => {
           </>
         )}
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacClockWindow;
+export default ZClockWindow;

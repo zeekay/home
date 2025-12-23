@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import { Send, Sparkles, Bot, User, Zap, Brain, Cpu } from 'lucide-react';
 
 interface HanzoAIWindowProps {
@@ -83,7 +83,7 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
   };
 
   return (
-    <MacWindow
+    <ZWindow
       title="Hanzo AI"
       onClose={onClose}
       initialPosition={{ x: 200, y: 80 }}
@@ -190,7 +190,7 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
           </p>
         </div>
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 

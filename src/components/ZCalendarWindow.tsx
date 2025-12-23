@@ -8,7 +8,7 @@ import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
 import { CalendarClock, Clock, User, Users } from 'lucide-react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 const timeSlots = [
@@ -19,7 +19,7 @@ const timeSlots = [
   '5:00 PM', '5:30 PM'
 ];
 
-const MacCalendarWindow = ({ onClose }: { onClose: () => void }) => {
+const ZCalendarWindow = ({ onClose }: { onClose: () => void }) => {
   const [date, setDate] = useState<Date>(addDays(new Date(), 1));
   const [timeSlot, setTimeSlot] = useState('10:00 AM');
   const [name, setName] = useState('');
@@ -55,7 +55,7 @@ const MacCalendarWindow = ({ onClose }: { onClose: () => void }) => {
   };
 
   return (
-    <MacWindow
+    <ZWindow
       title="Calendar"
       onClose={onClose}
       initialPosition={{ x: 150, y: 100 }}
@@ -167,8 +167,8 @@ const MacCalendarWindow = ({ onClose }: { onClose: () => void }) => {
           </form>
         </div>
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacCalendarWindow;
+export default ZCalendarWindow;

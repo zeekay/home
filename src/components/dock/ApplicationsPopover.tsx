@@ -214,11 +214,7 @@ const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
               <button
                 key={app.id}
                 onClick={() => { app.onClick?.(); onClose(); }}
-                className={cn(
-                  "flex flex-col items-center p-1.5 hover:bg-white/10 rounded-xl transition-colors",
-                  !app.onClick && "opacity-40 cursor-not-allowed"
-                )}
-                disabled={!app.onClick}
+                className="flex flex-col items-center p-1.5 hover:bg-white/10 rounded-xl transition-colors"
               >
                 <div className="w-10 h-10 mb-1">
                   {app.icon}

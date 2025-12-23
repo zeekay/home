@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 
-interface MacCalculatorWindowProps {
+interface ZCalculatorWindowProps {
   onClose: () => void;
 }
 
-const MacCalculatorWindow: React.FC<MacCalculatorWindowProps> = ({ onClose }) => {
+const ZCalculatorWindow: React.FC<ZCalculatorWindowProps> = ({ onClose }) => {
   const [display, setDisplay] = useState('0');
   const [previousValue, setPreviousValue] = useState<number | null>(null);
   const [operation, setOperation] = useState<string | null>(null);
@@ -125,7 +125,7 @@ const MacCalculatorWindow: React.FC<MacCalculatorWindowProps> = ({ onClose }) =>
   };
 
   return (
-    <MacWindow
+    <ZWindow
       title="Calculator"
       onClose={onClose}
       initialPosition={{ x: 200, y: 100 }}
@@ -193,8 +193,8 @@ const MacCalculatorWindow: React.FC<MacCalculatorWindowProps> = ({ onClose }) =>
           <button className={operatorButton} onClick={calculate}>=</button>
         </div>
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacCalculatorWindow;
+export default ZCalculatorWindow;

@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import MacDesktop from "./components/MacDesktop";
+import ZDesktop from "./components/ZDesktop";
 import TerminalContent from "./components/TerminalContent";
 import { TerminalProvider } from "./contexts/TerminalContext";
 import { DockProvider } from "./contexts/DockContext";
@@ -38,11 +38,11 @@ const App = () => {
             <BrowserRouter>
             <Routes>
               <Route path="/" element={
-                <MacDesktop>
+                <ZDesktop>
                   <Routes>
                     <Route path="/" element={<Index />} />
                   </Routes>
-                </MacDesktop>
+                </ZDesktop>
               } />
               <Route path="/terminal-content" element={<TerminalContent />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

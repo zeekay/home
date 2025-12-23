@@ -24,7 +24,7 @@ import {
   MacFolderIcon,
 } from './dock/icons';
 
-interface MacDockProps extends DockCallbacks {
+interface ZDockProps extends DockCallbacks {
   className?: string;
   onApplicationsClick?: () => void;
   onDownloadsClick?: () => void;
@@ -63,7 +63,7 @@ const getIconComponent = (id: string): React.ReactNode => {
   }
 };
 
-const MacDock: React.FC<MacDockProps> = ({
+const ZDock: React.FC<ZDockProps> = ({
   className,
   onFinderClick,
   onSafariClick,
@@ -241,4 +241,4 @@ const MacDock: React.FC<MacDockProps> = ({
   );
 };
 
-export default MacDock;
+export default ZDock;

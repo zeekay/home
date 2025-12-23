@@ -95,7 +95,8 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
   const [currentTip, setCurrentTip] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showBubble, setShowBubble] = useState(true);
-  
+  const [bubbleDismissed, setBubbleDismissed] = useState(false);
+
   // Chat state
   const [chatMode, setChatMode] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
@@ -162,6 +163,23 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
     return () => clearInterval(interval);
   }, [showBubble]);
 
+  // Re-show bubble after 1-3 minutes when dismissed
+  useEffect(() => {
+    if (!bubbleDismissed) return;
+
+    // Random delay between 1-3 minutes (60000-180000ms)
+    const delay = 60000 + Math.random() * 120000;
+
+    const timer = setTimeout(() => {
+      // Pick a new random tip when re-showing
+      setCurrentTip(Math.floor(Math.random() * ZOO_TIPS.length));
+      setShowBubble(true);
+      setBubbleDismissed(false);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [bubbleDismissed]);
+
   const goToNextTip = () => {
     setIsAnimating(true); // Start fade out
     setTimeout(() => {
@@ -216,6 +234,7 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
   const openChat = useCallback(() => {
     setChatMode(true);
     setShowBubble(false);
+    setBubbleDismissed(true);
   }, []);
 
   // Detect available animations when model loads
@@ -424,7 +443,7 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
           onClick={openChat}
         >
           <button
-            onClick={(e) => { e.stopPropagation(); setShowBubble(false); }}
+            onClick={(e) => { e.stopPropagation(); setShowBubble(false); setBubbleDismissed(true); }}
             className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg z-10"
           >
             <X className="w-3 h-3 text-white" />
@@ -480,7 +499,7 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
                 </div>
               </div>
               <button
-                onClick={() => { setChatMode(false); setShowBubble(true); }}
+                onClick={() => { setChatMode(false); setBubbleDismissed(true); }}
                 className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
               >
                 <X className="w-3 h-3 text-gray-500" />

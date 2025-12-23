@@ -23,7 +23,7 @@ const Index = () => {
 
   return (
     <div className="h-full w-full overflow-auto relative">
-      {/* Main content - no header needed, MacMenuBar handles it */}
+      {/* Main content - no header needed, ZMenuBar handles it */}
       <div className="p-6">
         <ProfileSection
           activeSection={activeSection}

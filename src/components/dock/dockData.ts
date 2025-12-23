@@ -85,7 +85,7 @@ export const createDockItems = (callbacks: DockCallbacks): DockItemType[] => {
       onClick: callbacks.onTerminalClick,
       useCustomIcon: true,
     },
-    // Separator would go here (handled in MacDock)
+    // Separator would go here (handled in ZDock)
     { 
       id: 'hanzo',
       label: 'Hanzo AI', 

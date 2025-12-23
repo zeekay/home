@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import { cn } from '@/lib/utils';
 import { ExternalLink } from 'lucide-react';
 
-interface MacTextPadWindowProps {
+interface ZTextPadWindowProps {
   onClose: () => void;
 }
 
-const MacTextPadWindow: React.FC<MacTextPadWindowProps> = ({ onClose }) => {
+const ZTextPadWindow: React.FC<ZTextPadWindowProps> = ({ onClose }) => {
   const [text, setText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
   const fullText = `👋 Hi, I'm Z
@@ -66,7 +66,7 @@ Say hi: curl -sL zeekay.chat | sh`;
   const windowHeight = isMobile ? 400 : 350;
 
   return (
-    <MacWindow
+    <ZWindow
       title="Welcome"
       onClose={onClose}
       className="animate-scale-in shadow-lg"
@@ -86,8 +86,8 @@ Say hi: curl -sL zeekay.chat | sh`;
           </div>
         )}
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacTextPadWindow;
+export default ZTextPadWindow;
