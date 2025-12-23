@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSystem } from '@/App';
 import ZDock from './ZDock';
 import ZMenuBar from './ZMenuBar';
 import ZTerminalWindow from './ZTerminalWindow';
@@ -66,6 +67,9 @@ type AppType = 'Finder' | 'Terminal' | 'Safari' | 'Music' | 'Mail' | 'Calendar' 
                'Lux Wallet' | 'Zoo' | 'Calculator' | 'Clock' | 'Weather' | 'Stickies';
 
 const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
+  // System controls
+  const { sleep, restart, shutdown, lockScreen } = useSystem();
+
   // Window visibility states
   const [showFinder, setShowFinder] = useState(false);
   const [showTerminal, setShowTerminal] = useState(false);
@@ -467,11 +471,15 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
   return (
     <div className="relative w-full h-screen overflow-hidden" onContextMenu={handleContextMenu}>
       {/* zOS Menu Bar - always on top */}
-      <ZMenuBar 
-        appName={activeApp} 
+      <ZMenuBar
+        appName={activeApp}
         onQuitApp={handleQuitCurrentApp}
         onOpenSettings={handleOpenSettings}
         onAboutMac={handleOpenAbout}
+        onSleep={sleep}
+        onRestart={restart}
+        onShutdown={shutdown}
+        onLockScreen={lockScreen}
       />
 
       {/* Animated Background */}
