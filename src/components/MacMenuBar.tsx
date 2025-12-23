@@ -751,15 +751,51 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
           )}
         </div>
 
-        {/* Control Center */}
+        {/* Date/Time */}
+        <div className="relative h-full">
+          <button
+            className={cn(systemTrayButtonClass, "px-[10px]", activeSystemMenu === 'datetime' && "bg-white/20")}
+            onClick={() => setActiveSystemMenu(activeSystemMenu === 'datetime' ? null : 'datetime')}
+          >
+            <span className="text-[13px] opacity-90">{formatTime(currentTime)}</span>
+          </button>
+          {activeSystemMenu === 'datetime' && (
+            <div className="absolute top-full right-0 mt-[5px] min-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1">
+              <div className="px-3 py-2 text-center">
+                <p className="text-2xl font-light">
+                  {currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                </p>
+                <p className="text-white/60">
+                  {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                </p>
+              </div>
+              <div className="h-[1px] bg-white/10 my-1" />
+              <div className="px-3 py-1.5 rounded-md hover:bg-blue-500 cursor-pointer">
+                Open Date & Time Settings...
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Control Center - 2 toggle switches icon */}
         <div className="relative h-full">
           <button
             className={cn(systemTrayButtonClass, activeSystemMenu === 'control' && "bg-white/20")}
             onClick={() => setActiveSystemMenu(activeSystemMenu === 'control' ? null : 'control')}
           >
-            <div className="flex gap-[2px]">
-              <div className="w-[4px] h-[4px] bg-current rounded-full opacity-90" />
-              <div className="w-[4px] h-[4px] bg-current rounded-full opacity-90" />
+            <div className="flex flex-col gap-[3px]">
+              {/* Top toggle - on position */}
+              <div className="flex items-center">
+                <div className="w-[10px] h-[5px] bg-current/40 rounded-full relative">
+                  <div className="absolute right-[1px] top-[1px] w-[3px] h-[3px] bg-current rounded-full opacity-90" />
+                </div>
+              </div>
+              {/* Bottom toggle - off position */}
+              <div className="flex items-center">
+                <div className="w-[10px] h-[5px] bg-current/40 rounded-full relative">
+                  <div className="absolute left-[1px] top-[1px] w-[3px] h-[3px] bg-current rounded-full opacity-90" />
+                </div>
+              </div>
             </div>
           </button>
           {activeSystemMenu === 'control' && (
@@ -907,32 +943,6 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
         <button className={systemTrayButtonClass}>
           <Search className="w-[15px] h-[15px] opacity-90" />
         </button>
-
-        {/* Date/Time */}
-        <div className="relative h-full">
-          <button
-            className={cn(systemTrayButtonClass, "px-[10px]", activeSystemMenu === 'datetime' && "bg-white/20")}
-            onClick={() => setActiveSystemMenu(activeSystemMenu === 'datetime' ? null : 'datetime')}
-          >
-            <span className="text-[13px] opacity-90">{formatTime(currentTime)}</span>
-          </button>
-          {activeSystemMenu === 'datetime' && (
-            <div className="absolute top-full right-0 mt-[5px] min-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1">
-              <div className="px-3 py-2 text-center">
-                <p className="text-2xl font-light">
-                  {currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
-                </p>
-                <p className="text-white/60">
-                  {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
-                </p>
-              </div>
-              <div className="h-[1px] bg-white/10 my-1" />
-              <div className="px-3 py-1.5 rounded-md hover:bg-blue-500 cursor-pointer">
-                Open Date & Time Settings...
-              </div>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Click outside handler overlay when menus are active */}

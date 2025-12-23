@@ -94,23 +94,34 @@ const MobileOverflow: React.FC<MobileOverflowProps> = ({ items }) => {
       </Tooltip>
       <PopoverContent side="top" align="end" className="w-72 bg-black/90 backdrop-blur-sm border-white/15 text-white rounded-xl p-2">
         <div className="grid grid-cols-3 gap-2">
-          {items.map((app, index) => (
-            <div 
-              key={index} 
-              className="flex flex-col items-center p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
-              onClick={() => {
-                if (app.onClick) {
-                  app.onClick();
-                  setMoreAppsOpen(false);
-                }
-              }}
-            >
-              <div className="w-10 h-10 flex items-center justify-center bg-black/40 rounded-xl mb-1 border border-white/5">
-                <app.icon className={`w-5 h-5 ${app.color}`} />
+          {items.map((app, index) => {
+            const Icon = app.icon;
+            const customIcon = app.useCustomIcon ? getIconComponent(app.id) : null;
+
+            return (
+              <div
+                key={app.id || index}
+                className="flex flex-col items-center p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                onClick={() => {
+                  if (app.onClick) {
+                    app.onClick();
+                    setMoreAppsOpen(false);
+                  }
+                }}
+              >
+                <div className={`w-10 h-10 flex items-center justify-center rounded-xl mb-1 overflow-hidden ${app.bgGradient || 'bg-black/40 border border-white/5'}`}>
+                  {customIcon ? (
+                    <div className="w-full h-full flex items-center justify-center">
+                      {customIcon}
+                    </div>
+                  ) : Icon ? (
+                    <Icon className={`w-5 h-5 ${app.color || 'text-white'}`} />
+                  ) : null}
+                </div>
+                <span className="text-xs text-center">{app.label}</span>
               </div>
-              <span className="text-xs text-center">{app.label}</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </PopoverContent>
     </Popover>

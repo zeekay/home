@@ -181,6 +181,17 @@ const MacDock: React.FC<MacDockProps> = ({
             </>
           )}
 
+          {/* Downloads Folder - shown on mobile too */}
+          {isMobile && (
+            <DockItem
+              id="downloads"
+              label="Downloads"
+              onClick={onDownloadsClick}
+              customIcon={<MacFolderIcon className="w-full h-full" badgeType="downloads" />}
+              isDraggable={false}
+            />
+          )}
+
           {/* Separator before Hanzo/Lux/Zoo apps */}
           {!isMobile && customApps.length > 0 && <Separator orientation="vertical" className="h-10 bg-white/20 mx-1" />}
 

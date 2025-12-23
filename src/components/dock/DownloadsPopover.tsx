@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, File, Download, ExternalLink } from 'lucide-react';
+import { FileText, File, ExternalLink } from 'lucide-react';
 import { HanzoLogo, LuxLogo, ZooLogo } from './icons';
 import { cn } from '@/lib/utils';
 
@@ -13,56 +13,50 @@ const documents = [
   {
     title: 'Lux Whitepaper',
     shortTitle: 'Lux',
-    description: 'Multi-consensus blockchain architecture',
-    icon: <LuxLogo className="w-8 h-8" />,
+    icon: <LuxLogo className="w-10 h-10" />,
     url: 'https://lux.network/whitepaper',
     type: 'PDF',
-    color: 'from-cyan-500/30 to-cyan-600/20',
+    bgColor: 'bg-gradient-to-br from-cyan-500 to-blue-600',
   },
   {
     title: 'Hanzo Docs',
     shortTitle: 'Hanzo',
-    description: 'Frontier AI and foundational models',
-    icon: <HanzoLogo className="w-8 h-8 text-white" />,
+    icon: <HanzoLogo className="w-10 h-10 text-white" />,
     url: 'https://docs.hanzo.ai',
     type: 'Docs',
-    color: 'from-purple-500/30 to-purple-600/20',
+    bgColor: 'bg-gradient-to-br from-orange-500 via-red-500 to-purple-600',
   },
   {
     title: 'Zoo Research',
     shortTitle: 'Zoo',
-    description: 'Decentralized AI research network',
-    icon: <ZooLogo className="w-8 h-8" />,
+    icon: <ZooLogo className="w-10 h-10" />,
     url: 'https://zoo.ngo/research',
     type: 'Research',
-    color: 'from-green-500/30 to-green-600/20',
+    bgColor: 'bg-gradient-to-br from-emerald-500 to-teal-600',
   },
   {
     title: 'ZIPs',
     shortTitle: 'ZIPs',
-    description: 'Governance and improvement proposals',
-    icon: <File className="w-8 h-8 text-green-400" />,
+    icon: <File className="w-6 h-6 text-white" />,
     url: 'https://zips.zoo.ngo',
     type: 'Proposals',
-    color: 'from-emerald-500/30 to-emerald-600/20',
+    bgColor: 'bg-gradient-to-br from-green-500 to-emerald-600',
   },
   {
     title: 'Lux Genesis',
     shortTitle: 'Genesis',
-    description: 'Network genesis and validator setup',
-    icon: <FileText className="w-8 h-8 text-blue-400" />,
+    icon: <FileText className="w-6 h-6 text-white" />,
     url: 'https://docs.lux.network/genesis',
     type: 'Technical',
-    color: 'from-blue-500/30 to-blue-600/20',
+    bgColor: 'bg-gradient-to-br from-blue-500 to-indigo-600',
   },
   {
     title: 'ACI Architecture',
     shortTitle: 'ACI',
-    description: 'AI Chain Infrastructure overview',
-    icon: <HanzoLogo className="w-7 h-7 text-purple-400" />,
+    icon: <HanzoLogo className="w-8 h-8 text-white" />,
     url: 'https://docs.hanzo.ai/aci',
     type: 'Architecture',
-    color: 'from-violet-500/30 to-violet-600/20',
+    bgColor: 'bg-gradient-to-br from-violet-500 to-purple-600',
   },
 ];
 
@@ -70,72 +64,177 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
   isOpen,
   onClose,
 }) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check for mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   if (!isOpen) return null;
+
+  // Mobile: Simple grid layout
+  if (isMobile) {
+    return (
+      <>
+        {/* Backdrop */}
+        <div
+          className="fixed inset-0 z-[9998]"
+          onClick={onClose}
+        />
+
+        {/* Mobile Grid Popover */}
+        <div 
+          className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999] w-[85vw] max-w-[320px] bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-3"
+          style={{
+            animation: 'slide-up-mobile 0.2s ease-out forwards',
+          }}
+        >
+          <div className="text-xs text-white/50 uppercase tracking-wider mb-2 px-1">Documents</div>
+          <div className="grid grid-cols-3 gap-2">
+            {documents.map((doc, index) => (
+              <a
+                key={index}
+                href={doc.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center p-2 hover:bg-white/10 rounded-xl transition-colors"
+              >
+                <div className={cn(
+                  "w-12 h-12 rounded-xl flex items-center justify-center mb-1",
+                  "border border-white/20",
+                  doc.bgColor
+                )}>
+                  {doc.icon}
+                </div>
+                <span className="text-[9px] text-white/90 text-center leading-tight truncate w-full">
+                  {doc.shortTitle}
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <style>{`
+          @keyframes slide-up-mobile {
+            0% {
+              opacity: 0;
+              transform: translateX(-50%) translateY(20px);
+            }
+            100% {
+              opacity: 1;
+              transform: translateX(-50%) translateY(0);
+            }
+          }
+        `}</style>
+      </>
+    );
+  }
+
+  // Desktop: Fan layout
+  const totalItems = documents.length;
+  const fanAngle = 60; // Total spread angle in degrees
+  const startAngle = -fanAngle / 2;
+  const angleStep = fanAngle / (totalItems - 1);
+  const radius = 180; // Distance from center point
 
   return (
     <>
       {/* Backdrop */}
-      <div 
-        className="fixed inset-0 z-[9998]" 
+      <div
+        className="fixed inset-0 z-[9998]"
         onClick={onClose}
       />
-      
-      {/* Popover */}
-      <div 
-        className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[9999] w-[380px] bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl animate-in slide-in-from-bottom-4"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-          <div className="flex items-center gap-2">
-            <Download className="w-4 h-4 text-white/70" />
-            <span className="text-sm font-medium text-white/90">Downloads</span>
-          </div>
-          <span className="text-xs text-white/50">{documents.length} items</span>
-        </div>
 
-        {/* Documents List */}
-        <div className="max-h-[400px] overflow-y-auto">
-          {documents.map((doc, index) => (
-            <a
-              key={index}
-              href={doc.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 px-4 py-3 hover:bg-white/10 transition-colors border-b border-white/5 last:border-b-0"
-            >
-              {/* Icon */}
-              <div className="w-10 h-10 flex items-center justify-center bg-white/10 rounded-lg shrink-0">
-                {doc.icon}
-              </div>
+      {/* Fan Container - positioned above the dock */}
+      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999]">
+        {/* Fan items */}
+        <div className="relative w-[400px] h-[300px]">
+          {documents.map((doc, index) => {
+            // Calculate position and rotation for each item in the fan
+            const angle = startAngle + (index * angleStep);
+            const radians = (angle * Math.PI) / 180;
+            
+            // Position items in an arc from bottom center
+            const x = Math.sin(radians) * radius;
+            const y = -Math.cos(radians) * radius + 100; // +100 to shift up from bottom
+            
+            // Stagger animation delay
+            const delay = index * 50;
 
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-white/90 truncate">{doc.title}</span>
-                  <ExternalLink className="w-3 h-3 text-white/40 shrink-0" />
+            return (
+              <a
+                key={index}
+                href={doc.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute left-1/2 bottom-0 group"
+                style={{
+                  transform: `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${angle}deg)`,
+                  animation: `fan-in 0.3s ease-out ${delay}ms both`,
+                  zIndex: totalItems - index,
+                }}
+              >
+                {/* Document card */}
+                <div 
+                  className={cn(
+                    "w-16 h-20 rounded-xl shadow-2xl flex flex-col items-center justify-center p-2",
+                    "border border-white/20 backdrop-blur-sm",
+                    "transition-all duration-200 cursor-pointer",
+                    "hover:scale-110 hover:z-50 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]",
+                    doc.bgColor
+                  )}
+                  style={{
+                    transformOrigin: 'bottom center',
+                  }}
+                >
+                  {/* Icon */}
+                  <div className="flex-1 flex items-center justify-center">
+                    {doc.icon}
+                  </div>
+                  
+                  {/* Label */}
+                  <span className="text-[9px] font-medium text-white/90 text-center leading-tight truncate w-full">
+                    {doc.shortTitle}
+                  </span>
                 </div>
-                <p className="text-xs text-white/50 truncate">{doc.description}</p>
-              </div>
 
-              {/* Type badge */}
-              <div className="px-2 py-0.5 bg-white/10 rounded text-[10px] text-white/60 shrink-0">
-                {doc.type}
-              </div>
-            </a>
-          ))}
+                {/* Tooltip on hover */}
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  <div className="bg-black/90 backdrop-blur-sm px-3 py-1.5 rounded-lg whitespace-nowrap border border-white/10">
+                    <div className="text-xs font-medium text-white">{doc.title}</div>
+                    <div className="text-[10px] text-white/50 flex items-center gap-1">
+                      {doc.type}
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </div>
+                  </div>
+                </div>
+              </a>
+            );
+          })}
         </div>
 
-        {/* Footer */}
-        <div className="px-4 py-2 border-t border-white/10 flex items-center justify-between">
-          <span className="text-xs text-white/40">Whitepapers & Documentation</span>
-          <button 
-            onClick={onClose}
-            className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
-          >
-            Done
-          </button>
-        </div>
+        {/* Base indicator */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-full" />
       </div>
+
+      {/* CSS for fan animation */}
+      <style>{`
+        @keyframes fan-in {
+          0% {
+            opacity: 0;
+            transform: translateX(calc(-50% + 0px)) translateY(50px) rotate(0deg) scale(0.5);
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+      `}</style>
     </>
   );
 };
