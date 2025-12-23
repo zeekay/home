@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import {
   Folder,
   FileText,
@@ -22,7 +22,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 
-interface MacFinderWindowProps {
+interface ZFinderWindowProps {
   onClose: () => void;
   onFocus?: () => void;
 }
@@ -37,7 +37,7 @@ interface FileItem {
   url?: string;
 }
 
-const MacFinderWindow: React.FC<MacFinderWindowProps> = ({ onClose, onFocus }) => {
+const ZFinderWindow: React.FC<ZFinderWindowProps> = ({ onClose, onFocus }) => {
   const [currentPath, setCurrentPath] = useState<string[]>(['Home']);
   const [viewMode, setViewMode] = useState<'icons' | 'list' | 'columns' | 'gallery'>('icons');
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -289,7 +289,7 @@ ZIPs: https://zips.zoo.ngo
   };
 
   return (
-    <MacWindow
+    <ZWindow
       title="Finder"
       onClose={onClose}
       onFocus={onFocus}
@@ -552,8 +552,8 @@ ZIPs: https://zips.zoo.ngo
           </div>
         )}
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacFinderWindow;
+export default ZFinderWindow;

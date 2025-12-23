@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Search, Video, VideoOff, Mic, MicOff, Phone, Mail, Bot, User } from 'lucide-react';
@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { contacts } from '@/data/socials';
 
-const MacFaceTimeWindow = ({ onClose }: { onClose: () => void }) => {
+const ZFaceTimeWindow = ({ onClose }: { onClose: () => void }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCallActive, setIsCallActive] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -71,7 +71,7 @@ const MacFaceTimeWindow = ({ onClose }: { onClose: () => void }) => {
   };
 
   return (
-    <MacWindow
+    <ZWindow
       title="FaceTime"
       onClose={onClose}
       initialPosition={{ x: 250, y: 120 }}
@@ -234,8 +234,8 @@ const MacFaceTimeWindow = ({ onClose }: { onClose: () => void }) => {
           </>
         )}
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacFaceTimeWindow;
+export default ZFaceTimeWindow;

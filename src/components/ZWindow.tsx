@@ -6,7 +6,7 @@ import WindowResizeHandle from './window/WindowResizeHandle';
 import { getWindowStyle, getNextZIndex, getResponsiveWindowSize, getResponsiveWindowPosition } from './window/windowUtils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-export interface MacWindowProps {
+export interface ZWindowProps {
   title: string;
   className?: string;
   onClose: () => void;
@@ -19,7 +19,7 @@ export interface MacWindowProps {
   customControls?: ReactNode;
 }
 
-const MacWindow: React.FC<MacWindowProps> = ({
+const ZWindow: React.FC<ZWindowProps> = ({
   title,
   className,
   onClose,
@@ -192,4 +192,4 @@ const MacWindow: React.FC<MacWindowProps> = ({
   );
 };
 
-export default MacWindow;
+export default ZWindow;

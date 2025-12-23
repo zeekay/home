@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import { cn } from '@/lib/utils';
 import { Music, Radio, Heart, Play, Pause, SkipForward, SkipBack, Volume2, ExternalLink, Disc3, ListMusic, Headphones } from 'lucide-react';
 import { socialProfiles } from '@/data/socials';
 
-interface MacMusicWindowProps {
+interface ZMusicWindowProps {
   onClose: () => void;
   onFocus?: () => void;
 }
@@ -27,7 +27,7 @@ const spotifyContent = {
   ]
 };
 
-const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose, onFocus }) => {
+const ZMusicWindow: React.FC<ZMusicWindowProps> = ({ onClose, onFocus }) => {
   const [activeTab, setActiveTab] = useState<TabType>('spotify');
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState(spotifyContent.recentlyPlayed[0]);
@@ -41,7 +41,7 @@ const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose, onFocus }) => 
   ];
 
   return (
-    <MacWindow
+    <ZWindow
       title="Music"
       onClose={onClose}
       onFocus={onFocus}
@@ -276,8 +276,8 @@ const MacMusicWindow: React.FC<MacMusicWindowProps> = ({ onClose, onFocus }) => 
           </div>
         </div>
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacMusicWindow;
+export default ZMusicWindow;

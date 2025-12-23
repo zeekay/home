@@ -136,12 +136,8 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
     );
   }
 
-  // Desktop: Fan layout - fans up and to the left from downloads icon
+  // Desktop: Stack layout - documents stack upward from downloads icon
   const totalItems = documents.length;
-  const fanAngle = 70; // Total spread angle in degrees
-  const startAngle = -90; // Start pointing left
-  const angleStep = fanAngle / (totalItems - 1);
-  const radius = 140; // Distance from origin point
 
   return (
     <>
@@ -151,85 +147,75 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
         onClick={onClose}
       />
 
-      {/* Fan Container - positioned above downloads icon (right side of dock) */}
-      <div className="fixed bottom-16 z-[9999]" style={{ right: '90px' }}>
-        {/* Fan items */}
-        <div className="relative w-[300px] h-[300px]">
-          {documents.map((doc, index) => {
-            // Calculate position and rotation for each item in the fan
-            // Fan spreads from bottom-right going up and to the left
-            const angle = startAngle + (index * angleStep);
-            const radians = (angle * Math.PI) / 180;
+      {/* Stack Container - positioned above downloads icon */}
+      <div 
+        className="fixed z-[9999] flex flex-col-reverse gap-2 p-2"
+        style={{ 
+          bottom: '80px',
+          right: '60px',
+        }}
+      >
+        {documents.map((doc, index) => {
+          // Stagger animation delay - first item appears last (stack from bottom)
+          const delay = (totalItems - 1 - index) * 40;
 
-            // Position items in an arc from bottom-right corner
-            const x = Math.cos(radians) * radius;
-            const y = Math.sin(radians) * radius;
-
-            // Stagger animation delay
-            const delay = index * 50;
-
-            return (
-              <a
-                key={index}
-                href={doc.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="absolute right-0 bottom-0 group"
-                style={{
-                  transform: `translateX(${x}px) translateY(${y}px) rotate(${angle + 90}deg)`,
-                  animation: `fan-in-right 0.3s ease-out ${delay}ms both`,
-                  zIndex: totalItems - index,
-                }}
+          return (
+            <a
+              key={index}
+              href={doc.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group"
+              style={{
+                animation: `stack-in 0.2s ease-out ${delay}ms both`,
+              }}
+            >
+              {/* Document card */}
+              <div
+                className={cn(
+                  "w-16 h-20 rounded-xl shadow-2xl flex flex-col items-center justify-center p-2",
+                  "border border-white/20 backdrop-blur-sm",
+                  "transition-all duration-200 cursor-pointer",
+                  "hover:scale-110 hover:z-50 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:-translate-x-2",
+                  doc.bgColor
+                )}
               >
-                {/* Document card */}
-                <div
-                  className={cn(
-                    "w-16 h-20 rounded-xl shadow-2xl flex flex-col items-center justify-center p-2",
-                    "border border-white/20 backdrop-blur-sm",
-                    "transition-all duration-200 cursor-pointer",
-                    "hover:scale-110 hover:z-50 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]",
-                    doc.bgColor
-                  )}
-                  style={{
-                    transformOrigin: 'bottom center',
-                  }}
-                >
-                  {/* Icon */}
-                  <div className="flex-1 flex items-center justify-center">
-                    {doc.icon}
-                  </div>
-
-                  {/* Label */}
-                  <span className="text-[9px] font-medium text-white/90 text-center leading-tight truncate w-full">
-                    {doc.shortTitle}
-                  </span>
+                {/* Icon */}
+                <div className="flex-1 flex items-center justify-center">
+                  {doc.icon}
                 </div>
 
-                {/* Tooltip on hover */}
-                <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                  <div className="bg-black/90 backdrop-blur-sm px-3 py-1.5 rounded-lg whitespace-nowrap border border-white/10">
-                    <div className="text-xs font-medium text-white">{doc.title}</div>
-                    <div className="text-[10px] text-white/50 flex items-center gap-1">
-                      {doc.type}
-                      <ExternalLink className="w-2.5 h-2.5" />
-                    </div>
+                {/* Label */}
+                <span className="text-[9px] font-medium text-white/90 text-center leading-tight truncate w-full">
+                  {doc.shortTitle}
+                </span>
+              </div>
+
+              {/* Tooltip on hover */}
+              <div className="absolute right-full top-1/2 -translate-y-1/2 mr-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                <div className="bg-black/90 backdrop-blur-sm px-3 py-1.5 rounded-lg whitespace-nowrap border border-white/10">
+                  <div className="text-xs font-medium text-white">{doc.title}</div>
+                  <div className="text-[10px] text-white/50 flex items-center gap-1">
+                    {doc.type}
+                    <ExternalLink className="w-2.5 h-2.5" />
                   </div>
                 </div>
-              </a>
-            );
-          })}
-        </div>
+              </div>
+            </a>
+          );
+        })}
       </div>
 
-      {/* CSS for fan animation */}
+      {/* CSS for stack animation */}
       <style>{`
-        @keyframes fan-in-right {
+        @keyframes stack-in {
           0% {
             opacity: 0;
-            transform: translateX(0px) translateY(0px) rotate(0deg) scale(0.5);
+            transform: translateY(20px) scale(0.8);
           }
           100% {
             opacity: 1;
+            transform: translateY(0) scale(1);
           }
         }
       `}</style>

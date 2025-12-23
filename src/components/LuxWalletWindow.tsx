@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import { Wallet, Send, ArrowDownLeft, ArrowUpRight, RefreshCw, Copy, Check, TrendingUp, Shield, Zap, Globe } from 'lucide-react';
 
 interface LuxWalletWindowProps {
@@ -36,7 +36,7 @@ const LuxWalletWindow: React.FC<LuxWalletWindowProps> = ({ onClose }) => {
   };
 
   return (
-    <MacWindow
+    <ZWindow
       title="Lux Wallet"
       onClose={onClose}
       initialPosition={{ x: 300, y: 100 }}
@@ -177,7 +177,7 @@ const LuxWalletWindow: React.FC<LuxWalletWindowProps> = ({ onClose }) => {
           </p>
         </div>
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 

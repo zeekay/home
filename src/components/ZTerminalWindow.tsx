@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import Terminal from './Terminal';
 import { 
   Select,
@@ -12,12 +12,12 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Settings } from 'lucide-react';
 
-interface MacTerminalWindowProps {
+interface ZTerminalWindowProps {
   onClose: () => void;
   onFocus?: () => void;
 }
 
-const MacTerminalWindow: React.FC<MacTerminalWindowProps> = ({ onClose, onFocus }) => {
+const ZTerminalWindow: React.FC<ZTerminalWindowProps> = ({ onClose, onFocus }) => {
   const [customFontSize, setCustomFontSize] = useState(14);
   const [customPadding, setCustomPadding] = useState(16);
   const [customTheme, setCustomTheme] = useState('dark');
@@ -42,7 +42,7 @@ const MacTerminalWindow: React.FC<MacTerminalWindowProps> = ({ onClose, onFocus 
   ];
 
   return (
-    <MacWindow
+    <ZWindow
       title="Terminal – bash"
       onClose={onClose}
       onFocus={onFocus}
@@ -113,8 +113,8 @@ const MacTerminalWindow: React.FC<MacTerminalWindowProps> = ({ onClose, onFocus 
           customTheme={customTheme}
         />
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacTerminalWindow;
+export default ZTerminalWindow;

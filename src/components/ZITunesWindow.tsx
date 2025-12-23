@@ -4,7 +4,7 @@ import { X, Play, Pause, SkipBack, SkipForward, Volume2, User, List, Music } fro
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
-interface MacITunesWindowProps {
+interface ZITunesWindowProps {
   onClose: () => void;
 }
 
@@ -15,7 +15,7 @@ interface PlaylistType {
   imageUrl: string;
 }
 
-const MacITunesWindow: React.FC<MacITunesWindowProps> = ({ onClose }) => {
+const ZITunesWindow: React.FC<ZITunesWindowProps> = ({ onClose }) => {
   const [position, setPosition] = useState({ x: 150, y: 150 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -250,4 +250,4 @@ const MacITunesWindow: React.FC<MacITunesWindowProps> = ({ onClose }) => {
   );
 };
 
-export default MacITunesWindow;
+export default ZITunesWindow;

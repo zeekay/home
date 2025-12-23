@@ -1,18 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import SafariNavBar from './safari/SafariNavBar';
 import SafariContent from './safari/SafariContent';
 import { calculateSizeReduction, checkIfInIframe } from './safari/safariUtils';
 
-interface MacSafariWindowProps {
+interface ZSafariWindowProps {
   onClose: () => void;
   initialUrl?: string;
   depth?: number;
 }
 
-const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
+const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
   onClose,
   initialUrl = 'https://www.google.com',
   depth = 0
@@ -83,8 +83,8 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
     
     // Create a new Safari window component with increased depth
     const safariWindow = (
-      <MacSafariWindow 
-        onClose={() => document.body.removeChild(newWindow)} 
+      <ZSafariWindow
+        onClose={() => document.body.removeChild(newWindow)}
         initialUrl={window.location.href}
         depth={depth + 1}
       />
@@ -96,7 +96,7 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
   };
 
   return (
-    <MacWindow
+    <ZWindow
       title={`Safari${depth > 0 ? ` (${depth})` : ''}`}
       onClose={onClose}
       initialPosition={{ x: 100 + (depth * 30), y: 100 + (depth * 20) }}
@@ -134,8 +134,8 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
           }}
         />
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacSafariWindow;
+export default ZSafariWindow;

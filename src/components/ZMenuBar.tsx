@@ -43,7 +43,7 @@ const ZMenuLogo: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
-interface MacMenuBarProps {
+interface ZMenuBarProps {
   className?: string;
   appName?: string;
   onQuitApp?: () => void;
@@ -353,7 +353,7 @@ const getAppMenus = (appName: string): MenuType[] => {
   ];
 };
 
-const MacMenuBar: React.FC<MacMenuBarProps> = ({
+const ZMenuBar: React.FC<ZMenuBarProps> = ({
   className,
   appName = "Finder",
   onQuitApp,
@@ -1003,4 +1003,4 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
   );
 };
 
-export default MacMenuBar;
+export default ZMenuBar;

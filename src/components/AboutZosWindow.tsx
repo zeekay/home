@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import { cn } from '@/lib/utils';
 
 interface AboutZosWindowProps {
@@ -71,7 +71,7 @@ const AboutZosWindow: React.FC<AboutZosWindowProps> = ({ onClose }) => {
   const windowHeight = isMobile ? 480 : 520;
 
   return (
-    <MacWindow
+    <ZWindow
       title=""
       onClose={onClose}
       className="animate-scale-in shadow-2xl"
@@ -163,7 +163,7 @@ const AboutZosWindow: React.FC<AboutZosWindowProps> = ({ onClose }) => {
           © {new Date().getFullYear()} Zach Kelling. All rights reserved.
         </p>
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 

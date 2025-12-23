@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import { Plus, Trash2, Palette } from 'lucide-react';
 
-interface MacStickiesWindowProps {
+interface ZStickiesWindowProps {
   onClose: () => void;
 }
 
@@ -22,7 +22,7 @@ const noteColors = [
   { name: 'Orange', bg: 'bg-orange-200', text: 'text-orange-900', border: 'border-orange-300' },
 ];
 
-const MacStickiesWindow: React.FC<MacStickiesWindowProps> = ({ onClose }) => {
+const ZStickiesWindow: React.FC<ZStickiesWindowProps> = ({ onClose }) => {
   const [notes, setNotes] = useState<StickyNote[]>([
     { id: '1', content: 'Welcome to Stickies!\n\nClick + to add a new note.', color: 'Yellow', createdAt: new Date() },
     { id: '2', content: 'Remember to:\n- Check emails\n- Review PRs\n- Deploy updates', color: 'Pink', createdAt: new Date() },
@@ -76,7 +76,7 @@ const MacStickiesWindow: React.FC<MacStickiesWindowProps> = ({ onClose }) => {
   };
 
   return (
-    <MacWindow
+    <ZWindow
       title="Stickies"
       onClose={onClose}
       initialPosition={{ x: 140, y: 70 }}
@@ -203,8 +203,8 @@ const MacStickiesWindow: React.FC<MacStickiesWindowProps> = ({ onClose }) => {
           )}
         </div>
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacStickiesWindow;
+export default ZStickiesWindow;

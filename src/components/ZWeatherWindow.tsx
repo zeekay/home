@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import { Sun, Cloud, CloudRain, CloudSnow, Wind, Droplets, Eye, Gauge, MapPin, Plus } from 'lucide-react';
 
-interface MacWeatherWindowProps {
+interface ZWeatherWindowProps {
   onClose: () => void;
 }
 
@@ -141,12 +141,12 @@ const getGradient = (condition: string) => {
   }
 };
 
-const MacWeatherWindow: React.FC<MacWeatherWindowProps> = ({ onClose }) => {
+const ZWeatherWindow: React.FC<ZWeatherWindowProps> = ({ onClose }) => {
   const [selectedCity, setSelectedCity] = useState('San Francisco');
   const weather = weatherData[selectedCity];
 
   return (
-    <MacWindow
+    <ZWindow
       title="Weather"
       onClose={onClose}
       initialPosition={{ x: 160, y: 60 }}
@@ -250,8 +250,8 @@ const MacWeatherWindow: React.FC<MacWeatherWindowProps> = ({ onClose }) => {
           </div>
         </div>
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacWeatherWindow;
+export default ZWeatherWindow;

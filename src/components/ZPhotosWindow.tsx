@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Image, Upload, Plus, Search, ExternalLink, Instagram, Github, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { socialProfiles, pinnedProjects, professionalInfo } from '@/data/socials';
 
-const MacPhotosWindow = ({ onClose }: { onClose: () => void }) => {
+const ZPhotosWindow = ({ onClose }: { onClose: () => void }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'photos' | 'projects' | 'brands'>('photos');
@@ -35,7 +35,7 @@ const MacPhotosWindow = ({ onClose }: { onClose: () => void }) => {
   ];
 
   return (
-    <MacWindow
+    <ZWindow
       title="Photos"
       onClose={onClose}
       initialPosition={{ x: 180, y: 80 }}
@@ -234,8 +234,8 @@ const MacPhotosWindow = ({ onClose }: { onClose: () => void }) => {
           )}
         </div>
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacPhotosWindow;
+export default ZPhotosWindow;

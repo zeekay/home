@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import { cn } from '@/lib/utils';
 import {
   Twitter,
@@ -24,7 +24,7 @@ import {
 import { socialProfiles, professionalInfo, pinnedProjects } from '@/data/socials';
 import { SoraIcon } from './dock/icons';
 
-interface MacSocialsWindowProps {
+interface ZSocialsWindowProps {
   onClose: () => void;
 }
 
@@ -119,7 +119,7 @@ const getIconForPlatform = (platform: string) => {
   }
 };
 
-const MacSocialsWindow: React.FC<MacSocialsWindowProps> = ({ onClose }) => {
+const ZSocialsWindow: React.FC<ZSocialsWindowProps> = ({ onClose }) => {
   const [selectedContact, setSelectedContact] = useState('main');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -131,7 +131,7 @@ const MacSocialsWindow: React.FC<MacSocialsWindowProps> = ({ onClose }) => {
   const currentContact = contactIdentities.find(c => c.id === selectedContact);
 
   return (
-    <MacWindow
+    <ZWindow
       title="Contacts"
       onClose={onClose}
       defaultWidth={900}
@@ -439,8 +439,8 @@ const MacSocialsWindow: React.FC<MacSocialsWindowProps> = ({ onClose }) => {
           )}
         </div>
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacSocialsWindow;
+export default ZSocialsWindow;

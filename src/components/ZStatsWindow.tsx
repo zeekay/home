@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import MacWindow from './MacWindow';
+import ZWindow from './ZWindow';
 import { BarChart3, ExternalLink, RefreshCw } from 'lucide-react';
 
-interface MacStatsWindowProps {
+interface ZStatsWindowProps {
   onClose: () => void;
 }
 
-const MacStatsWindow: React.FC<MacStatsWindowProps> = ({ onClose }) => {
+const ZStatsWindow: React.FC<ZStatsWindowProps> = ({ onClose }) => {
   const [isLoading, setIsLoading] = useState(true);
   const statsUrl = 'https://stats.zeekay.ai/';
 
   return (
-    <MacWindow
+    <ZWindow
       title="Stats Dashboard"
       onClose={onClose}
       initialPosition={{ x: 60, y: 30 }}
@@ -76,8 +76,8 @@ const MacStatsWindow: React.FC<MacStatsWindowProps> = ({ onClose }) => {
           />
         </div>
       </div>
-    </MacWindow>
+    </ZWindow>
   );
 };
 
-export default MacStatsWindow;
+export default ZStatsWindow;
