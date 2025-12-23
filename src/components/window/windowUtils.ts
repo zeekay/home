@@ -16,7 +16,7 @@ export const getNextZIndex = () => ++globalZIndex;
 export const getWindowStyle = (windowType: 'default' | 'terminal' | 'safari' | 'itunes' | 'textpad') => {
   switch (windowType) {
     case 'terminal':
-      return 'bg-black/75 text-white backdrop-blur-md';
+      return 'bg-black text-white rounded-lg';
     case 'safari':
       return 'bg-white/95 dark:bg-gray-800/95 backdrop-blur-md';
     case 'itunes':

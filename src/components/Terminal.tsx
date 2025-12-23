@@ -5,12 +5,11 @@ import { TerminalProps } from '@/types/terminal';
 import { useTerminal } from '@/contexts/TerminalContext';
 
 const terminalThemes = {
-  dark: { bg: 'bg-[#262a33]', text: 'text-white' },
+  dark: { bg: 'bg-black', text: 'text-white' }, // Pure black like iTerm2
   light: { bg: 'bg-[#f6f8fa]', text: 'text-gray-800' },
   blue: { bg: 'bg-[#0d2538]', text: 'text-cyan-100' },
   green: { bg: 'bg-[#0f2d1b]', text: 'text-green-100' },
   purple: { bg: 'bg-[#2b213a]', text: 'text-purple-100' },
-  // New themes
   neon: { bg: 'bg-[#0c0b1f]', text: 'text-[#00ff9f]' },
   retro: { bg: 'bg-[#2d2b55]', text: 'text-[#fad000]' },
   sunset: { bg: 'bg-gradient-to-r from-[#1a1c2c] to-[#2d1b31]', text: 'text-orange-100' },
@@ -21,6 +20,26 @@ const terminalThemes = {
   dracula: { bg: 'bg-[#282a36]', text: 'text-[#f8f8f2]' },
   nord: { bg: 'bg-[#2e3440]', text: 'text-[#d8dee9]' },
   pastel: { bg: 'bg-[#fdf6e3]', text: 'text-[#657b83]' }
+};
+
+// Clean ANSI escape codes and control characters from terminal output
+const cleanTerminalOutput = (text: string): string => {
+  return text
+    // Remove ANSI escape codes (including CSI sequences like [?2004h)
+    .replace(/\x1b\[[0-9;?]*[a-zA-Z]/g, '')
+    .replace(/\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)/g, '') // OSC sequences
+    .replace(/\x1b[PX^_][^\x1b]*\x1b\\/g, '') // DCS, SOS, PM, APC sequences
+    .replace(/\x1b[@-Z\\-_]/g, '') // Single ESC sequences
+    // Remove any leftover bracket sequences that might have been split
+    .replace(/\[\??\d*[a-zA-Z]/g, '')
+    // Remove control characters except newlines and tabs
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+    // Clean up multiple consecutive spaces (but preserve indentation)
+    .replace(/[^\S\n]{3,}/g, '  ')
+    // Trim trailing whitespace from lines
+    .split('\n')
+    .map(line => line.trimEnd())
+    .join('\n');
 };
 
 const Terminal: React.FC<TerminalProps> = ({ 
@@ -113,10 +132,10 @@ const Terminal: React.FC<TerminalProps> = ({
   const theme = getTerminalTheme();
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className={cn(
-        'glass-card terminal-shadow rounded-xl overflow-hidden flex flex-col w-full h-full transition-all duration-300 ease-in-out',
+        'overflow-hidden flex flex-col w-full h-full',
         className
       )}
     >
@@ -130,30 +149,26 @@ const Terminal: React.FC<TerminalProps> = ({
         {entries.map((entry, index) => (
           <div key={entry.id} className="mb-2">
             {entry.command && (
-              <div className="flex">
+              <div className="flex items-center" style={{ fontSize: `${customFontSize}px` }}>
                 <span className="text-cyan-400 mr-1">z@zeekay.ai</span>
-          <span className="text-blue-400 mr-1">~</span>
-          <span className="text-purple-400 mr-2">❯</span>
-                <span style={{ fontSize: `${customFontSize}px` }}>{entry.command}</span>
+                <span className="text-blue-400 mr-1">~</span>
+                <span className="text-purple-400 mr-2">❯</span>
+                <span className="text-gray-100">{entry.command}</span>
               </div>
             )}
             {entry.output && (
               <div
                 className={cn(
                   'whitespace-pre-wrap font-mono mt-1',
-                  entry.isError ? 'text-red-500' : 'text-foreground'
+                  entry.isError ? 'text-red-400' : 'text-gray-200'
                 )}
                 style={{ fontSize: `${customFontSize}px` }}
               >
-                {/* Strip ANSI escape codes and render clean output */}
-                {entry.output
-                  .replace(/\x1b\[[0-9;?]*[a-zA-Z]/g, '') // Remove ANSI escape codes including ? sequences
-                  .replace(/\x1b\][^\x07]*\x07/g, '') // Remove OSC sequences
-                  .replace(/\[[\d;?]*[a-zA-Z]/g, '') // Remove remaining bracket sequences
-                  .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '') // Remove control chars
+                {cleanTerminalOutput(entry.output)
                   .split('\n')
+                  .filter(line => line.trim() !== '') // Remove empty lines
                   .map((line, i) => (
-                    <div key={i}>{line || '\u00A0'}</div>
+                    <div key={i}>{line}</div>
                   ))
                 }
               </div>
@@ -161,7 +176,7 @@ const Terminal: React.FC<TerminalProps> = ({
           </div>
         ))}
         
-        <div className="flex mt-2">
+        <div className="flex items-center mt-2" style={{ fontSize: `${customFontSize}px` }}>
           <span className="text-cyan-400 mr-1">z@zeekay.ai</span>
           <span className="text-blue-400 mr-1">~</span>
           <span className="text-purple-400 mr-2">❯</span>
@@ -172,7 +187,7 @@ const Terminal: React.FC<TerminalProps> = ({
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="bg-transparent w-full outline-none terminal-text"
+              className="bg-transparent w-full outline-none text-gray-100 caret-gray-100"
               style={{ fontSize: `${customFontSize}px` }}
               autoFocus
             />
