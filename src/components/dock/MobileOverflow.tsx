@@ -11,17 +11,66 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  FinderIcon,
+  SafariIcon,
+  MailIcon,
+  PhotosIcon,
+  CalendarIcon,
+  SocialsIcon,
+  PhoneIcon,
+  MusicIcon,
+  TerminalIcon,
+  HanzoLogo,
+  LuxLogo,
+  ZooLogo,
+} from './icons';
 
 interface OverflowItemType {
-  icon: LucideIcon;
+  id: string;
+  icon?: LucideIcon;
   label: string;
-  color: string;
+  color?: string;
   onClick?: () => void;
+  bgGradient?: string;
+  useCustomIcon?: boolean;
 }
 
 interface MobileOverflowProps {
   items: OverflowItemType[];
 }
+
+// Map of item IDs to their custom icon components
+const getIconComponent = (id: string): React.ReactNode => {
+  switch (id) {
+    case 'finder':
+      return <FinderIcon className="w-full h-full" />;
+    case 'safari':
+      return <SafariIcon className="w-full h-full" />;
+    case 'mail':
+      return <MailIcon className="w-full h-full" />;
+    case 'photos':
+      return <PhotosIcon className="w-full h-full" />;
+    case 'calendar':
+      return <CalendarIcon className="w-full h-full" />;
+    case 'socials':
+      return <SocialsIcon className="w-full h-full" />;
+    case 'facetime':
+      return <PhoneIcon className="w-full h-full" />;
+    case 'music':
+      return <MusicIcon className="w-full h-full" />;
+    case 'terminal':
+      return <TerminalIcon className="w-full h-full" />;
+    case 'hanzo':
+      return <HanzoLogo className="w-full h-full text-white" />;
+    case 'lux':
+      return <LuxLogo className="w-full h-full text-white" />;
+    case 'zoo':
+      return <ZooLogo className="w-full h-full" />;
+    default:
+      return null;
+  }
+};
 
 const MobileOverflow: React.FC<MobileOverflowProps> = ({ items }) => {
   const [moreAppsOpen, setMoreAppsOpen] = useState(false);

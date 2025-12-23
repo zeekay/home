@@ -1,6 +1,7 @@
-import React from 'react';
-import { FileText, ExternalLink, Download, File } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { FileText, File, Download, ExternalLink } from 'lucide-react';
 import { HanzoLogo, LuxLogo, ZooLogo } from './icons';
+import { cn } from '@/lib/utils';
 
 interface DownloadsPopoverProps {
   isOpen: boolean;
@@ -10,46 +11,58 @@ interface DownloadsPopoverProps {
 // Whitepaper and document links
 const documents = [
   {
-    title: 'Lux Network Whitepaper',
+    title: 'Lux Whitepaper',
+    shortTitle: 'Lux',
     description: 'Multi-consensus blockchain architecture',
-    icon: <LuxLogo className="w-5 h-5 text-cyan-400" />,
+    icon: <LuxLogo className="w-8 h-8" />,
     url: 'https://lux.network/whitepaper',
     type: 'PDF',
+    color: 'from-cyan-500/30 to-cyan-600/20',
   },
   {
-    title: 'Hanzo AI Documentation',
+    title: 'Hanzo Docs',
+    shortTitle: 'Hanzo',
     description: 'Frontier AI and foundational models',
-    icon: <HanzoLogo className="w-5 h-5 text-white" />,
+    icon: <HanzoLogo className="w-8 h-8 text-white" />,
     url: 'https://docs.hanzo.ai',
     type: 'Docs',
+    color: 'from-purple-500/30 to-purple-600/20',
   },
   {
-    title: 'Zoo Research Papers',
+    title: 'Zoo Research',
+    shortTitle: 'Zoo',
     description: 'Decentralized AI research network',
-    icon: <ZooLogo className="w-5 h-5" />,
+    icon: <ZooLogo className="w-8 h-8" />,
     url: 'https://zoo.ngo/research',
     type: 'Research',
+    color: 'from-green-500/30 to-green-600/20',
   },
   {
-    title: 'ZIPs (Zoo Improvement Proposals)',
+    title: 'ZIPs',
+    shortTitle: 'ZIPs',
     description: 'Governance and improvement proposals',
-    icon: <File className="w-5 h-5 text-green-400" />,
+    icon: <File className="w-8 h-8 text-green-400" />,
     url: 'https://zips.zoo.ngo',
     type: 'Proposals',
+    color: 'from-emerald-500/30 to-emerald-600/20',
   },
   {
-    title: 'Lux Genesis Documentation',
+    title: 'Lux Genesis',
+    shortTitle: 'Genesis',
     description: 'Network genesis and validator setup',
-    icon: <FileText className="w-5 h-5 text-blue-400" />,
+    icon: <FileText className="w-8 h-8 text-blue-400" />,
     url: 'https://docs.lux.network/genesis',
     type: 'Technical',
+    color: 'from-blue-500/30 to-blue-600/20',
   },
   {
     title: 'ACI Architecture',
+    shortTitle: 'ACI',
     description: 'AI Chain Infrastructure overview',
-    icon: <HanzoLogo className="w-4 h-4 text-purple-400" />,
+    icon: <HanzoLogo className="w-7 h-7 text-purple-400" />,
     url: 'https://docs.hanzo.ai/aci',
     type: 'Architecture',
+    color: 'from-violet-500/30 to-violet-600/20',
   },
 ];
 

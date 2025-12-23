@@ -60,23 +60,28 @@ Say hi: curl -sL zeekay.chat | sh`;
     );
   };
 
+  // Responsive sizing
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+  const windowWidth = isMobile ? Math.min(350, window.innerWidth - 40) : 500;
+  const windowHeight = isMobile ? 400 : 350;
+
   return (
     <MacWindow
       title="Welcome"
       onClose={onClose}
       className="animate-scale-in shadow-lg"
-      initialPosition={{ x: window.innerWidth / 2 - 250, y: window.innerHeight / 2 - 150 }}
-      initialSize={{ width: 500, height: 350 }}
+      initialPosition={{ x: Math.max(20, window.innerWidth / 2 - windowWidth / 2), y: Math.max(60, window.innerHeight / 2 - windowHeight / 2) }}
+      initialSize={{ width: windowWidth, height: windowHeight }}
       windowType="textpad"
     >
       <div className="h-full p-2 bg-gradient-to-br from-zinc-900 to-black border border-white/10 overflow-auto">
         {isTyping ? (
-          <div className="w-full h-full p-4 font-mono text-base text-gray-300 whitespace-pre-wrap leading-relaxed">
+          <div className="w-full h-full p-3 sm:p-4 font-mono text-sm sm:text-base text-gray-300 whitespace-pre-wrap leading-relaxed">
             {text}
             <span className="terminal-cursor animate-blink bg-gray-300">|</span>
           </div>
         ) : (
-          <div className="w-full h-full p-4 font-mono text-base text-gray-300 whitespace-pre-wrap leading-relaxed">
+          <div className="w-full h-full p-3 sm:p-4 font-mono text-sm sm:text-base text-gray-300 whitespace-pre-wrap leading-relaxed">
             {renderTextWithLinks()}
           </div>
         )}
