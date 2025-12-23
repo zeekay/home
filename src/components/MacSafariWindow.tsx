@@ -122,10 +122,16 @@ const MacSafariWindow: React.FC<MacSafariWindowProps> = ({
           scaleFactor={scaleFactor}
         />
         
-        <SafariContent 
-          url={url} 
-          depth={depth} 
-          iframeKey={iframeKey} 
+        <SafariContent
+          url={url}
+          depth={depth}
+          iframeKey={iframeKey}
+          onNavigate={(newUrl) => {
+            setUrl(newUrl);
+            setInputUrl(newUrl);
+            setHistory(prev => [...prev.slice(0, historyIndex + 1), newUrl]);
+            setHistoryIndex(prev => prev + 1);
+          }}
         />
       </div>
     </MacWindow>

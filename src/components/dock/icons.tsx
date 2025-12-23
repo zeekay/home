@@ -25,11 +25,11 @@ export const FinderIcon: React.FC<{ className?: string }> = ({ className = "w-12
     {/* Face outline for rounded corners */}
     <rect x="8" y="10" width="48" height="44" rx="10" fill="none" stroke="#1E90FF" strokeWidth="0.5" />
     {/* Left eye - simple black rectangle with rounded corners */}
-    <rect x="18" y="24" width="5" height="10" rx="2" fill="#1a1a1a" />
+    <rect x="19" y="24" width="3" height="9" rx="1.5" fill="#1a1a1a" />
     {/* Right eye - simple black rectangle with rounded corners */}
-    <rect x="41" y="24" width="5" height="10" rx="2" fill="#1a1a1a" />
+    <rect x="42" y="24" width="3" height="9" rx="1.5" fill="#1a1a1a" />
     {/* Smile - simple black curved line */}
-    <path d="M20 42 Q32 52 44 42" stroke="#1a1a1a" strokeWidth="3" fill="none" strokeLinecap="round" />
+    <path d="M21 42 Q32 50 43 42" stroke="#1a1a1a" strokeWidth="2" fill="none" strokeLinecap="round" />
   </svg>
 );
 
@@ -115,21 +115,19 @@ export const CalendarIcon: React.FC<{ className?: string }> = ({ className = "w-
   );
 };
 
-// Socials Icon - Speech bubbles
+// Messages Icon - Chat bubble (macOS style)
 export const SocialsIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="socialsGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#64D2FF" />
-        <stop offset="100%" stopColor="#0A84FF" />
+        <stop offset="0%" stopColor="#5AF158" />
+        <stop offset="100%" stopColor="#2BD439" />
       </linearGradient>
     </defs>
     <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#socialsGrad)" />
-    {/* Chat bubbles */}
-    <path d="M14 20 h22 a4 4 0 0 1 4 4 v12 a4 4 0 0 1 -4 4 h-16 l-6 6 v-6 a4 4 0 0 1 -4 -4 v-12 a4 4 0 0 1 4 -4" fill="white" />
-    <circle cx="20" cy="30" r="2" fill="#0A84FF" />
-    <circle cx="28" cy="30" r="2" fill="#0A84FF" />
-    <circle cx="36" cy="30" r="2" fill="#0A84FF" />
+    {/* Chat bubble */}
+    <ellipse cx="32" cy="30" rx="18" ry="14" fill="white" />
+    <path d="M20 40 Q18 48 12 50 Q22 48 26 42" fill="white" />
   </svg>
 );
 
@@ -143,8 +141,12 @@ export const PhoneIcon: React.FC<{ className?: string }> = ({ className = "w-12 
       </linearGradient>
     </defs>
     <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#phoneGrad)" />
-    {/* Phone receiver */}
-    <path d="M18 22 c0 0 -2 8 6 16 s16 6 16 6 l4 -4 c1 -1 1 -2 0 -3 l-6 -4 c-1 -1 -2 -1 -3 0 l-2 2 c-4 -2 -8 -6 -10 -10 l2 -2 c1 -1 1 -2 0 -3 l-4 -6 c-1 -1 -2 -1 -3 0 l-4 4 z" fill="white" />
+    {/* Phone receiver - cleaner design */}
+    <path
+      d="M22 20c-2 0-4 2-4 4v4c0 8 6 16 16 16h4c2 0 4-2 4-4v-4l-8-4-2 4c-4-2-8-6-10-10l4-2-4-8h-4z"
+      fill="white"
+      transform="rotate(-15 32 32)"
+    />
   </svg>
 );
 
@@ -158,76 +160,75 @@ export const MusicIcon: React.FC<{ className?: string }> = ({ className = "w-12 
       </linearGradient>
     </defs>
     <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#musicGrad)" />
-    {/* Music note */}
-    <path d="M42 16 v24 c0 4 -4 7 -8 7 s-8 -3 -8 -7 s4 -7 8 -7 c2 0 4 0.5 5 1.5 v-14 l-16 4 v20 c0 4 -4 7 -8 7 s-8 -3 -8 -7 s4 -7 8 -7 c2 0 4 0.5 5 1.5 v-23 l22 -6 z" fill="white" />
+    {/* Music note - simplified single note */}
+    <ellipse cx="24" cy="44" rx="8" ry="6" fill="white" />
+    <rect x="30" y="14" width="4" height="32" fill="white" />
+    <path d="M34 14 L48 18 L48 24 L34 20 Z" fill="white" />
   </svg>
 );
 
-// Terminal Icon
+// Terminal Icon - Clean minimal design
 export const TerminalIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
     <rect x="4" y="4" width="56" height="56" rx="12" fill="#1a1a1a" />
-    {/* Terminal window frame */}
-    <rect x="8" y="8" width="48" height="48" rx="6" fill="#2a2a2a" />
-    {/* Title bar */}
-    <rect x="8" y="8" width="48" height="10" rx="6" fill="#3a3a3a" />
-    <rect x="8" y="14" width="48" height="4" fill="#3a3a3a" />
-    {/* Traffic lights */}
-    <circle cx="16" cy="13" r="2.5" fill="#FF5F56" />
-    <circle cx="24" cy="13" r="2.5" fill="#FFBD2E" />
-    <circle cx="32" cy="13" r="2.5" fill="#27CA40" />
-    {/* Terminal prompt */}
-    <text x="14" y="32" fill="#4AF626" fontSize="12" fontFamily="monospace">$</text>
-    <rect x="24" y="26" width="8" height="10" fill="#4AF626" opacity="0.8">
-      <animate attributeName="opacity" values="0.8;0.2;0.8" dur="1s" repeatCount="indefinite" />
-    </rect>
-    {/* Previous command output */}
-    <text x="14" y="46" fill="#888" fontSize="8" fontFamily="monospace">~ zach@macbook</text>
+    {/* Terminal prompt chevron */}
+    <path d="M16 24 L26 32 L16 40" stroke="#4AF626" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    {/* Underscore cursor at baseline */}
+    <rect x="32" y="38" width="14" height="3" fill="#4AF626" opacity="0.9" />
   </svg>
 );
 
-// Hanzo Logo - White H shape with diagonal stripe
-export const HanzoLogo: React.FC<{ className?: string }> = ({ className = "w-8 h-8" }) => (
-  <svg viewBox="0 0 67 67" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <path d="M22.21 67V44.6369H0V67H22.21Z" fill="currentColor"/>
-    <path d="M0 44.6369L22.21 46.8285V44.6369H0Z" fill="currentColor" opacity="0.7"/>
-    <path d="M66.7038 22.3184H22.2534L0.0878906 44.6367H44.4634L66.7038 22.3184Z" fill="currentColor"/>
-    <path d="M22.21 0H0V22.3184H22.21V0Z" fill="currentColor"/>
-    <path d="M66.7198 0H44.5098V22.3184H66.7198V0Z" fill="currentColor"/>
-    <path d="M66.6753 22.3185L44.5098 20.0822V22.3185H66.6753Z" fill="currentColor" opacity="0.7"/>
-    <path d="M66.7198 67V44.6369H44.5098V67H66.7198Z" fill="currentColor"/>
+// Hanzo Logo - White H shape with diagonal stripe (dock-optimized)
+export const HanzoLogo: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
+  <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <rect width="64" height="64" rx="12" fill="#000000" />
+    <g transform="translate(12, 12) scale(0.6)">
+      <path d="M22.21 67V44.6369H0V67H22.21Z" fill="white"/>
+      <path d="M0 44.6369L22.21 46.8285V44.6369H0Z" fill="white" opacity="0.7"/>
+      <path d="M66.7038 22.3184H22.2534L0.0878906 44.6367H44.4634L66.7038 22.3184Z" fill="white"/>
+      <path d="M22.21 0H0V22.3184H22.21V0Z" fill="white"/>
+      <path d="M66.7198 0H44.5098V22.3184H66.7198V0Z" fill="white"/>
+      <path d="M66.6753 22.3185L44.5098 20.0822V22.3185H66.6753Z" fill="white" opacity="0.7"/>
+      <path d="M66.7198 67V44.6369H44.5098V67H66.7198Z" fill="white"/>
+    </g>
   </svg>
 );
 
 // Lux Logo - Upside down triangle
-export const LuxLogo: React.FC<{ className?: string }> = ({ className = "w-8 h-8" }) => (
-  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className={className}>
-    <path d="M50 85 L15 25 L85 25 Z" fill="currentColor"/>
+export const LuxLogo: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
+  <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <rect width="64" height="64" rx="12" fill="#000000" />
+    <path d="M32 52 L12 18 L52 18 Z" fill="white"/>
   </svg>
 );
 
 // Zoo Logo - Three overlapping RGB circles
-export const ZooLogo: React.FC<{ className?: string; mono?: boolean }> = ({ className = "w-8 h-8", mono = false }) => {
+export const ZooLogo: React.FC<{ className?: string; mono?: boolean }> = ({ className = "w-12 h-12", mono = false }) => {
   if (mono) {
     return (
-      <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" className={className}>
-        <defs>
-          <clipPath id="outerCircleMono">
-            <circle cx="508" cy="510" r="283"/>
-          </clipPath>
-        </defs>
-        <g clipPath="url(#outerCircleMono)">
-          <circle cx="513" cy="369" r="234" fill="none" stroke="currentColor" strokeWidth="33"/>
-          <circle cx="365" cy="595" r="234" fill="none" stroke="currentColor" strokeWidth="33"/>
-          <circle cx="643" cy="595" r="234" fill="none" stroke="currentColor" strokeWidth="33"/>
-          <circle cx="508" cy="510" r="265" fill="none" stroke="currentColor" strokeWidth="36"/>
+      <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={className}>
+        <rect width="64" height="64" rx="12" fill="#000000" />
+        <g transform="translate(10, 10) scale(0.043)">
+          <defs>
+            <clipPath id="outerCircleMono">
+              <circle cx="508" cy="510" r="283"/>
+            </clipPath>
+          </defs>
+          <g clipPath="url(#outerCircleMono)">
+            <circle cx="513" cy="369" r="234" fill="none" stroke="white" strokeWidth="33"/>
+            <circle cx="365" cy="595" r="234" fill="none" stroke="white" strokeWidth="33"/>
+            <circle cx="643" cy="595" r="234" fill="none" stroke="white" strokeWidth="33"/>
+            <circle cx="508" cy="510" r="265" fill="none" stroke="white" strokeWidth="36"/>
+          </g>
         </g>
       </svg>
     );
   }
 
   return (
-    <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <rect width="64" height="64" rx="12" fill="#000000" />
+      <g transform="translate(10, 10) scale(0.043)">
       <defs>
         <clipPath id="outerCircleColor">
           <circle cx="512" cy="511" r="270"/>
@@ -261,6 +262,7 @@ export const ZooLogo: React.FC<{ className?: string; mono?: boolean }> = ({ clas
           </g>
         </g>
       </g>
+      </g>
     </svg>
   );
 };
@@ -269,29 +271,37 @@ export const ZooLogo: React.FC<{ className?: string; mono?: boolean }> = ({ clas
 export const MacFolderIcon: React.FC<{ className?: string; badgeType?: 'apps' | 'downloads' }> = ({ className = "w-12 h-12", badgeType }) => (
   <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={className}>
     <defs>
-      <linearGradient id="folderGrad" x1="32" y1="12" x2="32" y2="56" gradientUnits="userSpaceOnUse">
+      <linearGradient id="folderGrad" x1="32" y1="4" x2="32" y2="60" gradientUnits="userSpaceOnUse">
         <stop stopColor="#6CB5E9"/>
         <stop offset="1" stopColor="#3A8DD0"/>
       </linearGradient>
-      <linearGradient id="folderFrontGrad" x1="32" y1="20" x2="32" y2="56" gradientUnits="userSpaceOnUse">
+      <linearGradient id="folderFrontGrad" x1="32" y1="14" x2="32" y2="60" gradientUnits="userSpaceOnUse">
         <stop stopColor="#8AC7F0"/>
         <stop offset="1" stopColor="#4A9FE3"/>
       </linearGradient>
     </defs>
     {/* Folder back */}
-    <path d="M4 16C4 13.7909 5.79086 12 8 12H24L28 18H56C58.2091 18 60 19.7909 60 22V52C60 54.2091 58.2091 56 56 56H8C5.79086 56 4 54.2091 4 52V16Z" fill="url(#folderGrad)"/>
+    <path d="M2 10C2 7.79086 3.79086 6 6 6H22L26 12H58C60.2091 12 62 13.7909 62 16V56C62 58.2091 60.2091 60 58 60H6C3.79086 60 2 58.2091 2 56V10Z" fill="url(#folderGrad)"/>
     {/* Folder front */}
-    <path d="M4 24C4 21.7909 5.79086 20 8 20H56C58.2091 20 60 21.7909 60 24V52C60 54.2091 58.2091 56 56 56H8C5.79086 56 4 54.2091 4 52V24Z" fill="url(#folderFrontGrad)"/>
-    {/* Apps badge - Letter A */}
+    <path d="M2 18C2 15.7909 3.79086 14 6 14H58C60.2091 14 62 15.7909 62 18V56C62 58.2091 60.2091 60 58 60H6C3.79086 60 2 58.2091 2 56V18Z" fill="url(#folderFrontGrad)"/>
+    {/* Apps badge - Grid of app squares like macOS Launchpad */}
     {badgeType === 'apps' && (
-      <g transform="translate(20, 28)">
-        <path d="M12 2L4 22H8L10 18H14L16 22H20L12 2Z" fill="white" opacity="0.95"/>
-        <path d="M12 8L10 14H14L12 8Z" fill="#4A9FE3"/>
+      <g transform="translate(18, 24)">
+        {/* 3x3 grid of rounded squares */}
+        <rect x="2" y="2" width="6" height="6" rx="1.5" fill="white" opacity="0.95"/>
+        <rect x="11" y="2" width="6" height="6" rx="1.5" fill="white" opacity="0.95"/>
+        <rect x="20" y="2" width="6" height="6" rx="1.5" fill="white" opacity="0.95"/>
+        <rect x="2" y="11" width="6" height="6" rx="1.5" fill="white" opacity="0.95"/>
+        <rect x="11" y="11" width="6" height="6" rx="1.5" fill="white" opacity="0.95"/>
+        <rect x="20" y="11" width="6" height="6" rx="1.5" fill="white" opacity="0.95"/>
+        <rect x="2" y="20" width="6" height="6" rx="1.5" fill="white" opacity="0.85"/>
+        <rect x="11" y="20" width="6" height="6" rx="1.5" fill="white" opacity="0.85"/>
+        <rect x="20" y="20" width="6" height="6" rx="1.5" fill="white" opacity="0.85"/>
       </g>
     )}
     {/* Downloads badge - Arrow down in circle */}
     {badgeType === 'downloads' && (
-      <g transform="translate(20, 28)">
+      <g transform="translate(20, 26)">
         <circle cx="12" cy="12" r="10" fill="white" opacity="0.95"/>
         <path d="M12 6V14M12 14L8 10M12 14L16 10" stroke="#4A9FE3" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
         <path d="M7 18H17" stroke="#4A9FE3" strokeWidth="2.5" strokeLinecap="round"/>
@@ -301,7 +311,7 @@ export const MacFolderIcon: React.FC<{ className?: string; badgeType?: 'apps' | 
 );
 
 // Sora Logo - OpenAI video generation
-export const SoraIcon: React.FC<{ className?: string }> = ({ className = "w-6 h-6" }) => (
+export const SoraIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
     <path d="M43.4175 -0.000488281C50.4387 -0.000488281 56.7957 2.84467 61.3979 7.44482C63.4989 6.88303 65.7068 6.58252 67.9849 6.58252C82.0316 6.58255 93.4185 17.9694 93.4185 32.0161C93.4184 34.294 93.1169 36.5013 92.5552 38.6021C97.1554 43.2043 100 49.5613 100 56.5825C100 68.3512 92.0064 78.2507 81.1528 81.1528C78.2507 92.0064 68.3512 100 56.5825 100C49.5598 100 43.2016 97.1542 38.5991 92.5522C36.4992 93.1134 34.2929 93.4145 32.0161 93.4146C17.9694 93.4146 6.58252 82.0277 6.58252 67.981C6.58253 65.7046 6.88286 63.4985 7.44385 61.3989C2.84423 56.7967 -0.000488281 50.4402 -0.000488281 43.4194C-0.000393283 31.651 7.99283 21.7504 18.8462 18.8481C21.7478 7.99388 31.6484 -0.000343176 43.4175 -0.000488281ZM42.9487 40.2603C41.1918 33.7038 35.3761 29.5653 29.9604 31.0161C24.5449 32.4675 21.5777 38.9595 23.3345 45.5161C23.363 45.6225 23.3933 45.7288 23.4243 45.8345L23.4204 45.8354L25.2163 52.5376C26.9734 59.094 32.7889 63.2328 38.2046 61.7817C43.6199 60.3303 46.5871 53.8381 44.8306 47.2817L43.0347 40.5796L43.0308 40.5806C43.0048 40.4736 42.9772 40.3666 42.9487 40.2603ZM72.8159 32.8921C71.0589 26.3359 65.2432 22.1973 59.8276 23.6479C54.4122 25.0993 51.4442 31.5915 53.2007 38.1479C53.2292 38.2543 53.2595 38.3616 53.2905 38.4673L53.2866 38.4683L55.0825 45.1694C56.8395 51.7256 62.6553 55.8651 68.0708 54.4146C73.4864 52.9633 76.4535 46.4701 74.6968 39.9136L72.9019 33.2124L72.8979 33.2134C72.872 33.1063 72.8444 32.9984 72.8159 32.8921ZM35.9956 45.7407C36.8416 45.5144 37.7121 46.017 37.939 46.8628C38.1654 47.7087 37.6627 48.5782 36.8169 48.8052C35.9708 49.0318 35.1005 48.5301 34.8735 47.6841C34.6471 46.8381 35.1497 45.9676 35.9956 45.7407ZM28.9487 35.8481C30.4321 38.1604 32.9448 39.6113 35.689 39.7397C33.3765 41.2231 31.9257 43.7367 31.7974 46.481C30.314 44.1685 27.8004 42.7167 25.0562 42.5884C27.3686 41.1051 28.8204 38.5924 28.9487 35.8481ZM65.8638 38.3667C66.7095 38.1405 67.579 38.6424 67.8062 39.4878C68.0328 40.3338 67.5309 41.2041 66.6851 41.4312C65.8389 41.6577 64.9685 41.1552 64.7417 40.3091C64.5156 39.4632 65.0181 38.5936 65.8638 38.3667ZM58.814 28.4731C60.2972 30.7857 62.8109 32.2363 65.5552 32.3647C63.2428 33.848 61.792 36.3618 61.6636 39.106C60.1802 36.7938 57.6665 35.3427 54.9224 35.2144C57.2349 33.731 58.6857 31.2176 58.814 28.4731Z" fill="url(#soraGradient)"/>
     <defs>

@@ -1,12 +1,132 @@
 
-import React, { useEffect, useRef } from 'react';
-import { Search } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Search, ExternalLink, RefreshCw } from 'lucide-react';
 
 interface SafariContentProps {
   url: string;
   depth: number;
   iframeKey: number;
+  onNavigate?: (url: string) => void;
 }
+
+// Extract search query from DuckDuckGo URL
+const getDuckDuckGoQuery = (url: string): string | null => {
+  try {
+    const urlObj = new URL(url);
+    if (urlObj.hostname.includes('duckduckgo.com')) {
+      return urlObj.searchParams.get('q');
+    }
+  } catch {}
+  return null;
+};
+
+// Custom search results component
+interface SearchResultsProps {
+  query: string;
+  onNewSearch: (query: string) => void;
+}
+
+const SearchResults: React.FC<SearchResultsProps> = ({ query, onNewSearch }) => {
+  const [results, setResults] = useState<Array<{title: string; snippet: string; url: string}>>([]);
+  const [loading, setLoading] = useState(true);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Use Wikipedia API for search results (it allows CORS)
+    const fetchResults = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*&srlimit=8`
+        );
+        const data = await response.json();
+        if (data.query?.search) {
+          setResults(data.query.search.map((item: any) => ({
+            title: item.title,
+            snippet: item.snippet.replace(/<[^>]*>/g, ''), // Strip HTML
+            url: `https://en.wikipedia.org/wiki/${encodeURIComponent(item.title.replace(/ /g, '_'))}`
+          })));
+        }
+      } catch (e) {
+        console.error('Search failed:', e);
+      }
+      setLoading(false);
+    };
+    fetchResults();
+  }, [query]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newQuery = searchInputRef.current?.value;
+    if (newQuery) {
+      onNewSearch(newQuery);
+    }
+  };
+
+  return (
+    <div className="w-full h-full bg-white overflow-auto">
+      {/* Search header */}
+      <div className="sticky top-0 bg-white border-b border-gray-200 p-4">
+        <form onSubmit={handleSearch} className="max-w-2xl mx-auto flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              defaultValue={query}
+              placeholder="Search..."
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
+          >
+            Search
+          </button>
+        </form>
+      </div>
+
+      {/* Results */}
+      <div className="max-w-2xl mx-auto p-4">
+        <p className="text-sm text-gray-500 mb-4">
+          Showing Wikipedia results for "{query}"
+          <button
+            onClick={() => window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank')}
+            className="ml-2 text-blue-500 hover:underline inline-flex items-center gap-1"
+          >
+            Open Google <ExternalLink className="w-3 h-3" />
+          </button>
+        </p>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <RefreshCw className="w-6 h-6 text-gray-400 animate-spin" />
+          </div>
+        ) : results.length > 0 ? (
+          <div className="space-y-6">
+            {results.map((result, i) => (
+              <div key={i} className="group">
+                <a
+                  href={result.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline text-lg font-medium"
+                >
+                  {result.title}
+                </a>
+                <p className="text-sm text-green-700 truncate">{result.url}</p>
+                <p className="text-sm text-gray-600 mt-1">{result.snippet}...</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 text-center py-12">No results found</p>
+        )}
+      </div>
+    </div>
+  );
+};
 
 // Check if URL is a Google search URL
 const isGoogleUrl = (url: string): boolean => {
@@ -19,15 +139,28 @@ const isGoogleUrl = (url: string): boolean => {
 };
 
 // Google Search Component (custom implementation since Google blocks iframes)
-const GoogleSearch: React.FC = () => {
+interface GoogleSearchProps {
+  onSearch: (query: string) => void;
+}
+
+const GoogleSearch: React.FC<GoogleSearchProps> = ({ onSearch }) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus the search input when component mounts
+  useEffect(() => {
+    // Small delay to ensure the component is fully rendered
+    const timer = setTimeout(() => {
+      searchInputRef.current?.focus();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const query = searchInputRef.current?.value;
     if (query) {
-      // Open Google search in a new tab
-      window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+      // Navigate to DuckDuckGo which allows embedding
+      onSearch(query);
     }
   };
 
@@ -96,12 +229,33 @@ const GoogleSearch: React.FC = () => {
   );
 };
 
-const SafariContent: React.FC<SafariContentProps> = ({ url, depth, iframeKey }) => {
+const SafariContent: React.FC<SafariContentProps> = ({ url, depth, iframeKey, onNavigate }) => {
+  const handleSearch = (query: string) => {
+    if (onNavigate) {
+      // Navigate to search results (use DuckDuckGo URL format for tracking)
+      const searchUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
+      onNavigate(searchUrl);
+    } else {
+      // Fallback: open in new tab
+      window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+    }
+  };
+
   // Show custom Google search page for google.com URLs
   if (isGoogleUrl(url)) {
     return (
       <div className="flex-1 relative">
-        <GoogleSearch />
+        <GoogleSearch onSearch={handleSearch} />
+      </div>
+    );
+  }
+
+  // Show custom search results for DuckDuckGo URLs (since DDG blocks iframes too)
+  const searchQuery = getDuckDuckGoQuery(url);
+  if (searchQuery) {
+    return (
+      <div className="flex-1 relative">
+        <SearchResults query={searchQuery} onNewSearch={handleSearch} />
       </div>
     );
   }
