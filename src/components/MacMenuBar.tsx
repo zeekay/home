@@ -466,8 +466,8 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
     return <Volume2 className="w-[15px] h-[15px] opacity-90" />;
   };
 
-  const menuButtonClass = "h-full px-[10px] flex items-center rounded-[4px] mx-[1px] hover:bg-white/20 outline-none focus:outline-none focus:ring-0 transition-colors duration-75";
-  const systemTrayButtonClass = "h-full px-[7px] flex items-center rounded-[4px] mx-[1px] hover:bg-white/20 outline-none focus:outline-none focus:ring-0 transition-colors duration-75";
+  const menuButtonClass = "h-[22px] px-[10px] flex items-center rounded-[5px] mx-[1px] hover:bg-white/20 outline-none focus:outline-none focus:ring-0 transition-colors duration-75";
+  const systemTrayButtonClass = "h-[22px] px-[7px] flex items-center rounded-[5px] mx-[1px] hover:bg-white/20 outline-none focus:outline-none focus:ring-0 transition-colors duration-75";
 
   // Handle menu item click with action routing
   const handleMenuItemClick = (label: string) => {
@@ -547,10 +547,11 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
     <div
       ref={menuBarRef}
       className={cn(
-        'fixed top-0 left-0 right-0 z-[10000]',
-        'h-[25px] px-2',
+        'fixed top-[3px] left-[4px] right-[4px] z-[10000]',
+        'h-[28px] px-2',
         'flex items-center justify-between',
-        'bg-black/50 backdrop-blur-2xl saturate-150',
+        'bg-black/40 backdrop-blur-2xl saturate-150',
+        'rounded-[9px]',
         'text-white/90 text-[13px] font-medium tracking-[-0.01em]',
         'select-none',
         className
@@ -568,7 +569,7 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
             <LuxLogo className="w-[14px] h-[14px] text-white opacity-90" />
           </button>
           {activeMenu === -1 && (
-            <div className="absolute top-full left-0 mt-[1px] min-w-[230px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl text-white/90 text-[13px] p-1">
+            <div className="absolute top-full left-0 mt-[5px] min-w-[230px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1">
               {luxMenuItems.map((item, index) => renderMenuItem(item, index))}
             </div>
           )}
@@ -580,7 +581,7 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
             <button
               className={cn(
                 menuButtonClass,
-                menu.bold && "font-semibold",
+                menu.bold && "font-bold",
                 activeMenu === index && "bg-white/20"
               )}
               onClick={() => handleMenuClick(index)}
@@ -589,7 +590,7 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
               {menu.label}
             </button>
             {activeMenu === index && (
-              <div className="absolute top-full left-0 mt-[1px] min-w-[230px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl text-white/90 text-[13px] p-1 max-h-[80vh] overflow-y-auto">
+              <div className="absolute top-full left-0 mt-[5px] min-w-[230px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1 max-h-[80vh] overflow-y-auto">
                 {menu.items.map((item, itemIndex) => renderMenuItem(item, itemIndex))}
               </div>
             )}
@@ -612,7 +613,7 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
             )}
           </button>
           {activeSystemMenu === 'bluetooth' && (
-            <div className="absolute top-full right-0 mt-[1px] min-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl text-white/90 text-[13px] p-1">
+            <div className="absolute top-full right-0 mt-[5px] min-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1">
               <div className="px-3 py-2 flex items-center justify-between">
                 <span className="font-semibold">Bluetooth</span>
                 <button
@@ -659,7 +660,7 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
             )}
           </button>
           {activeSystemMenu === 'wifi' && (
-            <div className="absolute top-full right-0 mt-[1px] min-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl text-white/90 text-[13px] p-1">
+            <div className="absolute top-full right-0 mt-[5px] min-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1">
               <div className="px-3 py-2 flex items-center justify-between">
                 <span className="font-semibold">Wi-Fi</span>
                 <button
@@ -713,7 +714,7 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
             )}
           </button>
           {activeSystemMenu === 'focus' && (
-            <div className="absolute top-full right-0 mt-[1px] min-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl text-white/90 text-[13px] p-1">
+            <div className="absolute top-full right-0 mt-[5px] min-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1">
               <div className="px-3 py-2 flex items-center justify-between">
                 <span className="font-semibold">Focus</span>
                 <button
@@ -916,7 +917,7 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
             <span className="text-[13px] opacity-90">{formatTime(currentTime)}</span>
           </button>
           {activeSystemMenu === 'datetime' && (
-            <div className="absolute top-full right-0 mt-[1px] min-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl text-white/90 text-[13px] p-1">
+            <div className="absolute top-full right-0 mt-[5px] min-w-[280px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-[10px] shadow-2xl text-white/90 text-[13px] p-1">
               <div className="px-3 py-2 text-center">
                 <p className="text-2xl font-light">
                   {currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}

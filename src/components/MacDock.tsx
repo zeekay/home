@@ -27,6 +27,7 @@ interface MacDockProps extends DockCallbacks {
   className?: string;
   onApplicationsClick?: () => void;
   onDownloadsClick?: () => void;
+  activeApps?: string[];
 }
 
 // Map of item IDs to their custom icon components
@@ -76,7 +77,8 @@ const MacDock: React.FC<MacDockProps> = ({
   onLuxClick,
   onZooClick,
   onApplicationsClick,
-  onDownloadsClick
+  onDownloadsClick,
+  activeApps = []
 }) => {
   const isMobile = useIsMobile();
 
@@ -151,6 +153,7 @@ const MacDock: React.FC<MacDockProps> = ({
               customIcon={item.useCustomIcon ? getIconComponent(item.id) : undefined}
               icon={item.icon}
               bgGradient={item.bgGradient}
+              isActive={activeApps.includes(item.id)}
             />
           ))}
 
@@ -173,6 +176,7 @@ const MacDock: React.FC<MacDockProps> = ({
               onClick={item.onClick}
               customIcon={item.useCustomIcon ? getIconComponent(item.id) : undefined}
               bgGradient={item.bgGradient}
+              isActive={activeApps.includes(item.id)}
             />
           ))}
 
