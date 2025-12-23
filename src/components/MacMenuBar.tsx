@@ -777,24 +777,20 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
           )}
         </div>
 
-        {/* Control Center - 2 toggle switches icon */}
+        {/* Control Center - two horizontal sliders icon like macOS */}
         <div className="relative h-full">
           <button
             className={cn(systemTrayButtonClass, activeSystemMenu === 'control' && "bg-white/20")}
             onClick={() => setActiveSystemMenu(activeSystemMenu === 'control' ? null : 'control')}
           >
-            <div className="flex flex-col gap-[3px]">
-              {/* Top toggle - on position */}
-              <div className="flex items-center">
-                <div className="w-[10px] h-[5px] bg-current/40 rounded-full relative">
-                  <div className="absolute right-[1px] top-[1px] w-[3px] h-[3px] bg-current rounded-full opacity-90" />
-                </div>
+            <div className="flex flex-col gap-[2px]">
+              {/* Top slider - dot on right */}
+              <div className="w-[14px] h-[4px] bg-current/30 rounded-full relative">
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[4px] h-[4px] bg-current rounded-full" />
               </div>
-              {/* Bottom toggle - off position */}
-              <div className="flex items-center">
-                <div className="w-[10px] h-[5px] bg-current/40 rounded-full relative">
-                  <div className="absolute left-[1px] top-[1px] w-[3px] h-[3px] bg-current rounded-full opacity-90" />
-                </div>
+              {/* Bottom slider - dot on left */}
+              <div className="w-[14px] h-[4px] bg-current/30 rounded-full relative">
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[4px] h-[4px] bg-current rounded-full" />
               </div>
             </div>
           </button>
