@@ -31,9 +31,10 @@ export interface DockCallbacks {
 // Other apps live in the Applications folder
 export const createDockItems = (callbacks: DockCallbacks): DockItemType[] => {
   return [
-    { 
+    {
       id: 'finder',
-      label: 'Finder', 
+      label: 'Finder',
+      onClick: callbacks.onFinderClick,
       useCustomIcon: true,
     },
     { 

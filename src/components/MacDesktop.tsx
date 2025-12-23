@@ -3,6 +3,7 @@ import MacDock from './MacDock';
 import MacMenuBar from './MacMenuBar';
 import MacTerminalWindow from './MacTerminalWindow';
 import MacSafariWindow from './MacSafariWindow';
+import MacFinderWindow from './MacFinderWindow';
 import MacMusicWindow from './MacMusicWindow';
 import MacEmailWindow from './MacEmailWindow';
 import MacCalendarWindow from './MacCalendarWindow';
@@ -13,6 +14,10 @@ import MacTextPadWindow from './MacTextPadWindow';
 import MacGitHubStatsWindow from './MacGitHubStatsWindow';
 import MacSocialsWindow from './MacSocialsWindow';
 import MacStatsWindow from './MacStatsWindow';
+import MacCalculatorWindow from './MacCalculatorWindow';
+import MacClockWindow from './MacClockWindow';
+import MacWeatherWindow from './MacWeatherWindow';
+import MacStickiesWindow from './MacStickiesWindow';
 import HanzoAIWindow from './HanzoAIWindow';
 import LuxWalletWindow from './LuxWalletWindow';
 import ZooAssistantWindow from './ZooAssistantWindow';
@@ -45,10 +50,11 @@ interface ContextMenuPosition {
 type AppType = 'Finder' | 'Terminal' | 'Safari' | 'Music' | 'Mail' | 'Calendar' | 
                'System Preferences' | 'Photos' | 'FaceTime' | 'Notes' | 
                'GitHub Stats' | 'Messages' | 'Activity Monitor' | 'Hanzo AI' | 
-               'Lux Wallet' | 'Zoo';
+               'Lux Wallet' | 'Zoo' | 'Calculator' | 'Clock' | 'Weather' | 'Stickies';
 
 const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   // Window visibility states
+  const [showFinder, setShowFinder] = useState(false);
   const [showTerminal, setShowTerminal] = useState(false);
   const [showSafari, setShowSafari] = useState(false);
   const [showMusic, setShowMusic] = useState(false);
@@ -64,6 +70,10 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   const [showHanzoAI, setShowHanzoAI] = useState(false);
   const [showLuxWallet, setShowLuxWallet] = useState(false);
   const [showZooAssistant, setShowZooAssistant] = useState(false);
+  const [showCalculator, setShowCalculator] = useState(false);
+  const [showClock, setShowClock] = useState(false);
+  const [showWeather, setShowWeather] = useState(false);
+  const [showStickies, setShowStickies] = useState(false);
   const [showApplications, setShowApplications] = useState(false);
   const [showDownloads, setShowDownloads] = useState(false);
 
@@ -123,6 +133,38 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
     setActiveApp(appName);
   };
 
+  // Menu bar action handlers
+  const handleQuitCurrentApp = useCallback(() => {
+    // Close the current active app
+    switch (activeApp) {
+      case 'Finder': setShowFinder(false); break;
+      case 'Terminal': setShowTerminal(false); break;
+      case 'Safari': setShowSafari(false); break;
+      case 'Music': setShowMusic(false); break;
+      case 'Mail': setShowEmail(false); break;
+      case 'Calendar': setShowCalendar(false); break;
+      case 'System Preferences': setShowSystemPreferences(false); break;
+      case 'Photos': setShowPhotos(false); break;
+      case 'FaceTime': setShowFaceTime(false); break;
+      case 'Notes': setShowTextPad(false); break;
+      case 'GitHub Stats': setShowGitHubStats(false); break;
+      case 'Messages': setShowSocials(false); break;
+      case 'Activity Monitor': setShowStats(false); break;
+      case 'Hanzo AI': setShowHanzoAI(false); break;
+      case 'Lux Wallet': setShowLuxWallet(false); break;
+      case 'Zoo': setShowZooAssistant(false); break;
+      case 'Calculator': setShowCalculator(false); break;
+      case 'Clock': setShowClock(false); break;
+      case 'Weather': setShowWeather(false); break;
+      case 'Stickies': setShowStickies(false); break;
+    }
+    setActiveApp('Finder');
+  }, [activeApp]);
+
+  const handleOpenSettings = useCallback(() => {
+    handleOpenApp(setShowSystemPreferences, 'System Preferences');
+  }, []);
+
   // Background theme handlers
   const handleChangeBackground = (newTheme: string) => {
     setTheme(newTheme);
@@ -167,7 +209,11 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
   return (
     <div className="relative w-full h-screen overflow-hidden" onContextMenu={handleContextMenu}>
       {/* Mac Menu Bar - always on top */}
-      <MacMenuBar appName={activeApp} />
+      <MacMenuBar 
+        appName={activeApp} 
+        onQuitApp={handleQuitCurrentApp}
+        onOpenSettings={handleOpenSettings}
+      />
 
       {/* Animated Background */}
       <AnimatedBackground theme={theme} customImageUrl={customBgUrl} />
@@ -178,9 +224,16 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
       </div>
 
       {/* Application Windows */}
+      {showFinder && (
+        <MacFinderWindow
+          onClose={() => handleCloseApp(setShowFinder)}
+          onFocus={() => handleFocusApp('Finder')}
+        />
+      )}
+
       {showTerminal && (
-        <MacTerminalWindow 
-          onClose={() => handleCloseApp(setShowTerminal)} 
+        <MacTerminalWindow
+          onClose={() => handleCloseApp(setShowTerminal)}
           onFocus={() => handleFocusApp('Terminal')}
         />
       )}
@@ -283,6 +336,30 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         />
       )}
 
+      {showCalculator && (
+        <MacCalculatorWindow 
+          onClose={() => handleCloseApp(setShowCalculator)}
+        />
+      )}
+
+      {showClock && (
+        <MacClockWindow 
+          onClose={() => handleCloseApp(setShowClock)}
+        />
+      )}
+
+      {showWeather && (
+        <MacWeatherWindow 
+          onClose={() => handleCloseApp(setShowWeather)}
+        />
+      )}
+
+      {showStickies && (
+        <MacStickiesWindow 
+          onClose={() => handleCloseApp(setShowStickies)}
+        />
+      )}
+
       {/* Applications Popover */}
       <ApplicationsPopover
         isOpen={showApplications}
@@ -294,6 +371,10 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
         onOpenHanzo={() => handleOpenApp(setShowHanzoAI, 'Hanzo AI')}
         onOpenLux={() => handleOpenApp(setShowLuxWallet, 'Lux Wallet')}
         onOpenZoo={() => handleOpenApp(setShowZooAssistant, 'Zoo')}
+        onOpenCalculator={() => handleOpenApp(setShowCalculator, 'Calculator')}
+        onOpenClock={() => handleOpenApp(setShowClock, 'Clock')}
+        onOpenWeather={() => handleOpenApp(setShowWeather, 'Weather')}
+        onOpenStickies={() => handleOpenApp(setShowStickies, 'Stickies')}
       />
 
       {/* Downloads Popover */}
@@ -429,6 +510,7 @@ const MacDesktop: React.FC<MacDesktopProps> = ({ children }) => {
 
       {/* Mac Dock */}
       <MacDock
+        onFinderClick={() => handleOpenApp(setShowFinder, 'Finder')}
         onTerminalClick={() => handleOpenApp(setShowTerminal, 'Terminal')}
         onSafariClick={() => handleOpenApp(setShowSafari, 'Safari')}
         onMusicClick={() => handleOpenApp(setShowMusic, 'Music')}

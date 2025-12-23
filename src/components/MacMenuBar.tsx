@@ -46,6 +46,10 @@ const LuxLogo: React.FC<{ className?: string }> = ({ className }) => (
 interface MacMenuBarProps {
   className?: string;
   appName?: string;
+  onQuitApp?: () => void;
+  onOpenSettings?: () => void;
+  onAboutMac?: () => void;
+  onMinimize?: () => void;
 }
 
 interface MenuItemType {
@@ -351,7 +355,11 @@ const getAppMenus = (appName: string): MenuType[] => {
 
 const MacMenuBar: React.FC<MacMenuBarProps> = ({
   className,
-  appName = "Finder"
+  appName = "Finder",
+  onQuitApp,
+  onOpenSettings,
+  onAboutMac,
+  onMinimize,
 }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState(87);
@@ -461,6 +469,28 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
   const menuButtonClass = "h-full px-[10px] flex items-center rounded-[4px] mx-[1px] hover:bg-white/20 outline-none focus:outline-none focus:ring-0 transition-colors duration-75";
   const systemTrayButtonClass = "h-full px-[7px] flex items-center rounded-[4px] mx-[1px] hover:bg-white/20 outline-none focus:outline-none focus:ring-0 transition-colors duration-75";
 
+  // Handle menu item click with action routing
+  const handleMenuItemClick = (label: string) => {
+    setActiveMenu(null);
+    setActiveSystemMenu(null);
+    setMenuBarActive(false);
+    
+    // Route actions based on label
+    if (label === `Quit ${appName}` && onQuitApp) {
+      onQuitApp();
+    } else if (label === 'Settings...' && onOpenSettings) {
+      onOpenSettings();
+    } else if (label === 'System Settings...' && onOpenSettings) {
+      onOpenSettings();
+    } else if (label === 'About This Mac' && onAboutMac) {
+      onAboutMac();
+    } else if (label === 'Minimize' && onMinimize) {
+      onMinimize();
+    } else if (label === `Hide ${appName}`) {
+      // Could implement hide functionality
+    }
+  };
+
   const renderMenuItem = (item: MenuItemType, itemIndex: number) => {
     if (item.type === 'separator') {
       return <div key={itemIndex} className="h-[1px] bg-white/10 my-[6px] mx-3" />;
@@ -500,6 +530,7 @@ const MacMenuBar: React.FC<MacMenuBarProps> = ({
           "flex items-center justify-between mx-1.5 px-3 py-[6px] rounded-[5px] hover:bg-blue-500 cursor-pointer transition-colors",
           item.disabled && "opacity-40 cursor-default hover:bg-transparent"
         )}
+        onClick={() => handleMenuItemClick(item.label)}
       >
         <span className="flex items-center gap-2">
           {item.checked && <Check className="w-3.5 h-3.5" />}

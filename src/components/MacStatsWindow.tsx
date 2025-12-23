@@ -8,7 +8,7 @@ interface MacStatsWindowProps {
 
 const MacStatsWindow: React.FC<MacStatsWindowProps> = ({ onClose }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const statsUrl = 'https://zeekay.github.io/stats/';
+  const statsUrl = 'https://stats.zeekay.ai/';
 
   return (
     <MacWindow
