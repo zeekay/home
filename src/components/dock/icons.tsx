@@ -141,12 +141,12 @@ export const PhoneIcon: React.FC<{ className?: string }> = ({ className = "w-12 
       </linearGradient>
     </defs>
     <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#phoneGrad)" />
-    {/* Phone receiver - cleaner design */}
-    <path
-      d="M22 20c-2 0-4 2-4 4v4c0 8 6 16 16 16h4c2 0 4-2 4-4v-4l-8-4-2 4c-4-2-8-6-10-10l4-2-4-8h-4z"
-      fill="white"
-      transform="rotate(-15 32 32)"
-    />
+    {/* Phone receiver - classic handset shape */}
+    <g transform="rotate(-135 32 32)">
+      <rect x="28" y="12" width="8" height="40" rx="4" fill="white" />
+      <ellipse cx="32" cy="14" rx="10" ry="6" fill="white" />
+      <ellipse cx="32" cy="50" rx="10" ry="6" fill="white" />
+    </g>
   </svg>
 );
 
@@ -160,10 +160,10 @@ export const MusicIcon: React.FC<{ className?: string }> = ({ className = "w-12 
       </linearGradient>
     </defs>
     <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#musicGrad)" />
-    {/* Music note - simplified single note */}
-    <ellipse cx="24" cy="44" rx="8" ry="6" fill="white" />
-    <rect x="30" y="14" width="4" height="32" fill="white" />
-    <path d="M34 14 L48 18 L48 24 L34 20 Z" fill="white" />
+    {/* Music note - properly connected */}
+    <ellipse cx="22" cy="44" rx="9" ry="7" fill="white" />
+    <rect x="28" y="16" width="4" height="30" fill="white" />
+    <path d="M28 16 L28 20 L48 14 L48 10 Z" fill="white" />
   </svg>
 );
 
@@ -194,21 +194,21 @@ export const HanzoLogo: React.FC<{ className?: string }> = ({ className = "w-12 
   </svg>
 );
 
-// Lux Logo - Upside down triangle
+// Lux Logo - Upside down triangle (slightly smaller for balance)
 export const LuxLogo: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={className}>
     <rect width="64" height="64" rx="12" fill="#000000" />
-    <path d="M32 52 L12 18 L52 18 Z" fill="white"/>
+    <path d="M32 48 L16 20 L48 20 Z" fill="white"/>
   </svg>
 );
 
-// Zoo Logo - Three overlapping RGB circles
+// Zoo Logo - Three overlapping RGB circles (larger, less whitespace)
 export const ZooLogo: React.FC<{ className?: string; mono?: boolean }> = ({ className = "w-12 h-12", mono = false }) => {
   if (mono) {
     return (
       <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={className}>
         <rect width="64" height="64" rx="12" fill="#000000" />
-        <g transform="translate(4, 6) scale(0.055)">
+        <g transform="translate(2, 4) scale(0.060)">
           <defs>
             <clipPath id="outerCircleMono">
               <circle cx="508" cy="510" r="283"/>
@@ -228,7 +228,7 @@ export const ZooLogo: React.FC<{ className?: string; mono?: boolean }> = ({ clas
   return (
     <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" className={className}>
       <rect width="64" height="64" rx="12" fill="#000000" />
-      <g transform="translate(4, 6) scale(0.055)">
+      <g transform="translate(2, 4) scale(0.060)">
       <defs>
         <clipPath id="outerCircleColor">
           <circle cx="512" cy="511" r="270"/>

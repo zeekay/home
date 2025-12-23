@@ -94,7 +94,8 @@ const BootSequence: React.FC<BootSequenceProps> = ({ onComplete, skipDelay = 350
     <div
       className={cn(
         'fixed inset-0 z-[99999] bg-black flex items-center justify-center transition-opacity duration-500',
-        isExiting ? 'opacity-0' : 'opacity-100'
+        isExiting ? 'opacity-0' : 'opacity-100',
+        isComplete ? 'cursor-pointer' : 'cursor-default'
       )}
       onClick={isComplete ? handleSkip : undefined}
     >
