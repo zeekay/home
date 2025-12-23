@@ -89,7 +89,7 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
         />
 
         {/* Mobile Grid Popover */}
-        <div 
+        <div
           className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999] w-[85vw] max-w-[320px] bg-black/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-3"
           style={{
             animation: 'slide-up-mobile 0.2s ease-out forwards',
@@ -136,12 +136,12 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
     );
   }
 
-  // Desktop: Fan layout
+  // Desktop: Fan layout - fans up and to the left from downloads icon
   const totalItems = documents.length;
-  const fanAngle = 60; // Total spread angle in degrees
-  const startAngle = -fanAngle / 2;
+  const fanAngle = 70; // Total spread angle in degrees
+  const startAngle = -90; // Start pointing left
   const angleStep = fanAngle / (totalItems - 1);
-  const radius = 180; // Distance from center point
+  const radius = 140; // Distance from origin point
 
   return (
     <>
@@ -151,19 +151,20 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
         onClick={onClose}
       />
 
-      {/* Fan Container - positioned above the dock */}
-      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999]">
+      {/* Fan Container - positioned above downloads icon (right side of dock) */}
+      <div className="fixed bottom-16 z-[9999]" style={{ right: '90px' }}>
         {/* Fan items */}
-        <div className="relative w-[400px] h-[300px]">
+        <div className="relative w-[300px] h-[300px]">
           {documents.map((doc, index) => {
             // Calculate position and rotation for each item in the fan
+            // Fan spreads from bottom-right going up and to the left
             const angle = startAngle + (index * angleStep);
             const radians = (angle * Math.PI) / 180;
-            
-            // Position items in an arc from bottom center
-            const x = Math.sin(radians) * radius;
-            const y = -Math.cos(radians) * radius + 100; // +100 to shift up from bottom
-            
+
+            // Position items in an arc from bottom-right corner
+            const x = Math.cos(radians) * radius;
+            const y = Math.sin(radians) * radius;
+
             // Stagger animation delay
             const delay = index * 50;
 
@@ -173,15 +174,15 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
                 href={doc.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="absolute left-1/2 bottom-0 group"
+                className="absolute right-0 bottom-0 group"
                 style={{
-                  transform: `translateX(calc(-50% + ${x}px)) translateY(${y}px) rotate(${angle}deg)`,
-                  animation: `fan-in 0.3s ease-out ${delay}ms both`,
+                  transform: `translateX(${x}px) translateY(${y}px) rotate(${angle + 90}deg)`,
+                  animation: `fan-in-right 0.3s ease-out ${delay}ms both`,
                   zIndex: totalItems - index,
                 }}
               >
                 {/* Document card */}
-                <div 
+                <div
                   className={cn(
                     "w-16 h-20 rounded-xl shadow-2xl flex flex-col items-center justify-center p-2",
                     "border border-white/20 backdrop-blur-sm",
@@ -197,7 +198,7 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
                   <div className="flex-1 flex items-center justify-center">
                     {doc.icon}
                   </div>
-                  
+
                   {/* Label */}
                   <span className="text-[9px] font-medium text-white/90 text-center leading-tight truncate w-full">
                     {doc.shortTitle}
@@ -218,17 +219,14 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
             );
           })}
         </div>
-
-        {/* Base indicator */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent rounded-full" />
       </div>
 
       {/* CSS for fan animation */}
       <style>{`
-        @keyframes fan-in {
+        @keyframes fan-in-right {
           0% {
             opacity: 0;
-            transform: translateX(calc(-50% + 0px)) translateY(50px) rotate(0deg) scale(0.5);
+            transform: translateX(0px) translateY(0px) rotate(0deg) scale(0.5);
           }
           100% {
             opacity: 1;
