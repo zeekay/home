@@ -55,9 +55,9 @@ const ZOO_TIPS = [
 ];
 
 const STORAGE_KEY = 'zoo-assistant-position';
-const DEFAULT_SIZE = { width: 200, height: 280 };
-const MIN_SIZE = { width: 120, height: 160 };
-const MAX_SIZE = { width: 400, height: 560 };
+const DEFAULT_SIZE = { width: 220, height: 340 };
+const MIN_SIZE = { width: 150, height: 200 };
+const MAX_SIZE = { width: 500, height: 700 };
 
 interface Position {
   x: number;
@@ -266,6 +266,30 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
 
   const CurrentIcon = ZOO_TIPS[currentTip].icon;
 
+  // Compute bubble position based on giraffe location on screen
+  const bubblePosition = React.useMemo(() => {
+    const bubbleWidth = 260;
+    const bubbleHeight = 180;
+    const padding = 20;
+
+    // Check available space on each side
+    const spaceLeft = position.x;
+    const spaceRight = window.innerWidth - position.x - size.width;
+    const spaceTop = position.y;
+    const spaceBottom = window.innerHeight - position.y - size.height;
+
+    // Prefer left side, but if not enough space, try other sides
+    if (spaceLeft >= bubbleWidth + padding) {
+      return { side: 'left' as const, className: 'right-full mr-3 top-0', pointerClass: 'top-8 -right-2' };
+    } else if (spaceRight >= bubbleWidth + padding) {
+      return { side: 'right' as const, className: 'left-full ml-3 top-0', pointerClass: 'top-8 -left-2' };
+    } else if (spaceTop >= bubbleHeight + padding) {
+      return { side: 'top' as const, className: 'bottom-full mb-3 left-1/2 -translate-x-1/2', pointerClass: '-bottom-2 left-1/2 -translate-x-1/2' };
+    } else {
+      return { side: 'bottom' as const, className: 'top-full mt-3 left-1/2 -translate-x-1/2', pointerClass: '-top-2 left-1/2 -translate-x-1/2' };
+    }
+  }, [position, size]);
+
   return (
     <div
       ref={containerRef}
@@ -276,17 +300,17 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
         width: size.width,
       }}
     >
-      {/* Speech Bubble - positioned to the left so it doesn't cover giraffe */}
+      {/* Speech Bubble - responsive positioning based on screen location */}
       {showBubble && (
       <div
-        className={`absolute right-full mr-3 top-0 w-[220px] sm:w-[260px] transition-all duration-300 ${
-          isAnimating ? 'opacity-0 transform -translate-x-2' : 'opacity-100'
+        className={`absolute ${bubblePosition.className} w-[220px] sm:w-[260px] transition-all duration-300 z-10 ${
+          isAnimating ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
         }`}
       >
         <div className="bg-white rounded-2xl p-3 sm:p-4 shadow-2xl relative">
           <button
             onClick={() => setShowBubble(false)}
-            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
+            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg z-10"
           >
             <X className="w-3 h-3 text-white" />
           </button>
@@ -329,8 +353,8 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
           </div>
         </div>
 
-        {/* Speech bubble pointer - pointing right towards giraffe */}
-        <div className="absolute top-8 -right-2 w-4 h-4 bg-white transform rotate-45 shadow-lg" />
+        {/* Speech bubble pointer - position based on bubble side */}
+        <div className={`absolute ${bubblePosition.pointerClass} w-4 h-4 bg-white transform rotate-45 shadow-lg`} />
       </div>
       )}
 
@@ -355,9 +379,11 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
             src="/models/GIRAFFE_ADULT.glb"
             alt="Zoo Giraffe"
             camera-controls={!isMetaDragging}
-            camera-orbit="0deg 65deg 12m"
-            camera-target="0m 2.8m 0m"
-            field-of-view="35deg"
+            camera-orbit="20deg 75deg 8m"
+            camera-target="0m 2.5m 0m"
+            field-of-view="50deg"
+            min-camera-orbit="auto auto 4m"
+            max-camera-orbit="auto auto 20m"
             auto-rotate
             auto-rotate-delay="3000"
             rotation-per-second="15deg"
