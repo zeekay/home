@@ -5,9 +5,10 @@ import { ExternalLink } from 'lucide-react';
 
 interface ZTextPadWindowProps {
   onClose: () => void;
+  onFocus?: () => void;
 }
 
-const ZTextPadWindow: React.FC<ZTextPadWindowProps> = ({ onClose }) => {
+const ZTextPadWindow: React.FC<ZTextPadWindowProps> = ({ onClose, onFocus }) => {
   const [text, setText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
   const fullText = `👋 Hi, I'm Z
@@ -67,8 +68,9 @@ Say hi: curl -sL zeekay.chat | sh`;
 
   return (
     <ZWindow
-      title="Welcome"
+      title="TextEdit"
       onClose={onClose}
+      onFocus={onFocus}
       className="animate-scale-in shadow-lg"
       initialPosition={{ x: Math.max(20, window.innerWidth / 2 - windowWidth / 2), y: Math.max(60, window.innerHeight / 2 - windowHeight / 2) }}
       initialSize={{ width: windowWidth, height: windowHeight }}

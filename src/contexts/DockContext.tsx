@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { logger } from '@/lib/logger';
 
 interface DockItem {
   id: string;
@@ -30,9 +31,10 @@ const DEFAULT_DOCK_ITEMS: DockItem[] = [
   { id: 'facetime', isPinned: true, order: 6 },
   { id: 'music', isPinned: true, order: 7 },
   { id: 'terminal', isPinned: true, order: 8 },
-  { id: 'hanzo', isPinned: true, order: 9 },
-  { id: 'lux', isPinned: true, order: 10 },
-  { id: 'zoo', isPinned: true, order: 11 },
+  { id: 'textedit', isPinned: true, order: 9 },
+  { id: 'hanzo', isPinned: true, order: 10 },
+  { id: 'lux', isPinned: true, order: 11 },
+  { id: 'zoo', isPinned: true, order: 12 },
 ];
 
 const STORAGE_KEY = 'zos-dock-order';
@@ -54,7 +56,7 @@ export const DockProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return merged;
       }
     } catch (e) {
-      console.error('Failed to parse dock order:', e);
+      logger.error('Failed to parse dock order:', e);
     }
     return DEFAULT_DOCK_ITEMS;
   });

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect, useCallback, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import WindowTitleBar from './window/WindowTitleBar';
 import WindowResizeHandle from './window/WindowResizeHandle';
@@ -45,6 +45,8 @@ const ZWindow: React.FC<ZWindowProps> = ({
   const [resizeStartPos, setResizeStartPos] = useState({ x: 0, y: 0 });
   const [startSize, setStartSize] = useState({ width: 0, height: 0 });
   const [isMinimized, setIsMinimized] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
+  const [preMaximizeState, setPreMaximizeState] = useState<{ position: { x: number; y: number }; size: { width: number; height: number } } | null>(null);
   const [zIndex, setZIndex] = useState(getNextZIndex());
   
   // Update position and size when screen size changes
@@ -75,7 +77,8 @@ const ZWindow: React.FC<ZWindowProps> = ({
   
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isMobile) return; // Disable dragging on mobile
-    
+    if (isMaximized) return; // Disable dragging when maximized
+
     setIsDragging(true);
     setDragOffset({
       x: e.clientX - position.x,
@@ -98,13 +101,35 @@ const ZWindow: React.FC<ZWindowProps> = ({
   const toggleMinimize = () => {
     setIsMinimized(!isMinimized);
   };
-  
+
+  const toggleMaximize = () => {
+    if (isMobile) return; // Disable maximize on mobile
+
+    if (isMaximized) {
+      // Restore to previous size and position
+      if (preMaximizeState) {
+        setPosition(preMaximizeState.position);
+        setSize(preMaximizeState.size);
+      }
+      setIsMaximized(false);
+    } else {
+      // Save current state and maximize
+      setPreMaximizeState({ position, size });
+      setPosition({ x: 0, y: 28 }); // 28px for menu bar
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight - 28 - 80 // 28 for menu bar, 80 for dock
+      });
+      setIsMaximized(true);
+    }
+  };
+
   // Method to bring window to front
-  const bringToFront = () => {
+  const bringToFront = useCallback(() => {
     const newZIndex = getNextZIndex();
     setZIndex(newZIndex);
     onFocus?.();
-  };
+  }, [onFocus]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -137,20 +162,20 @@ const ZWindow: React.FC<ZWindowProps> = ({
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, isResizing, dragOffset, resizeStartPos, startSize, position.x, position.y]);
+  }, [isDragging, isResizing, dragOffset, resizeStartPos, startSize, position.x, position.y, size.width]);
 
   // For touch events on mobile
   useEffect(() => {
     if (!isMobile) return;
     
-    const handleTouchStart = (e: TouchEvent) => {
+    const handleTouchStart = () => {
       bringToFront();
     };
     
     return () => {
       // Cleanup if needed
     };
-  }, [isMobile]);
+  }, [isMobile, bringToFront]);
 
   return (
     <div
@@ -165,7 +190,9 @@ const ZWindow: React.FC<ZWindowProps> = ({
         top: `${position.y}px`,
         width: `${size.width}px`,
         height: isMinimized ? '32px' : `${size.height}px`,
-        transition: isMinimized ? 'height 0.2s ease-in-out, opacity 0.2s ease-in-out' : 'opacity 0.2s ease-in-out',
+        transition: (isMinimized || isMaximized || preMaximizeState)
+          ? 'all 0.2s ease-in-out'
+          : 'opacity 0.2s ease-in-out',
         zIndex: zIndex,
       }}
       onClick={bringToFront}
@@ -176,6 +203,8 @@ const ZWindow: React.FC<ZWindowProps> = ({
         onMouseDown={handleMouseDown}
         onClose={onClose}
         onMinimize={toggleMinimize}
+        onMaximize={toggleMaximize}
+        isMaximized={isMaximized}
         customControls={customControls}
       />
 
@@ -185,7 +214,7 @@ const ZWindow: React.FC<ZWindowProps> = ({
             {children}
           </div>
           
-          {resizable && !isMobile && <WindowResizeHandle onResizeStart={handleResizeStart} />}
+          {resizable && !isMobile && !isMaximized && <WindowResizeHandle onResizeStart={handleResizeStart} />}
         </>
       )}
     </div>

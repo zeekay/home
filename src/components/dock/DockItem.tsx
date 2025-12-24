@@ -110,15 +110,26 @@ const DockItem: React.FC<DockItemProps> = ({
   const isPinned = id ? isItemPinned(id) : false;
   const canRemove = id !== 'finder'; // Finder cannot be removed
 
+  // Handle keyboard activation (Enter/Space)
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick?.();
+    }
+  };
+
   const button = (
     <button
       ref={dragRef}
       className={cn(
-        "group relative flex items-center justify-center px-0.5 outline-none focus:outline-none focus:ring-0 active:outline-none transition-all duration-150",
+        "group relative flex items-center justify-center px-0.5 transition-all duration-150",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-xl",
         isDragging && "opacity-50 scale-90",
         isDropTarget && "scale-110"
       )}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
+      aria-label={`Open ${label}`}
       draggable={isDraggable && !isMobile && !!id}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
@@ -142,10 +153,10 @@ const DockItem: React.FC<DockItemProps> = ({
           <Icon className={`w-6 h-6 ${color || 'text-white'}`} />
         ) : null}
       </div>
-      {/* Active indicator dot */}
+      {/* Active indicator dot - macOS style */}
       <div className={cn(
-        "absolute -bottom-1 w-1 h-1 rounded-full bg-white/80 transition-opacity",
-        isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+        "absolute -bottom-[6px] w-[5px] h-[5px] rounded-full bg-white/90 transition-all duration-200",
+        isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
       )} />
     </button>
   );

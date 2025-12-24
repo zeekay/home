@@ -141,8 +141,12 @@ const ForceQuitDialog: React.FC<ForceQuitDialogProps> = ({
     <div 
       className="fixed inset-0 z-[30000] flex items-center justify-center bg-black/40 backdrop-blur-sm"
       onClick={onClose}
+      role="presentation"
     >
       <div 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="force-quit-title"
         className="w-[400px] bg-gray-800/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
@@ -150,7 +154,7 @@ const ForceQuitDialog: React.FC<ForceQuitDialogProps> = ({
         <div className="px-4 py-3 bg-gray-700/50 border-b border-white/10">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-yellow-400" />
-            <h2 className="text-white font-semibold">Force Quit Applications</h2>
+            <h2 id="force-quit-title" className="text-white font-semibold">Force Quit Applications</h2>
           </div>
           <p className="text-white/60 text-sm mt-1">
             If an app does not respond, select it and click Force Quit.

@@ -10,7 +10,7 @@ interface InterestCardProps {
 
 const InterestCard: React.FC<InterestCardProps> = ({ category }) => {
   // Map of icon names to components
-  const iconMap: Record<string, React.FC<any>> = {
+  const iconMap: Record<string, React.FC<{ className?: string }>> = {
     Code,
     Cpu,
     Bot,

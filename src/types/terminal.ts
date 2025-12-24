@@ -15,6 +15,13 @@ export interface TerminalEntry {
   id: number;
 }
 
+export interface EditorState {
+  isOpen: boolean;
+  fileName: string;
+  content: string;
+  isNewFile: boolean;
+}
+
 export interface TerminalContextType {
   entries: TerminalEntry[];
   addEntry: (entry: Omit<TerminalEntry, 'id'> & { id?: number }) => void;
@@ -24,4 +31,8 @@ export interface TerminalContextType {
   commandHistory: string[];
   setCommandHistory: React.Dispatch<React.SetStateAction<string[]>>;
   clearEntries: () => void;
+  editorState: EditorState;
+  openEditor: (fileName: string, content: string, isNewFile?: boolean) => void;
+  closeEditor: () => void;
+  saveFile: (fileName: string, content: string) => Promise<void>;
 }

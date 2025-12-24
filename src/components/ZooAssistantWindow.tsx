@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { X, Sparkles, Heart, Lightbulb, HelpCircle, Coffee, Zap, ChevronLeft, ChevronRight, Move, Maximize2, Send, MessageCircle } from 'lucide-react';
-import '@google/model-viewer/dist/model-viewer';
 
-// Type declaration for model-viewer
+// Dynamic import of model-viewer for better code splitting (~500KB savings)
+// The import happens when component mounts, not at bundle time
+
+// Type declaration for model-viewer custom element
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
       'model-viewer': React.DetailedHTMLProps<
@@ -92,10 +95,18 @@ interface Size {
 }
 
 const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
+  const [modelViewerLoaded, setModelViewerLoaded] = useState(false);
   const [currentTip, setCurrentTip] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showBubble, setShowBubble] = useState(true);
   const [bubbleDismissed, setBubbleDismissed] = useState(false);
+  
+  // Dynamically import model-viewer when component mounts
+  useEffect(() => {
+    import('@google/model-viewer/dist/model-viewer').then(() => {
+      setModelViewerLoaded(true);
+    });
+  }, []);
 
   // Chat state
   const [chatMode, setChatMode] = useState(false);
@@ -125,7 +136,9 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
           return savedPos;
         }
       }
-    } catch (e) {}
+    } catch {
+      // localStorage unavailable - use defaults
+    }
     return defaultPos;
   });
 
@@ -137,7 +150,9 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
         const parsed = JSON.parse(saved);
         return parsed.size || defaultSize;
       }
-    } catch (e) {}
+    } catch {
+      // localStorage unavailable - use defaults
+    }
     return defaultSize;
   });
 
@@ -424,7 +439,7 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
   return (
     <div
       ref={containerRef}
-      className="fixed z-[15000] select-none"
+      className="fixed z-[100] select-none"
       style={{
         left: position.x,
         top: position.y,
@@ -582,6 +597,11 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
           className="drop-shadow-2xl"
           style={{ width: size.width, height: size.height }}
         >
+          {!modelViewerLoaded ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="animate-pulse text-white/50 text-sm">Loading 3D model...</div>
+            </div>
+          ) : (
           <model-viewer
             ref={modelViewerRef as React.RefObject<HTMLElement>}
             src="/models/GIRAFFE_ADULT.glb"
@@ -622,12 +642,17 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
             }}
             onClick={() => {
               if (isMetaDragging) return;
-              // Only cycle animation on click - chat opens via speech bubble
+              // Open chat on click, cycle animation with double-click
+              openChat();
+            }}
+            onDoubleClick={() => {
+              // Cycle animation on double-click
               if (availableAnimations.length > 0) {
                 cycleAnimation();
               }
             }}
           />
+          )}
         </div>
 
         {/* Resize handle */}
@@ -645,7 +670,7 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
         className={`text-center text-white/40 text-[9px] sm:text-[10px] mt-1 sm:mt-2 ${!showBubble && !chatMode ? 'cursor-pointer hover:text-white/60' : ''}`}
         onClick={() => { if (!showBubble && !chatMode) openChat(); }}
       >
-        {isDragging || isMetaDragging ? 'Release to place' : isResizing ? 'Release to resize' : chatMode ? '⌘+drag to move' : showBubble ? '⌘+drag to move • Drag to rotate' : 'Click me to chat!'}
+        {isDragging || isMetaDragging ? 'Release to place' : isResizing ? 'Release to resize' : chatMode ? '⌘+drag to move' : '⌘+drag to move • Drag to rotate • Click to chat'}
       </p>
     </div>
   );

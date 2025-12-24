@@ -19,7 +19,7 @@ export const getWaveAnimationInitialState = () => ({
   noiseScale: 20,
   noiseOctaves: 4,
   color: { r: 40, g: 40, b: 60, a: 0.5 },
-  peaks: [] as any[],
+  peaks: [] as Array<{ x: number; y: number; radius: number; alpha: number }>,
   lastUpdate: Date.now(),
 });
 
@@ -44,7 +44,7 @@ export const getThemeColor = (theme: string) => {
 
 export const animateEnhancedWaves = (ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, initialColor: { r: number; g: number; b: number; a: number }) => {
   let animationFrameId: number;
-  let state = getWaveAnimationInitialState();
+  const state = getWaveAnimationInitialState();
   state.color = initialColor;
   
   const update = () => {

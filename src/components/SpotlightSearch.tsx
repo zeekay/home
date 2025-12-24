@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
+import { QUICK_LINKS, EXTERNAL_LINKS } from '@/config/links';
 import {
   Search,
   Folder,
@@ -21,6 +22,10 @@ import {
   Cloud,
   StickyNote,
   Command,
+  ExternalLink,
+  FolderOpen,
+  Hash,
+  ArrowRight,
 } from 'lucide-react';
 
 // Hanzo AI Logo
@@ -43,8 +48,9 @@ type AppType = 'Finder' | 'Terminal' | 'Safari' | 'Music' | 'Mail' | 'Calendar' 
                'Lux Wallet' | 'Zoo' | 'Calculator' | 'Clock' | 'Weather' | 'Stickies';
 
 interface SearchResult {
-  type: 'app' | 'action' | 'document';
+  type: 'app' | 'action' | 'document' | 'calculation' | 'web';
   name: string;
+  subtitle?: string;
   icon: React.ReactNode;
   action: () => void;
   shortcut?: string;
@@ -81,6 +87,55 @@ const appList: { name: AppType; icon: React.ReactNode; keywords: string[] }[] = 
   { name: 'Stickies', icon: <StickyNote className="w-5 h-5" />, keywords: ['notes', 'sticky', 'reminder'] },
 ];
 
+// Virtual documents/files that can be searched
+const documentList = [
+  { name: 'README.md', path: 'Documents', type: 'file', url: 'https://github.com/hanzoai' },
+  { name: 'hanzo', path: 'Documents', type: 'folder', url: 'https://github.com/hanzoai' },
+  { name: 'lux', path: 'Documents', type: 'folder', url: 'https://github.com/luxfi' },
+  { name: 'zoo', path: 'Documents', type: 'folder', url: 'https://github.com/zooai' },
+  { name: 'zen-0.6B', path: 'Documents/models', type: 'folder', url: 'https://huggingface.co/hanzoai/zen-0.6B' },
+  { name: 'zen-1.7B', path: 'Documents/models', type: 'folder', url: 'https://huggingface.co/hanzoai/zen-1.7B' },
+  { name: 'zen-4B', path: 'Documents/models', type: 'folder', url: 'https://huggingface.co/hanzoai/zen-4B' },
+  { name: 'zen-8B', path: 'Documents/models', type: 'folder', url: 'https://huggingface.co/hanzoai/zen-8B' },
+  { name: 'mcp', path: 'Documents/hanzo', type: 'folder', url: 'https://github.com/hanzoai/mcp' },
+  { name: 'dev', path: 'Documents/hanzo', type: 'folder', url: 'https://github.com/hanzoai/dev' },
+  { name: 'ui', path: 'Documents/hanzo', type: 'folder', url: 'https://github.com/hanzoai/ui' },
+  { name: 'node', path: 'Documents/lux', type: 'folder', url: 'https://github.com/luxfi/node' },
+  { name: 'wallet', path: 'Documents/lux', type: 'folder', url: 'https://github.com/luxfi/wallet' },
+  { name: 'zips', path: 'Documents/zoo', type: 'folder', url: 'https://zips.zoo.ngo' },
+  { name: 'dotfiles', path: 'Documents', type: 'folder' },
+  { name: 'ellipsis', path: 'Documents/dotfiles', type: 'folder' },
+  { name: 'zeesh', path: 'Documents/dotfiles', type: 'folder' },
+];
+
+// Quick web links - use centralized config with additional search link
+const quickLinks = [
+  ...QUICK_LINKS,
+  { name: 'Google', url: `${EXTERNAL_LINKS.google}/search?q=`, keywords: ['google', 'search'] },
+];
+
+// Try to evaluate math expression safely
+const tryEvaluate = (expr: string): number | null => {
+  try {
+    // Only allow numbers, operators, parentheses, and decimal points
+    const sanitized = expr.replace(/[^0-9+\-*/().%\s^]/g, '');
+    if (!sanitized || sanitized.length < 1) return null;
+
+    // Replace ^ with ** for exponentiation
+    const processed = sanitized.replace(/\^/g, '**');
+
+    // Evaluate using Function (safer than eval)
+    const result = new Function(`return ${processed}`)();
+
+    if (typeof result === 'number' && !isNaN(result) && isFinite(result)) {
+      return result;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+};
+
 const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
   isOpen,
   onClose,
@@ -93,9 +148,9 @@ const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Build search results based on query
-  const getResults = useCallback((): SearchResult[] => {
+  const results = useMemo((): SearchResult[] => {
     const q = query.toLowerCase().trim();
-    const results: SearchResult[] = [];
+    const resultList: SearchResult[] = [];
 
     if (!q) {
       // Show recent/suggested apps when empty
@@ -103,15 +158,31 @@ const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
       suggested.forEach(appName => {
         const app = appList.find(a => a.name === appName);
         if (app) {
-          results.push({
+          resultList.push({
             type: 'app',
             name: app.name,
+            subtitle: 'Application',
             icon: app.icon,
             action: () => { onOpenApp(app.name); onClose(); },
           });
         }
       });
-      return results;
+      return resultList;
+    }
+
+    // Check for math expression
+    const calculation = tryEvaluate(q);
+    if (calculation !== null) {
+      resultList.push({
+        type: 'calculation',
+        name: `= ${calculation}`,
+        subtitle: `${q}`,
+        icon: <Hash className="w-5 h-5 text-orange-400" />,
+        action: () => {
+          navigator.clipboard?.writeText(String(calculation));
+          onClose();
+        },
+      });
     }
 
     // Search apps
@@ -119,40 +190,93 @@ const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
       const nameMatch = app.name.toLowerCase().includes(q);
       const keywordMatch = app.keywords.some(k => k.includes(q));
       if (nameMatch || keywordMatch) {
-        results.push({
+        resultList.push({
           type: 'app',
           name: app.name,
+          subtitle: 'Application',
           icon: app.icon,
           action: () => { onOpenApp(app.name); onClose(); },
         });
       }
     });
 
+    // Search documents/files
+    documentList.forEach(doc => {
+      if (doc.name.toLowerCase().includes(q) || doc.path.toLowerCase().includes(q)) {
+        resultList.push({
+          type: 'document',
+          name: doc.name,
+          subtitle: `${doc.path} - ${doc.type === 'folder' ? 'Folder' : 'Document'}`,
+          icon: doc.type === 'folder'
+            ? <FolderOpen className="w-5 h-5 text-blue-400" />
+            : <FileText className="w-5 h-5 text-gray-400" />,
+          action: () => {
+            if (doc.url) {
+              window.open(doc.url, '_blank');
+            } else {
+              onOpenApp('Finder');
+            }
+            onClose();
+          },
+        });
+      }
+    });
+
+    // Quick web links
+    quickLinks.forEach(link => {
+      if (link.keywords.some(k => k.includes(q)) || link.name.toLowerCase().includes(q)) {
+        resultList.push({
+          type: 'web',
+          name: link.name,
+          subtitle: link.url,
+          icon: <Globe className="w-5 h-5 text-cyan-400" />,
+          action: () => {
+            window.open(link.url, '_blank');
+            onClose();
+          },
+        });
+      }
+    });
+
     // Add system actions
     if ('quit'.includes(q) || 'close'.includes(q)) {
-      results.push({
+      resultList.push({
         type: 'action',
         name: 'Quit Current App',
+        subtitle: 'System Action',
         icon: <Command className="w-5 h-5" />,
         action: () => { onQuitApp(); onClose(); },
-        shortcut: 'Cmd+Q',
+        shortcut: '⌘Q',
       });
     }
 
     if ('settings'.includes(q) || 'preferences'.includes(q)) {
-      results.push({
+      resultList.push({
         type: 'action',
         name: 'Open System Preferences',
+        subtitle: 'System Action',
         icon: <Settings className="w-5 h-5" />,
         action: () => { onOpenSettings(); onClose(); },
-        shortcut: 'Cmd+,',
+        shortcut: '⌘,',
       });
     }
 
-    return results;
-  }, [query, onOpenApp, onQuitApp, onOpenSettings, onClose]);
+    // Web search suggestion (at the end)
+    if (q.length > 2 && resultList.length < 10) {
+      resultList.push({
+        type: 'web',
+        name: `Search "${query}" on the web`,
+        subtitle: 'Press Enter to search',
+        icon: <Search className="w-5 h-5 text-white/50" />,
+        action: () => {
+          window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+          onClose();
+        },
+      });
+    }
 
-  const results = getResults();
+    return resultList;
+  }, [query, onOpenApp, onQuitApp, onOpenSettings, onClose]);
 
   // Focus input when opening
   useEffect(() => {
@@ -201,12 +325,27 @@ const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
 
   if (!isOpen) return null;
 
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case 'app': return 'Application';
+      case 'document': return 'Document';
+      case 'calculation': return 'Calculator - Click to copy';
+      case 'web': return 'Web';
+      case 'action': return 'System Action';
+      default: return type;
+    }
+  };
+
   return (
-    <div 
+    <div
       className="fixed inset-0 z-[30000] flex items-start justify-center pt-[15%] bg-black/30 backdrop-blur-sm"
       onClick={onClose}
+      role="presentation"
     >
-      <div 
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Spotlight Search"
         className="w-[600px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
@@ -242,13 +381,14 @@ const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
             </div>
           )}
 
+          {/* Group results by type */}
           {results.map((result, index) => (
             <div
-              key={`${result.type}-${result.name}`}
+              key={`${result.type}-${result.name}-${index}`}
               className={cn(
                 "flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors",
-                index === selectedIndex 
-                  ? "bg-blue-500 text-white" 
+                index === selectedIndex
+                  ? "bg-blue-500 text-white"
                   : "text-white/90 hover:bg-white/10"
               )}
               onClick={result.action}
@@ -260,13 +400,13 @@ const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
               )}>
                 {result.icon}
               </div>
-              <div className="flex-1">
-                <p className="font-medium">{result.name}</p>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate">{result.name}</p>
                 <p className={cn(
-                  "text-xs",
+                  "text-xs truncate",
                   index === selectedIndex ? "text-white/70" : "text-white/50"
                 )}>
-                  {result.type === 'app' ? 'Application' : 'System Action'}
+                  {result.subtitle || getTypeLabel(result.type)}
                 </p>
               </div>
               {result.shortcut && (
@@ -277,6 +417,18 @@ const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
                   {result.shortcut}
                 </span>
               )}
+              {result.type === 'web' && (
+                <ExternalLink className={cn(
+                  "w-4 h-4",
+                  index === selectedIndex ? "text-white/70" : "text-white/40"
+                )} />
+              )}
+              {result.type === 'document' && (
+                <ArrowRight className={cn(
+                  "w-4 h-4",
+                  index === selectedIndex ? "text-white/70" : "text-white/40"
+                )} />
+              )}
             </div>
           ))}
         </div>
@@ -285,11 +437,11 @@ const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
         <div className="px-4 py-2 border-t border-white/10 flex items-center justify-between text-white/40 text-xs">
           <span>Spotlight Search</span>
           <div className="flex gap-2">
-            <span>Arrow keys to navigate</span>
+            <span>↑↓ Navigate</span>
             <span>-</span>
-            <span>Enter to open</span>
+            <span>↵ Open</span>
             <span>-</span>
-            <span>Esc to close</span>
+            <span>esc Close</span>
           </div>
         </div>
       </div>

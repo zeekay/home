@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_ENDPOINTS } from '@/config/links';
 
 export interface StackOverflowUser {
   reputation: number;
@@ -14,13 +15,13 @@ export interface StackOverflowUser {
   link: string;
 }
 
-export const useStackOverflow = (userId: string = '641766') => {
+export const useStackOverflow = (userId: string = API_ENDPOINTS.stackOverflow.defaultUserId) => {
   const [data, setData] = useState<StackOverflowUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`https://api.stackexchange.com/2.3/users/${userId}?site=stackoverflow`)
+    fetch(`${API_ENDPOINTS.stackOverflow.base}/users/${userId}?site=stackoverflow`)
       .then(r => r.json())
       .then(response => {
         if (response.items?.[0]) {

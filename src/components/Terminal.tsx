@@ -1,8 +1,19 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { TerminalProps } from '@/types/terminal';
 import { useTerminal } from '@/contexts/TerminalContext';
+import { getCurrentDir } from '@/utils/terminalFileSystem';
+import VimEditor from './VimEditor';
+
+// Commands for tab completion
+const COMMANDS = [
+  'ls', 'll', 'la', 'cd', 'pwd', 'cat', 'head', 'tail', 'vim', 'nvim', 'nano',
+  'mkdir', 'touch', 'rm', 'cp', 'mv', 'echo', 'grep', 'wc', 'tree', 'clear',
+  'history', 'help', 'neofetch', 'info', 'whoami', 'uname', 'hostname', 'date',
+  'uptime', 'which', 'type', 'alias', 'env', 'printenv', 'theme', 'git', 'node',
+  'npm', 'npx', 'python', 'python3', 'open', 'cowsay', 'fortune', 'ellipsis', 'dots'
+];
 
 const terminalThemes = {
   dark: { bg: 'bg-black', text: 'text-white' }, // Pure black like iTerm2
@@ -24,16 +35,28 @@ const terminalThemes = {
 
 // Clean ANSI escape codes and control characters from terminal output
 const cleanTerminalOutput = (text: string): string => {
+  // Use string construction for ANSI escape sequences to avoid ESLint control-regex warnings
+  const ESC = '\x1b';
+  const BEL = '\x07';
+  const ansiCsi = new RegExp(ESC + '\\[[0-9;?]*[a-zA-Z]', 'g');
+  const ansiOsc = new RegExp(ESC + '\\][^' + BEL + ESC + ']*(?:' + BEL + '|' + ESC + '\\\\)', 'g');
+  const ansiDcs = new RegExp(ESC + '[PX^_][^' + ESC + ']*' + ESC + '\\\\', 'g');
+  const ansiSingle = new RegExp(ESC + '[@-Z\\\\-_]', 'g');
+  // Control characters: NUL-BS, VT, FF, SO-US, DEL (excluding TAB, LF, CR)
+  const controlChars = new RegExp('[' + String.fromCharCode(0) + '-' + String.fromCharCode(8) + 
+    String.fromCharCode(11) + String.fromCharCode(12) + 
+    String.fromCharCode(14) + '-' + String.fromCharCode(31) + String.fromCharCode(127) + ']', 'g');
+  
   return text
     // Remove ANSI escape codes (including CSI sequences like [?2004h)
-    .replace(/\x1b\[[0-9;?]*[a-zA-Z]/g, '')
-    .replace(/\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)/g, '') // OSC sequences
-    .replace(/\x1b[PX^_][^\x1b]*\x1b\\/g, '') // DCS, SOS, PM, APC sequences
-    .replace(/\x1b[@-Z\\-_]/g, '') // Single ESC sequences
+    .replace(ansiCsi, '')
+    .replace(ansiOsc, '') // OSC sequences
+    .replace(ansiDcs, '') // DCS, SOS, PM, APC sequences
+    .replace(ansiSingle, '') // Single ESC sequences
     // Remove any leftover bracket sequences that might have been split
     .replace(/\[\??\d*[a-zA-Z]/g, '')
     // Remove control characters except newlines and tabs
-    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+    .replace(controlChars, '')
     // Clean up multiple consecutive spaces (but preserve indentation)
     .replace(/[^\S\n]{3,}/g, '  ')
     // Trim trailing whitespace from lines
@@ -52,7 +75,10 @@ const Terminal: React.FC<TerminalProps> = ({
     entries,
     executeCommand,
     commandHistory,
-    setCommandHistory
+    setCommandHistory,
+    editorState,
+    closeEditor,
+    saveFile
   } = useTerminal();
   
   const [inputValue, setInputValue] = useState('');
@@ -73,10 +99,11 @@ const Terminal: React.FC<TerminalProps> = ({
       inputRef.current?.focus();
     };
     
-    containerRef.current?.addEventListener('click', handleClick);
+    const container = containerRef.current;
+    container?.addEventListener('click', handleClick);
     
     return () => {
-      containerRef.current?.removeEventListener('click', handleClick);
+      container?.removeEventListener('click', handleClick);
     };
   }, []);
 
@@ -100,8 +127,52 @@ const Terminal: React.FC<TerminalProps> = ({
     await executeCommand(trimmedCommand);
   };
 
+  // Tab completion
+  const handleTabComplete = useCallback(() => {
+    const parts = inputValue.split(' ');
+    const currentWord = parts[parts.length - 1];
+    const isFirstWord = parts.length === 1;
+    
+    if (!currentWord) return;
+    
+    let completions: string[] = [];
+    
+    if (isFirstWord) {
+      // Complete commands
+      completions = COMMANDS.filter(cmd => cmd.startsWith(currentWord.toLowerCase()));
+    } else {
+      // Complete file/directory names
+      const currentDir = getCurrentDir();
+      const items = Object.keys(currentDir);
+      completions = items.filter(item => item.toLowerCase().startsWith(currentWord.toLowerCase()));
+    }
+    
+    if (completions.length === 1) {
+      // Single match - complete it
+      parts[parts.length - 1] = completions[0];
+      setInputValue(parts.join(' '));
+    } else if (completions.length > 1) {
+      // Multiple matches - find common prefix
+      const commonPrefix = completions.reduce((prefix, completion) => {
+        let i = 0;
+        while (i < prefix.length && i < completion.length && prefix[i] === completion[i]) {
+          i++;
+        }
+        return prefix.slice(0, i);
+      }, completions[0]);
+      
+      if (commonPrefix.length > currentWord.length) {
+        parts[parts.length - 1] = commonPrefix;
+        setInputValue(parts.join(' '));
+      }
+    }
+  }, [inputValue]);
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowUp') {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      handleTabComplete();
+    } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       const newIndex = Math.min(historyIndex + 1, commandHistory.length - 1);
       setHistoryIndex(newIndex);
@@ -130,6 +201,24 @@ const Terminal: React.FC<TerminalProps> = ({
   };
 
   const theme = getTerminalTheme();
+
+  // Handle vim editor save
+  const handleEditorSave = async (content: string) => {
+    await saveFile(editorState.fileName, content);
+  };
+
+  // Show VimEditor when editing
+  if (editorState.isOpen) {
+    return (
+      <VimEditor
+        fileName={editorState.fileName}
+        initialContent={editorState.content}
+        onSave={handleEditorSave}
+        onClose={closeEditor}
+        isNewFile={editorState.isNewFile}
+      />
+    );
+  }
 
   return (
     <div

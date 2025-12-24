@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ZWindow from './ZWindow';
+import { logger } from '@/lib/logger';
 import { Plus, Trash2, Palette } from 'lucide-react';
 
 interface ZStickiesWindowProps {
@@ -22,14 +23,43 @@ const noteColors = [
   { name: 'Orange', bg: 'bg-orange-200', text: 'text-orange-900', border: 'border-orange-300' },
 ];
 
+const STORAGE_KEY = 'zos-stickies-notes';
+
+const defaultNotes: StickyNote[] = [
+  { id: '1', content: 'Welcome to Stickies!\n\nClick + to add a new note.', color: 'Yellow', createdAt: new Date() },
+  { id: '2', content: 'Remember to:\n- Check emails\n- Review PRs\n- Deploy updates', color: 'Pink', createdAt: new Date() },
+  { id: '3', content: 'Ideas:\n• New terminal features\n• Better animations\n• More themes', color: 'Blue', createdAt: new Date() },
+];
+
 const ZStickiesWindow: React.FC<ZStickiesWindowProps> = ({ onClose }) => {
-  const [notes, setNotes] = useState<StickyNote[]>([
-    { id: '1', content: 'Welcome to Stickies!\n\nClick + to add a new note.', color: 'Yellow', createdAt: new Date() },
-    { id: '2', content: 'Remember to:\n- Check emails\n- Review PRs\n- Deploy updates', color: 'Pink', createdAt: new Date() },
-    { id: '3', content: 'Ideas:\n• New terminal features\n• Better animations\n• More themes', color: 'Blue', createdAt: new Date() },
-  ]);
+  // Load notes from localStorage
+  const [notes, setNotes] = useState<StickyNote[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Convert date strings back to Date objects
+        return parsed.map((note: Omit<StickyNote, 'createdAt'> & { createdAt: string }) => ({
+          ...note,
+          createdAt: new Date(note.createdAt)
+        }));
+      }
+    } catch (e) {
+      logger.error('Failed to load stickies:', e);
+    }
+    return defaultNotes;
+  });
   const [selectedNote, setSelectedNote] = useState<string | null>(null);
   const [showColorPicker, setShowColorPicker] = useState<string | null>(null);
+
+  // Persist notes to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    } catch (e) {
+      logger.error('Failed to save stickies:', e);
+    }
+  }, [notes]);
 
   const addNote = () => {
     const newNote: StickyNote = {

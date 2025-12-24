@@ -10,6 +10,8 @@ interface WindowTitleBarProps {
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   onClose: () => void;
   onMinimize: () => void;
+  onMaximize?: () => void;
+  isMaximized?: boolean;
   customControls?: React.ReactNode;
 }
 
@@ -19,6 +21,8 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
   onMouseDown,
   onClose,
   onMinimize,
+  onMaximize,
+  isMaximized,
   customControls
 }) => {
   const isMobile = useIsMobile();
@@ -59,7 +63,7 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
       )}
       onMouseDown={onMouseDown}
     >
-      <WindowControls onClose={onClose} onMinimize={onMinimize} />
+      <WindowControls onClose={onClose} onMinimize={onMinimize} onMaximize={onMaximize} isMaximized={isMaximized} />
       {showTitle && (
         <div className="text-center flex-1 text-xs font-medium select-none">
           {title}

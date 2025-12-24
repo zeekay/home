@@ -146,7 +146,7 @@ const GithubProjects: React.FC<GithubProjectsProps> = ({ className }) => {
             <Filter size={14} className="text-muted-foreground" />
             <select 
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as 'stars' | 'updated' | 'name')}
               className="bg-background/50 border border-border rounded py-1 px-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value="stars">Most Stars</option>

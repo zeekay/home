@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import ZWindow from './ZWindow';
 import { cn } from '@/lib/utils';
 
+// Extend Navigator interface for non-standard deviceMemory property
+interface NavigatorWithDeviceMemory extends Navigator {
+  deviceMemory?: number;
+}
+
 interface AboutZosWindowProps {
   onClose: () => void;
 }
@@ -54,7 +59,7 @@ const getSystemInfo = (): SystemInfo => {
     colorDepth: `${window.screen.colorDepth}-bit`,
     language: navigator.language,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    memory: (navigator as any).deviceMemory ? `${(navigator as any).deviceMemory} GB` : undefined,
+    memory: (navigator as NavigatorWithDeviceMemory).deviceMemory ? `${(navigator as NavigatorWithDeviceMemory).deviceMemory} GB` : undefined,
     cores: navigator.hardwareConcurrency,
   };
 };
