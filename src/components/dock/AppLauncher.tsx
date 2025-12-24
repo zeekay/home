@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/popover";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { HanzoLogo, LuxLogo, ZooLogo, MacFolderIcon, AppsBadge } from './logos';
+import { EXTERNAL_LINKS } from '@/config/links';
 
 interface AppLauncherProps {
   onHanzoClick?: () => void;
@@ -89,7 +90,7 @@ const AppLauncher: React.FC<AppLauncherProps> = ({ onHanzoClick, onLuxClick, onZ
           <div className="text-xs text-white/50 uppercase tracking-wider mb-2 px-1">Websites</div>
           <div className="grid grid-cols-3 gap-2">
             <a
-              href="https://hanzo.ai"
+              href={EXTERNAL_LINKS.hanzoAI}
               target="_blank"
               rel="noopener noreferrer"
               className="flex flex-col items-center p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
@@ -102,7 +103,7 @@ const AppLauncher: React.FC<AppLauncherProps> = ({ onHanzoClick, onLuxClick, onZ
             </a>
 
             <a
-              href="https://lux.network"
+              href={EXTERNAL_LINKS.luxNetwork}
               target="_blank"
               rel="noopener noreferrer"
               className="flex flex-col items-center p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
@@ -115,7 +116,7 @@ const AppLauncher: React.FC<AppLauncherProps> = ({ onHanzoClick, onLuxClick, onZ
             </a>
 
             <a
-              href="https://zoo.ngo"
+              href={EXTERNAL_LINKS.zooLabs}
               target="_blank"
               rel="noopener noreferrer"
               className="flex flex-col items-center p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"

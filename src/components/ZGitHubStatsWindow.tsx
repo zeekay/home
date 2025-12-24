@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import ZWindow from './ZWindow';
 import { useGitHubStats } from '@/hooks/useGitHubStats';
 import { useStackOverflow } from '@/hooks/useStackOverflow';
@@ -80,30 +80,47 @@ const ZGitHubStatsWindow: React.FC<ZGitHubStatsWindowProps> = ({ onClose }) => {
     );
   }
 
-  // Get last 24 months of commits for the chart
-  const recentCommits = stats.monthlyCommits.slice(-24).map(item => ({
-    month: item.month.slice(2), // "2024-01" -> "24-01"
-    commits: item.commits
-  }));
+  // Memoize chart data transformations - only recalculate when stats change
+  const recentCommits = useMemo(() => 
+    stats.monthlyCommits.slice(-24).map(item => ({
+      month: item.month.slice(2), // "2024-01" -> "24-01"
+      commits: item.commits
+    })), [stats.monthlyCommits]
+  );
 
-  // Get last 24 months of LOC for the chart
-  const recentLoc = stats.cumulativeLoc.slice(-24).map(item => ({
-    month: item.month.slice(2),
-    loc: item.loc / 1000000 // Convert to millions
-  }));
+  const recentLoc = useMemo(() => 
+    stats.cumulativeLoc.slice(-24).map(item => ({
+      month: item.month.slice(2),
+      loc: item.loc / 1000000 // Convert to millions
+    })), [stats.cumulativeLoc]
+  );
 
-  // Format top repos for display
-  const topReposData = stats.topRepos.slice(0, 7).map((repo, idx) => ({
-    name: repo.repo.split('/')[1] || repo.repo,
-    fullName: repo.repo,
-    commits: repo.commits,
-    fill: COLORS[idx % COLORS.length]
-  }));
+  const topReposData = useMemo(() => 
+    stats.topRepos.slice(0, 7).map((repo, idx) => ({
+      name: repo.repo.split('/')[1] || repo.repo,
+      fullName: repo.repo,
+      commits: repo.commits,
+      fill: COLORS[idx % COLORS.length]
+    })), [stats.topRepos]
+  );
 
-  const dayOfWeekData = stats.byDayOfWeek.map((item, idx) => ({
-    ...item,
-    fill: COLORS[idx % COLORS.length]
-  }));
+  const dayOfWeekData = useMemo(() => 
+    stats.byDayOfWeek.map((item, idx) => ({
+      ...item,
+      fill: COLORS[idx % COLORS.length]
+    })), [stats.byDayOfWeek]
+  );
+
+  // Memoize yearly summary calculation
+  const yearlySummary = useMemo(() => 
+    Object.entries(
+      stats.monthlyCommits.reduce((acc, item) => {
+        const year = item.month.slice(0, 4);
+        acc[year] = (acc[year] || 0) + item.commits;
+        return acc;
+      }, {} as Record<string, number>)
+    ).reverse().slice(0, 10), [stats.monthlyCommits]
+  );
 
   return (
     <ZWindow
@@ -302,13 +319,7 @@ const ZGitHubStatsWindow: React.FC<ZGitHubStatsWindowProps> = ({ onClose }) => {
                   <h3 className="font-medium">Yearly Summary</h3>
                 </div>
                 <div className="space-y-3 max-h-[250px] overflow-y-auto">
-                  {Object.entries(
-                    stats.monthlyCommits.reduce((acc, item) => {
-                      const year = item.month.slice(0, 4);
-                      acc[year] = (acc[year] || 0) + item.commits;
-                      return acc;
-                    }, {} as Record<string, number>)
-                  ).reverse().slice(0, 10).map(([year, commits]) => (
+                  {yearlySummary.map(([year, commits]) => (
                     <div key={year} className="flex items-center gap-3">
                       <span className="text-sm text-gray-400 w-12">{year}</span>
                       <div className="flex-1 bg-gray-700/50 rounded-full h-4 overflow-hidden">

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ZWindow from './ZWindow';
-import { Send, Sparkles, Bot, User, Zap, Brain, Cpu } from 'lucide-react';
+import { Send, Sparkles, Bot, User, Zap } from 'lucide-react';
+import { HanzoLogo } from './dock/logos';
 
 interface HanzoAIWindowProps {
   onClose: () => void;
@@ -95,7 +96,7 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
         <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10 bg-black/40">
           <div className="relative">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 via-red-500 to-purple-600 flex items-center justify-center">
-              <Brain className="w-6 h-6 text-white" />
+              <HanzoLogo className="w-6 h-6 text-white" />
             </div>
             <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-black" />
           </div>
@@ -129,7 +130,7 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
                 }`}
               >
                 {message.role === 'assistant' ? (
-                  <Bot className="w-5 h-5 text-white" />
+                  <HanzoLogo className="w-5 h-5 text-white" />
                 ) : (
                   <User className="w-5 h-5 text-white" />
                 )}
@@ -152,7 +153,7 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
           {isTyping && (
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
-                <Bot className="w-5 h-5 text-white" />
+                <HanzoLogo className="w-5 h-5 text-white" />
               </div>
               <div className="bg-white/10 rounded-2xl px-4 py-3">
                 <div className="flex gap-1">

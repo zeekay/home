@@ -18,6 +18,7 @@ import {
   PhoneIcon,
   MusicIcon,
   TerminalIcon,
+  TextEditIcon,
   HanzoLogo,
   LuxLogo,
   ZooLogo,
@@ -52,6 +53,8 @@ const getIconComponent = (id: string): React.ReactNode => {
       return <MusicIcon className="w-full h-full" />;
     case 'terminal':
       return <TerminalIcon className="w-full h-full" />;
+    case 'textedit':
+      return <TextEditIcon className="w-full h-full" />;
     case 'hanzo':
       return <HanzoLogo className="w-full h-full text-white" />;
     case 'lux':
@@ -74,6 +77,7 @@ const ZDock: React.FC<ZDockProps> = ({
   onFaceTimeClick,
   onMusicClick,
   onTerminalClick,
+  onTextEditClick,
   onHanzoClick,
   onLuxClick,
   onZooClick,
@@ -95,6 +99,7 @@ const ZDock: React.FC<ZDockProps> = ({
     onFaceTimeClick,
     onMusicClick,
     onTerminalClick,
+    onTextEditClick,
     onHanzoClick,
     onLuxClick,
     onZooClick
@@ -143,6 +148,9 @@ const ZDock: React.FC<ZDockProps> = ({
   return (
     <TooltipProvider>
       <div
+        data-dock
+        role="toolbar"
+        aria-label="Application dock"
         className={cn(
           'fixed left-1/2 transform -translate-x-1/2',
           'inline-flex items-center justify-center',

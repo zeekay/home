@@ -2,7 +2,7 @@
 import { TerminalEntry } from '@/types/terminal';
 import { WebContainer } from '@webcontainer/api';
 import { executeWebContainerCommand } from './webContainerUtil';
-import { readFile } from './terminalFileSystem';
+import { readFile, getFileForEditing, getCurrentDir, writeFile, copyFile, moveFile, grepFile, headFile, tailFile, wcFile } from './terminalFileSystem';
 
 // Alias mappings (like .zshrc aliases)
 const aliases: Record<string, string> = {
@@ -44,7 +44,7 @@ export const executeHelpCommand = (
 ): void => {
   addEntry({
     command,
-    output: `zOS Terminal - Available Commands
+    output: `zOS Terminal v4.2.0 - Available Commands
 
 Navigation:
   ls, ll, la         List files (-a shows hidden, -l long format)
@@ -54,19 +54,25 @@ Navigation:
 
 File Operations:
   cat [file]         View file contents
-  vim/nano/pico      Edit file (simulated)
+  head [-n] [file]   View first n lines (default 10)
+  tail [-n] [file]   View last n lines (default 10)
   touch [file]       Create empty file
   mkdir [dir]        Create directory
   rm [file]          Remove file
+  cp [src] [dest]    Copy file
+  mv [src] [dest]    Move/rename file
   echo [text]        Print text (> file to write)
+  grep [pat] [file]  Search for pattern (-n for line numbers)
+  wc [file]          Word count (-l lines, -w words, -c chars)
 
 Editors:
-  vim [file]         Open in Vim (display mode)
-  nano [file]        Open in Nano (alias to vim)
-  pico [file]        Open in Pico (alias to vim)
-  ed [file]          Open in Ed (alias to vim)
+  vim [file]         Open file in Vim editor (full vim keybindings)
+  nano/pico [file]   Aliases to vim
+  :w                 Save file (in vim)
+  :q                 Quit editor (in vim)
+  :wq                Save and quit (in vim)
 
-Runtime:
+Runtime (via WebContainer):
   node [file.js]     Run JavaScript file
   npx [pkg]          Run npm package
   npm [cmd]          npm commands
@@ -78,24 +84,34 @@ System:
   uname [-a]         System info
   neofetch / info    System summary
   env                Environment variables
+  date               Current date/time
+  uptime             Session uptime
 
-Git:
-  git status/log/diff/branch
+Git (via WebContainer):
+  git status         Show working tree status
+  git log            Show commit history
+  git diff           Show changes
+  git branch         List branches
+
+Utilities:
+  cowsay [msg]       ASCII art cow
+  fortune            Random quote
+  open [url]         Open URL in browser
 
 Ellipsis (Dotfiles):
-  ellipsis           Show ellipsis info
+  ellipsis           Dotfile manager info
   dots               List installed packages
 
 Aliases (from .zshrc):
-  ll → ls -la        la → ls -a       .. → cd ..
-  g → git            gs → git status  v → vim
-  n → node           py → python3     cls → clear
+  ll → ls -la    la → ls -a     .. → cd ..
+  g → git        gs → git status   v → vim
+  n → node       py → python3      cls → clear
 
 Theme:
   theme [name]       Change theme (dracula, nord, matrix, monokai...)
 
-Type 'cat .zshrc' or 'cat .vimrc' to see your configs.
-Type 'cd Documents' to see GitHub project links.`,
+Type 'cat .zshrc' to see your configs.
+Type 'cd Documents' for GitHub project links.`,
     id: Date.now()
   });
 };
@@ -104,7 +120,8 @@ export const executeVimCommand = (
   args: string[],
   addEntry: (entry: Omit<TerminalEntry, 'id'> & { id?: number }) => void,
   command: string,
-  editorName: string = 'vim'
+  editorName: string = 'vim',
+  openEditor?: (fileName: string, content: string, isNewFile?: boolean) => void
 ): void => {
   const file = args[0];
 
@@ -123,19 +140,31 @@ github.com/zeekay/vice | github.com/zeekay/dot-vim`,
 
 Usage: ${editorName} [file]
 
-In zOS, editors display file contents.
-For editing, use: echo "content" > file`,
+Open files for editing with vim keybindings.
+Commands: :w to save, :q to quit, :wq to save and quit`,
       id: Date.now()
     });
     return;
   }
 
-  // Try to read the file
-  const content = readFile(file);
-  if (content !== null) {
+  // Try to get file for editing
+  const fileData = getFileForEditing(file);
+  
+  if (fileData && openEditor) {
+    // Open the real editor
     addEntry({
       command,
-      output: `╭─────────────────────────────────────────────────────────────╮
+      output: `Opening ${file}...`,
+      id: Date.now()
+    });
+    openEditor(file, fileData.content, fileData.isNewFile);
+  } else if (!openEditor) {
+    // Fallback to display mode if no editor callback
+    const content = readFile(file);
+    if (content !== null) {
+      addEntry({
+        command,
+        output: `╭─────────────────────────────────────────────────────────────╮
 │ ${editorName.toUpperCase()} - ${file.padEnd(50)} │
 ╰─────────────────────────────────────────────────────────────╯
 
@@ -143,12 +172,12 @@ ${content}
 
 ───────────────────────────────────────────────────────────────
 [Read-only] Press :q to exit (simulated)`,
-      id: Date.now()
-    });
-  } else {
-    addEntry({
-      command,
-      output: `${editorName}: ${file}: New file
+        id: Date.now()
+      });
+    } else {
+      addEntry({
+        command,
+        output: `${editorName}: ${file}: New file
 
 ╭─────────────────────────────────────────────────────────────╮
 │ ${editorName.toUpperCase()} - ${file.padEnd(50)} │
@@ -159,8 +188,9 @@ ${content}
 ~
 
 [New File] Use 'echo "content" > ${file}' to create`,
-      id: Date.now()
-    });
+        id: Date.now()
+      });
+    }
   }
 };
 
@@ -422,7 +452,8 @@ export const processCommand = async (
   isWebContainerReady: boolean,
   addEntry: (entry: Omit<TerminalEntry, 'id'> & { id?: number }) => void,
   clearEntries: () => void,
-  commandHistory: string[] = []
+  commandHistory: string[] = [],
+  openEditor?: (fileName: string, content: string, isNewFile?: boolean) => void
 ): Promise<void> => {
   if (!command.trim()) return;
 
@@ -480,41 +511,41 @@ export const processCommand = async (
   }
 
   if (cmd === 'whoami') {
-    addEntry({ command: '', output: 'z', id: Date.now() });
+    addEntry({ command, output: 'z', id: Date.now() });
     return;
   }
 
   if (cmd === 'id') {
-    addEntry({ command: '', output: 'uid=1000(z) gid=1000(z) groups=1000(z),27(sudo),100(users)', id: Date.now() });
+    addEntry({ command, output: 'uid=1000(z) gid=1000(z) groups=1000(z),27(sudo),100(users)', id: Date.now() });
     return;
   }
 
   if (cmd === 'uname') {
     const flag = args[0];
     if (flag === '-a') {
-      addEntry({ command: '', output: 'zOS 4.2.0 zeekay.ai WebContainer aarch64 GNU/Linux', id: Date.now() });
+      addEntry({ command, output: 'zOS 4.2.0 zeekay.ai WebContainer aarch64 GNU/Linux', id: Date.now() });
     } else if (flag === '-r') {
-      addEntry({ command: '', output: '4.2.0-webcontainer', id: Date.now() });
+      addEntry({ command, output: '4.2.0-webcontainer', id: Date.now() });
     } else {
-      addEntry({ command: '', output: 'zOS', id: Date.now() });
+      addEntry({ command, output: 'zOS', id: Date.now() });
     }
     return;
   }
 
   if (cmd === 'hostname') {
-    addEntry({ command: '', output: 'zeekay.ai', id: Date.now() });
+    addEntry({ command, output: 'zeekay.ai', id: Date.now() });
     return;
   }
 
   if (cmd === 'date') {
-    addEntry({ command: '', output: new Date().toString(), id: Date.now() });
+    addEntry({ command, output: new Date().toString(), id: Date.now() });
     return;
   }
 
   if (cmd === 'uptime') {
     const uptime = Math.floor((Date.now() - performance.timeOrigin) / 1000);
     const uptimeStr = uptime > 60 ? `${Math.floor(uptime / 60)} min` : `${uptime} sec`;
-    addEntry({ command: '', output: `up ${uptimeStr}, 1 user, load average: 0.00, 0.00, 0.00`, id: Date.now() });
+    addEntry({ command, output: `up ${uptimeStr}, 1 user, load average: 0.00, 0.00, 0.00`, id: Date.now() });
     return;
   }
 
@@ -531,7 +562,7 @@ export const processCommand = async (
         'python': '/usr/bin/python3',
         'python3': '/usr/bin/python3',
       };
-      addEntry({ command: '', output: paths[prog] || `${prog} not found`, id: Date.now() });
+      addEntry({ command, output: paths[prog] || `${prog} not found`, id: Date.now() });
     }
     return;
   }
@@ -540,9 +571,9 @@ export const processCommand = async (
     const prog = args[0];
     if (prog) {
       if (aliases[prog]) {
-        addEntry({ command: '', output: `${prog} is aliased to '${aliases[prog]}'`, id: Date.now() });
+        addEntry({ command, output: `${prog} is aliased to '${aliases[prog]}'`, id: Date.now() });
       } else {
-        addEntry({ command: '', output: `${prog} is /usr/bin/${prog}`, id: Date.now() });
+        addEntry({ command, output: `${prog} is /usr/bin/${prog}`, id: Date.now() });
       }
     }
     return;
@@ -552,7 +583,7 @@ export const processCommand = async (
     const aliasOutput = Object.entries(aliases)
       .map(([k, v]) => `${k}='${v}'`)
       .join('\n');
-    addEntry({ command: '', output: aliasOutput, id: Date.now() });
+    addEntry({ command, output: aliasOutput, id: Date.now() });
     return;
   }
 
@@ -564,16 +595,160 @@ export const processCommand = async (
 
   // Handle editor commands (vim, nano, pico, ed)
   if (['vim', 'nvim', 'vi', 'nano', 'pico', 'ed', 'emacs'].includes(cmd)) {
-    executeVimCommand(args, addEntry, command, cmd);
+    executeVimCommand(args, addEntry, command, cmd, openEditor);
     return;
   }
 
-  // Git commands (simulated)
+  // Grep command
+  if (cmd === 'grep') {
+    if (args.length < 2) {
+      addEntry({ command, output: 'Usage: grep <pattern> <file>', isError: true, id: Date.now() });
+      return;
+    }
+    const pattern = args[0];
+    const fileName = args[1];
+    const showLineNumbers = args.includes('-n');
+
+    const result = grepFile(pattern, fileName);
+    if (result === null) {
+      addEntry({ command, output: `grep: ${fileName}: No such file or directory`, isError: true, id: Date.now() });
+    } else if (result.matches.length === 0) {
+      addEntry({ command, output: '', id: Date.now() });
+    } else {
+      const output = result.matches.map((line, i) =>
+        showLineNumbers ? `${result.lineNumbers[i]}:${line}` : line
+      ).join('\n');
+      addEntry({ command, output, id: Date.now() });
+    }
+    return;
+  }
+
+  // Head command
+  if (cmd === 'head') {
+    let lines = 10;
+    let fileName = args[0];
+
+    // Parse -n flag
+    if (args[0] === '-n' && args[1]) {
+      lines = parseInt(args[1]) || 10;
+      fileName = args[2];
+    } else if (args[0]?.startsWith('-')) {
+      lines = parseInt(args[0].slice(1)) || 10;
+      fileName = args[1];
+    }
+
+    if (!fileName) {
+      addEntry({ command, output: 'Usage: head [-n lines] <file>', isError: true, id: Date.now() });
+      return;
+    }
+
+    const content = headFile(fileName, lines);
+    if (content === null) {
+      addEntry({ command, output: `head: ${fileName}: No such file or directory`, isError: true, id: Date.now() });
+    } else {
+      addEntry({ command, output: content, id: Date.now() });
+    }
+    return;
+  }
+
+  // Tail command
+  if (cmd === 'tail') {
+    let lines = 10;
+    let fileName = args[0];
+
+    // Parse -n flag
+    if (args[0] === '-n' && args[1]) {
+      lines = parseInt(args[1]) || 10;
+      fileName = args[2];
+    } else if (args[0]?.startsWith('-')) {
+      lines = parseInt(args[0].slice(1)) || 10;
+      fileName = args[1];
+    }
+
+    if (!fileName) {
+      addEntry({ command, output: 'Usage: tail [-n lines] <file>', isError: true, id: Date.now() });
+      return;
+    }
+
+    const content = tailFile(fileName, lines);
+    if (content === null) {
+      addEntry({ command, output: `tail: ${fileName}: No such file or directory`, isError: true, id: Date.now() });
+    } else {
+      addEntry({ command, output: content, id: Date.now() });
+    }
+    return;
+  }
+
+  // Copy command
+  if (cmd === 'cp') {
+    if (args.length < 2) {
+      addEntry({ command, output: 'Usage: cp <source> <destination>', isError: true, id: Date.now() });
+      return;
+    }
+    const result = copyFile(args[0], args[1]);
+    if (result.isError) {
+      addEntry({ command, output: result.output, isError: true, id: Date.now() });
+    } else {
+      addEntry({ command, output: '', id: Date.now() });
+    }
+    return;
+  }
+
+  // Move command
+  if (cmd === 'mv') {
+    if (args.length < 2) {
+      addEntry({ command, output: 'Usage: mv <source> <destination>', isError: true, id: Date.now() });
+      return;
+    }
+    const result = moveFile(args[0], args[1]);
+    if (result.isError) {
+      addEntry({ command, output: result.output, isError: true, id: Date.now() });
+    } else {
+      addEntry({ command, output: '', id: Date.now() });
+    }
+    return;
+  }
+
+  // Word count command
+  if (cmd === 'wc') {
+    const fileName = args.filter(a => !a.startsWith('-'))[0];
+    if (!fileName) {
+      addEntry({ command, output: 'Usage: wc <file>', isError: true, id: Date.now() });
+      return;
+    }
+
+    const result = wcFile(fileName);
+    if (result === null) {
+      addEntry({ command, output: `wc: ${fileName}: No such file or directory`, isError: true, id: Date.now() });
+    } else {
+      const showLines = args.includes('-l');
+      const showWords = args.includes('-w');
+      const showChars = args.includes('-c') || args.includes('-m');
+
+      if (showLines && !showWords && !showChars) {
+        addEntry({ command, output: `${result.lines} ${fileName}`, id: Date.now() });
+      } else if (showWords && !showLines && !showChars) {
+        addEntry({ command, output: `${result.words} ${fileName}`, id: Date.now() });
+      } else if (showChars && !showLines && !showWords) {
+        addEntry({ command, output: `${result.chars} ${fileName}`, id: Date.now() });
+      } else {
+        addEntry({ command, output: `  ${result.lines}   ${result.words}  ${result.chars} ${fileName}`, id: Date.now() });
+      }
+    }
+    return;
+  }
+
+  // Git commands - pass to WebContainer if available, otherwise show demo
   if (cmd === 'git') {
+    if (webContainerInstance && isWebContainerReady) {
+      await executeWebContainerCommand(webContainerInstance, resolvedCommand, addEntry, command);
+      return;
+    }
+    // Fallback demo mode when WebContainer not ready
     const subCmd = args[0];
     if (subCmd === 'status') {
       addEntry({
-        command: '',
+        command,
         output: `On branch main
 Your branch is up to date with 'origin/main'.
 
@@ -584,7 +759,7 @@ nothing to commit, working tree clean`,
     }
     if (subCmd === 'log') {
       addEntry({
-        command: '',
+        command,
         output: `* a1b2c3d (HEAD -> main, origin/main) Update terminal features
 * e4f5g6h Add zsh configuration
 * i7j8k9l Initial commit`,
@@ -594,7 +769,7 @@ nothing to commit, working tree clean`,
     }
     if (subCmd === 'branch') {
       addEntry({
-        command: '',
+        command,
         output: `* main
   develop
   feature/terminal`,
@@ -604,7 +779,7 @@ nothing to commit, working tree clean`,
     }
     if (subCmd === 'remote') {
       addEntry({
-        command: '',
+        command,
         output: `origin  git@github.com:zeekay/zos.git (fetch)
 origin  git@github.com:zeekay/zos.git (push)`,
         id: Date.now()
@@ -612,8 +787,8 @@ origin  git@github.com:zeekay/zos.git (push)`,
       return;
     }
     addEntry({
-      command: '',
-      output: `git: simulated in zOS. Try 'git status', 'git log', or 'git branch'`,
+      command,
+      output: `git: WebContainer loading... Try again in a moment.`,
       id: Date.now()
     });
     return;
@@ -623,7 +798,7 @@ origin  git@github.com:zeekay/zos.git (push)`,
   if (cmd === 'npm') {
     const subCmd = args[0];
     if (subCmd === 'version' || subCmd === '-v') {
-      addEntry({ command: '', output: '10.2.0', id: Date.now() });
+      addEntry({ command, output: '10.2.0', id: Date.now() });
       return;
     }
     // Fall through to WebContainer
@@ -632,7 +807,7 @@ origin  git@github.com:zeekay/zos.git (push)`,
   // Node.js - try WebContainer first
   if (cmd === 'node') {
     if (args[0] === '-v' || args[0] === '--version') {
-      addEntry({ command: '', output: 'v20.10.0', id: Date.now() });
+      addEntry({ command, output: 'v20.10.0', id: Date.now() });
       return;
     }
 
@@ -657,11 +832,11 @@ origin  git@github.com:zeekay/zos.git (push)`,
   // Python
   if (cmd === 'python' || cmd === 'python3') {
     if (args[0] === '--version' || args[0] === '-V') {
-      addEntry({ command: '', output: 'Python 3.12.0', id: Date.now() });
+      addEntry({ command, output: 'Python 3.12.0', id: Date.now() });
       return;
     }
     addEntry({
-      command: '',
+      command,
       output: 'Python is simulated. WebContainer runs Node.js natively.',
       id: Date.now()
     });
@@ -673,10 +848,10 @@ origin  git@github.com:zeekay/zos.git (push)`,
     const target = args[0];
     if (target) {
       if (target.startsWith('http')) {
-        addEntry({ command: '', output: `Opening ${target} in browser...`, id: Date.now() });
+        addEntry({ command, output: `Opening ${target} in browser...`, id: Date.now() });
         window.open(target, '_blank');
       } else {
-        addEntry({ command: '', output: `open: cannot open '${target}': Use cat to view files`, id: Date.now() });
+        addEntry({ command, output: `open: cannot open '${target}': Use cat to view files`, id: Date.now() });
       }
     }
     return;
@@ -686,7 +861,7 @@ origin  git@github.com:zeekay/zos.git (push)`,
   if (cmd === 'cowsay') {
     const message = args.join(' ') || 'moo!';
     addEntry({
-      command: '',
+      command,
       output: ` ${'_'.repeat(message.length + 2)}
 < ${message} >
  ${'-'.repeat(message.length + 2)}
@@ -710,7 +885,7 @@ origin  git@github.com:zeekay/zos.git (push)`,
       "Code is poetry.",
     ];
     addEntry({
-      command: '',
+      command,
       output: fortunes[Math.floor(Math.random() * fortunes.length)],
       id: Date.now()
     });
@@ -718,13 +893,13 @@ origin  git@github.com:zeekay/zos.git (push)`,
   }
 
   if (webContainerInstance && isWebContainerReady) {
-    await executeWebContainerCommand(webContainerInstance, resolvedCommand, addEntry);
+    await executeWebContainerCommand(webContainerInstance, resolvedCommand, addEntry, command);
   } else {
-    const { processCommand } = await import('@/utils/terminal');
-    const result = processCommand(resolvedCommand);
+    const { processCommand: processTerminalCommand } = await import('@/utils/terminal');
+    const result = processTerminalCommand(resolvedCommand);
 
     addEntry({
-      command: '',
+      command,
       output: result.output,
       isError: result.isError,
       id: Date.now()

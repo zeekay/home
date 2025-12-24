@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FileText, File, ExternalLink, FolderOpen } from 'lucide-react';
 import { HanzoLogo, LuxLogo, ZooLogo } from './icons';
 import { cn } from '@/lib/utils';
+import { EXTERNAL_LINKS } from '@/config/links';
 
 interface DownloadsPopoverProps {
   isOpen: boolean;
@@ -16,7 +17,7 @@ const documents = [
     shortTitle: 'Lux',
     description: 'Quantum-safe blockchain',
     icon: <LuxLogo className="w-8 h-8" />,
-    url: 'https://lux.network/whitepaper',
+    url: EXTERNAL_LINKS.luxWhitepaper,
     type: 'PDF',
     bgColor: 'bg-gradient-to-br from-cyan-500 to-blue-600',
   },
@@ -25,7 +26,7 @@ const documents = [
     shortTitle: 'Hanzo',
     description: 'AI platform docs',
     icon: <HanzoLogo className="w-8 h-8 text-white" />,
-    url: 'https://docs.hanzo.ai',
+    url: EXTERNAL_LINKS.hanzoDocs,
     type: 'Docs',
     bgColor: 'bg-gradient-to-br from-orange-500 via-red-500 to-purple-600',
   },
@@ -34,7 +35,7 @@ const documents = [
     shortTitle: 'Zoo',
     description: 'DeAI research',
     icon: <ZooLogo className="w-8 h-8" />,
-    url: 'https://zoo.ngo/research',
+    url: EXTERNAL_LINKS.zooResearch,
     type: 'Research',
     bgColor: 'bg-gradient-to-br from-emerald-500 to-teal-600',
   },
@@ -43,7 +44,7 @@ const documents = [
     shortTitle: 'ZIPs',
     description: 'Improvement proposals',
     icon: <File className="w-5 h-5 text-white" />,
-    url: 'https://zips.zoo.ngo',
+    url: EXTERNAL_LINKS.zooZips,
     type: 'Proposals',
     bgColor: 'bg-gradient-to-br from-green-500 to-emerald-600',
   },
@@ -52,7 +53,7 @@ const documents = [
     shortTitle: 'Genesis',
     description: 'Network genesis',
     icon: <FileText className="w-5 h-5 text-white" />,
-    url: 'https://docs.lux.network/genesis',
+    url: EXTERNAL_LINKS.luxGenesis,
     type: 'Technical',
     bgColor: 'bg-gradient-to-br from-blue-500 to-indigo-600',
   },
@@ -61,7 +62,7 @@ const documents = [
     shortTitle: 'ACI',
     description: 'AI chain infra',
     icon: <HanzoLogo className="w-6 h-6 text-white" />,
-    url: 'https://docs.hanzo.ai/aci',
+    url: EXTERNAL_LINKS.hanzoACI,
     type: 'Architecture',
     bgColor: 'bg-gradient-to-br from-violet-500 to-purple-600',
   },
@@ -168,6 +169,7 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
 
       {/* Fan Container - centered above downloads icon (2nd from right in dock) */}
       <div
+        data-popover
         className="fixed z-[9999]"
         style={{
           bottom: '85px',
@@ -178,8 +180,9 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
         {documents.map((doc, index) => {
           // Calculate fan angle - spread outward from center (alternating left/right)
           const centerIndex = (totalItems - 1) / 2;
-          const fanAngle = (index - centerIndex) * 6; // 6 degrees spread per item
-          const yOffset = index * 65; // Vertical spacing for readability
+          const baseOffset = 3; // Slight rotation to continue visual arc from downloads icon
+          const fanAngle = (index - centerIndex) * 6 + baseOffset; // 6 degrees spread per item
+          const yOffset = index * 62; // Vertical spacing for readability
           const delay = (totalItems - 1 - index) * 40;
 
           return (

@@ -1,6 +1,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { Search, ExternalLink, RefreshCw } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 interface SafariContentProps {
   url: string;
@@ -16,7 +17,9 @@ const getDuckDuckGoQuery = (url: string): string | null => {
     if (urlObj.hostname.includes('duckduckgo.com')) {
       return urlObj.searchParams.get('q');
     }
-  } catch {}
+  } catch {
+    // Invalid URL - return null (expected for malformed input)
+  }
   return null;
 };
 
@@ -41,14 +44,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({ query, onNewSearch }) => 
         );
         const data = await response.json();
         if (data.query?.search) {
-          setResults(data.query.search.map((item: any) => ({
+          setResults(data.query.search.map((item: { title: string; snippet: string }) => ({
             title: item.title,
             snippet: item.snippet.replace(/<[^>]*>/g, ''), // Strip HTML
             url: `https://en.wikipedia.org/wiki/${encodeURIComponent(item.title.replace(/ /g, '_'))}`
           })));
         }
       } catch (e) {
-        console.error('Search failed:', e);
+        logger.error('Search failed:', e);
       }
       setLoading(false);
     };

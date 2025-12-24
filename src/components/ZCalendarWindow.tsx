@@ -42,15 +42,7 @@ const ZCalendarWindow = ({ onClose }: { onClose: () => void }) => {
     setTimeout(() => {
       setSubmitting(false);
       toast.success('Meeting scheduled successfully!');
-      
-      // In a real implementation, you would send this to a backend
-      console.log({
-        date: format(date, 'yyyy-MM-dd'),
-        time: timeSlot,
-        name,
-        email,
-        description
-      });
+      // Meeting data: date, time, name, email, description - ready for backend integration
     }, 1500);
   };
 

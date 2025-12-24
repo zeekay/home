@@ -1,36 +1,48 @@
 
 import React from 'react';
-import { X, Minus, Square } from 'lucide-react';
+import { X, Minus, Maximize2, Minimize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface WindowControlsProps {
   onClose: () => void;
   onMinimize: () => void;
+  onMaximize?: () => void;
+  isMaximized?: boolean;
 }
 
 const WindowControls: React.FC<WindowControlsProps> = ({
   onClose,
-  onMinimize
+  onMinimize,
+  onMaximize,
+  isMaximized = false,
 }) => {
   return (
-    <div className="flex space-x-2 items-center">
-      <button 
+    <div className="flex space-x-[6px] items-center group/controls" role="group" aria-label="Window controls">
+      <button
         onClick={onClose}
-        className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition-colors flex items-center justify-center"
-        title="Close"
+        className="w-3 h-3 rounded-full bg-[#ff5f57] hover:bg-[#ff5f57] transition-colors flex items-center justify-center"
+        aria-label="Close window"
       >
-        <X className="w-2 h-2 text-red-800 opacity-0 hover:opacity-100" />
+        <X className="w-2 h-2 text-[#4d0000] opacity-0 group-hover/controls:opacity-100 transition-opacity" aria-hidden="true" />
       </button>
-      <button 
+      <button
         onClick={onMinimize}
-        className="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors flex items-center justify-center"
-        title="Minimize"
+        className="w-3 h-3 rounded-full bg-[#febc2e] hover:bg-[#febc2e] transition-colors flex items-center justify-center"
+        aria-label="Minimize window"
       >
-        <Minus className="w-2 h-2 text-yellow-800 opacity-0 hover:opacity-100" />
+        <Minus className="w-2 h-2 text-[#995700] opacity-0 group-hover/controls:opacity-100 transition-opacity" aria-hidden="true" />
       </button>
-      <div className="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600 transition-colors flex items-center justify-center">
-        <Square className="w-2 h-2 text-green-800 opacity-0 hover:opacity-100" />
-      </div>
+      <button
+        onClick={onMaximize}
+        className="w-3 h-3 rounded-full bg-[#28c840] hover:bg-[#28c840] transition-colors flex items-center justify-center"
+        aria-label={isMaximized ? "Restore window" : "Maximize window"}
+      >
+        {isMaximized ? (
+          <Minimize2 className="w-2 h-2 text-[#006500] opacity-0 group-hover/controls:opacity-100 transition-opacity" aria-hidden="true" />
+        ) : (
+          <Maximize2 className="w-2 h-2 text-[#006500] opacity-0 group-hover/controls:opacity-100 transition-opacity" aria-hidden="true" />
+        )}
+      </button>
     </div>
   );
 };

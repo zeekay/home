@@ -43,6 +43,31 @@ const ZMenuLogo: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
+// Control Center icon - two horizontal toggle switches (macOS style)
+const ControlCenterIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg
+    viewBox="0 0 18 18"
+    className={cn("w-[15px] h-[15px]", className)}
+    fill="currentColor"
+  >
+    <defs>
+      <mask id="toggleMask">
+        <rect width="18" height="18" fill="white" />
+        {/* Top toggle knob hole (left side - off) */}
+        <circle cx="4.5" cy="4.5" r="2.5" fill="black" />
+        {/* Bottom toggle knob hole (right side - on) */}
+        <circle cx="13.5" cy="13.5" r="2.5" fill="black" />
+      </mask>
+    </defs>
+    <g mask="url(#toggleMask)">
+      {/* Top toggle track */}
+      <rect x="0" y="1" width="18" height="7" rx="3.5" />
+      {/* Bottom toggle track */}
+      <rect x="0" y="10" width="18" height="7" rx="3.5" />
+    </g>
+  </svg>
+);
+
 interface ZMenuBarProps {
   className?: string;
   appName?: string;
@@ -54,6 +79,8 @@ interface ZMenuBarProps {
   onRestart?: () => void;
   onShutdown?: () => void;
   onLockScreen?: () => void;
+  darkMode?: boolean;
+  onToggleDarkMode?: () => void;
 }
 
 interface MenuItemType {
@@ -368,6 +395,8 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
   onRestart,
   onShutdown,
   onLockScreen,
+  darkMode = false,
+  onToggleDarkMode,
 }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState(87);
@@ -381,6 +410,9 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
   const [airDropEnabled, setAirDropEnabled] = useState(true);
   const [stageManagerEnabled, setStageManagerEnabled] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [screenMirroringEnabled, setScreenMirroringEnabled] = useState(false);
+  const [accessibilityEnabled, setAccessibilityEnabled] = useState(false);
+  const [cameraEnabled, setCameraEnabled] = useState(false);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [menuBarActive, setMenuBarActive] = useState(false);
   const menuBarRef = useRef<HTMLDivElement>(null);
@@ -398,8 +430,10 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
   const menuItems = getAppMenus(appName);
 
   // Initialize menu order when menuItems change
+  // We intentionally only depend on length to avoid reinitializing on every render
   useEffect(() => {
     setMenuOrder(menuItems.map((_, i) => i));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuItems.length]);
 
   // Track Cmd key state and handle global keyboard shortcuts
@@ -423,6 +457,17 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
+  }, []);
+
+  // Close menus when window loses focus
+  useEffect(() => {
+    const handleWindowBlur = () => {
+      setActiveMenu(null);
+      setActiveSystemMenu(null);
+      setMenuBarActive(false);
+    };
+    window.addEventListener('blur', handleWindowBlur);
+    return () => window.removeEventListener('blur', handleWindowBlur);
   }, []);
 
   // Drag handlers for menu reordering
@@ -474,9 +519,17 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
       setCurrentTime(new Date());
     }, 1000);
 
-    // Try to get battery info
-    if ('getBattery' in navigator) {
-      (navigator as any).getBattery().then((battery: any) => {
+    // Try to get battery info (Battery API types)
+    interface BatteryManager extends EventTarget {
+      level: number;
+      charging: boolean;
+    }
+    interface NavigatorWithBattery extends Navigator {
+      getBattery?: () => Promise<BatteryManager>;
+    }
+    const nav = navigator as NavigatorWithBattery;
+    if (nav.getBattery) {
+      nav.getBattery().then((battery) => {
         setBatteryLevel(Math.round(battery.level * 100));
         setIsCharging(battery.charging);
         battery.addEventListener('levelchange', () => {
@@ -588,6 +641,48 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
       // Log out goes to lock screen
       onLockScreen();
     }
+    // Edit menu actions - use document.execCommand for compatibility
+    else if (label === 'Undo') {
+      document.execCommand('undo');
+    } else if (label === 'Redo') {
+      document.execCommand('redo');
+    } else if (label === 'Cut') {
+      document.execCommand('cut');
+    } else if (label === 'Copy') {
+      document.execCommand('copy');
+    } else if (label === 'Paste') {
+      // Paste requires user permission, try clipboard API first
+      navigator.clipboard.readText().then(text => {
+        document.execCommand('insertText', false, text);
+      }).catch(() => {
+        document.execCommand('paste');
+      });
+    } else if (label === 'Select All') {
+      document.execCommand('selectAll');
+    }
+    // View menu actions
+    else if (label === 'Zoom In' || label === 'Bigger') {
+      const currentZoom = parseFloat(document.body.style.zoom || '1');
+      document.body.style.zoom = String(Math.min(currentZoom + 0.1, 2));
+    } else if (label === 'Zoom Out' || label === 'Smaller') {
+      const currentZoom = parseFloat(document.body.style.zoom || '1');
+      document.body.style.zoom = String(Math.max(currentZoom - 0.1, 0.5));
+    } else if (label === 'Actual Size' || label === 'Default Font Size') {
+      document.body.style.zoom = '1';
+    } else if (label === 'Enter Full Screen') {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        document.documentElement.requestFullscreen();
+      }
+    } else if (label === 'Reload Page') {
+      window.location.reload();
+    }
+    // Window menu actions
+    else if (label === 'Bring All to Front') {
+      // Focus the window
+      window.focus();
+    }
   };
 
   const renderMenuItem = (item: MenuItemType, itemIndex: number) => {
@@ -649,7 +744,7 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
         'fixed top-[3px] left-[4px] right-[4px] z-[10000]',
         'h-[28px] px-2',
         'flex items-center justify-between',
-        'bg-black/40 backdrop-blur-2xl saturate-150',
+        'bg-black/50 backdrop-blur-2xl saturate-150',
         'rounded-[9px]',
         'text-white/90 text-[13px] font-medium tracking-[-0.01em]',
         'select-none',
@@ -664,6 +759,9 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
             className={cn(menuButtonClass, "px-[8px]", activeMenu === -1 && "bg-white/20")}
             onClick={() => handleMenuClick(-1)}
             onMouseEnter={() => handleMenuHover(-1)}
+            aria-label="System menu"
+            aria-expanded={activeMenu === -1}
+            aria-haspopup="menu"
           >
             <ZMenuLogo className="w-[14px] h-[14px] text-white opacity-90" />
           </button>
@@ -724,6 +822,8 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
           <button
             className={cn(systemTrayButtonClass, activeSystemMenu === 'bluetooth' && "bg-white/20")}
             onClick={() => setActiveSystemMenu(activeSystemMenu === 'bluetooth' ? null : 'bluetooth')}
+            aria-label={`Bluetooth ${bluetoothEnabled ? 'enabled' : 'disabled'}`}
+            aria-expanded={activeSystemMenu === 'bluetooth'}
           >
             {bluetoothEnabled ? (
               <Bluetooth className="w-[15px] h-[15px] opacity-90" />
@@ -771,6 +871,8 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
           <button
             className={cn(systemTrayButtonClass, activeSystemMenu === 'battery' && "bg-white/20")}
             onClick={() => setActiveSystemMenu(activeSystemMenu === 'battery' ? null : 'battery')}
+            aria-label={`Battery ${batteryLevel}%${isCharging ? ', charging' : ''}`}
+            aria-expanded={activeSystemMenu === 'battery'}
           >
             <div className="flex items-center gap-1">
               {isCharging ? (
@@ -799,6 +901,8 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
           <button
             className={cn(systemTrayButtonClass, activeSystemMenu === 'volume' && "bg-white/20")}
             onClick={() => setActiveSystemMenu(activeSystemMenu === 'volume' ? null : 'volume')}
+            aria-label={`Volume ${volume[0]}%`}
+            aria-expanded={activeSystemMenu === 'volume'}
           >
             <VolumeIcon />
           </button>
@@ -822,22 +926,15 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
           )}
         </div>
 
-        {/* Control Center - two horizontal sliders icon like macOS */}
+        {/* Control Center - two horizontal toggle switches icon like macOS */}
         <div className="relative h-full">
           <button
             className={cn(systemTrayButtonClass, activeSystemMenu === 'control' && "bg-white/20")}
             onClick={() => setActiveSystemMenu(activeSystemMenu === 'control' ? null : 'control')}
+            aria-label="Control Center"
+            aria-expanded={activeSystemMenu === 'control'}
           >
-            <div className="flex flex-col gap-[3px]">
-              {/* Top slider - knob on right */}
-              <div className="w-[16px] h-[5px] bg-current/40 rounded-full relative">
-                <div className="absolute right-[0px] top-1/2 -translate-y-1/2 w-[5px] h-[5px] bg-current rounded-full" />
-              </div>
-              {/* Bottom slider - knob on left */}
-              <div className="w-[16px] h-[5px] bg-current/40 rounded-full relative">
-                <div className="absolute left-[0px] top-1/2 -translate-y-1/2 w-[5px] h-[5px] bg-current rounded-full" />
-              </div>
-            </div>
+              <ControlCenterIcon className="w-[15px] h-[15px] opacity-90" />
           </button>
           {activeSystemMenu === 'control' && (
             <div className="absolute top-full right-0 mt-[1px] w-[320px] bg-black/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl text-white/90 text-[13px] p-3">
@@ -850,6 +947,8 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
                       "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
                       wifiEnabled ? "bg-blue-500" : "bg-white/10 hover:bg-white/15"
                     )}
+                    aria-label={`Wi-Fi ${wifiEnabled ? 'on' : 'off'}`}
+                    aria-pressed={wifiEnabled}
                   >
                     <Wifi className="w-5 h-5" />
                   </button>
@@ -859,6 +958,8 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
                       "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
                       bluetoothEnabled ? "bg-blue-500" : "bg-white/10 hover:bg-white/15"
                     )}
+                    aria-label={`Bluetooth ${bluetoothEnabled ? 'on' : 'off'}`}
+                    aria-pressed={bluetoothEnabled}
                   >
                     <Bluetooth className="w-5 h-5" />
                   </button>
@@ -868,6 +969,8 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
                       "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
                       airDropEnabled ? "bg-blue-500" : "bg-white/10 hover:bg-white/15"
                     )}
+                    aria-label={`AirDrop ${airDropEnabled ? 'on' : 'off'}`}
+                    aria-pressed={airDropEnabled}
                   >
                     <Airplay className="w-5 h-5" />
                   </button>
@@ -882,6 +985,8 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
                     "flex-1 p-3 rounded-2xl text-left transition-colors",
                     focusEnabled ? "bg-purple-500" : "bg-white/10 hover:bg-white/15"
                   )}
+                  aria-label={`Focus mode ${focusEnabled ? 'on' : 'off'}`}
+                  aria-pressed={focusEnabled}
                 >
                   <Moon className="w-5 h-5 mb-1" />
                   <p className="text-sm font-semibold">Focus</p>
@@ -899,16 +1004,17 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
                     </div>
                   </div>
                   <div className="flex items-center justify-center gap-3">
-                    <button className="p-1 hover:bg-white/10 rounded">
+                    <button className="p-1 hover:bg-white/10 rounded" aria-label="Previous track">
                       <SkipBack className="w-4 h-4" />
                     </button>
                     <button
                       className="p-1 hover:bg-white/10 rounded"
                       onClick={() => setIsPlaying(!isPlaying)}
+                      aria-label={isPlaying ? 'Pause' : 'Play'}
                     >
                       {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                     </button>
-                    <button className="p-1 hover:bg-white/10 rounded">
+                    <button className="p-1 hover:bg-white/10 rounded" aria-label="Next track">
                       <SkipForward className="w-4 h-4" />
                     </button>
                   </div>
@@ -928,22 +1034,53 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
                   <p className="text-xs font-semibold">Stage Manager</p>
                 </button>
 
-                <button className="flex-1 p-3 rounded-2xl text-left bg-white/10 hover:bg-white/15 transition-colors">
+                <button
+                  onClick={() => setScreenMirroringEnabled(!screenMirroringEnabled)}
+                  className={cn(
+                    "flex-1 p-3 rounded-2xl text-left transition-colors",
+                    screenMirroringEnabled ? "bg-blue-500" : "bg-white/10 hover:bg-white/15"
+                  )}
+                >
                   <MonitorSmartphone className="w-5 h-5 mb-1" />
                   <p className="text-xs font-semibold">Screen Mirroring</p>
+                  <p className="text-xs opacity-70">{screenMirroringEnabled ? "On" : "Off"}</p>
                 </button>
               </div>
 
               {/* Fourth Row - Small buttons */}
               <div className="flex gap-2 mb-3">
-                <button className="flex-1 p-3 rounded-2xl bg-white/10 hover:bg-white/15 transition-colors flex flex-col items-center">
+                <button
+                  onClick={() => setAccessibilityEnabled(!accessibilityEnabled)}
+                  className={cn(
+                    "flex-1 p-3 rounded-2xl transition-colors flex flex-col items-center",
+                    accessibilityEnabled ? "bg-blue-500" : "bg-white/10 hover:bg-white/15"
+                  )}
+                  title="Accessibility Shortcuts"
+                >
                   <Accessibility className="w-5 h-5" />
+                  <p className="text-[10px] mt-1 opacity-70">Accessibility</p>
                 </button>
-                <button className="flex-1 p-3 rounded-2xl bg-white/10 hover:bg-white/15 transition-colors flex flex-col items-center">
+                <button
+                  onClick={() => setCameraEnabled(!cameraEnabled)}
+                  className={cn(
+                    "flex-1 p-3 rounded-2xl transition-colors flex flex-col items-center",
+                    cameraEnabled ? "bg-green-500" : "bg-white/10 hover:bg-white/15"
+                  )}
+                  title={cameraEnabled ? "Camera In Use" : "Camera Off"}
+                >
                   <Camera className="w-5 h-5" />
+                  <p className="text-[10px] mt-1 opacity-70">{cameraEnabled ? "In Use" : "Camera"}</p>
                 </button>
-                <button className="flex-1 p-3 rounded-2xl bg-white/10 hover:bg-white/15 transition-colors flex flex-col items-center">
-                  <Moon className="w-5 h-5" />
+                <button
+                  onClick={onToggleDarkMode}
+                  className={cn(
+                    "flex-1 p-3 rounded-2xl transition-colors flex flex-col items-center",
+                    darkMode ? "bg-indigo-500" : "bg-white/10 hover:bg-white/15"
+                  )}
+                  title={darkMode ? "Dark Mode On" : "Dark Mode Off"}
+                >
+                  {darkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                  <p className="text-[10px] mt-1 opacity-70">{darkMode ? "Dark" : "Light"}</p>
                 </button>
               </div>
 
@@ -980,11 +1117,26 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
           )}
         </div>
 
+        {/* Spotlight Search */}
+        <button
+          className={cn(systemTrayButtonClass)}
+          onClick={() => {
+            // Trigger Spotlight via keyboard event dispatch
+            const event = new KeyboardEvent('keydown', { key: ' ', metaKey: true, bubbles: true });
+            document.dispatchEvent(event);
+          }}
+          aria-label="Spotlight Search"
+        >
+          <Search className="w-[14px] h-[14px] opacity-90" />
+        </button>
+
         {/* Date/Time - far right */}
         <div className="relative h-full">
           <button
             className={cn(systemTrayButtonClass, "px-[10px]", activeSystemMenu === 'datetime' && "bg-white/20")}
             onClick={() => setActiveSystemMenu(activeSystemMenu === 'datetime' ? null : 'datetime')}
+            aria-label="Date and time"
+            aria-expanded={activeSystemMenu === 'datetime'}
           >
             <span className="text-[13px] opacity-90">{formatTime(currentTime)}</span>
           </button>

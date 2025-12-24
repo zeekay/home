@@ -32,13 +32,26 @@ export interface GitHubStats {
   cumulativeLoc: CumulativeLoc[];
 }
 
+export interface ModelUsage {
+  model: string;
+  interactions: number;
+  tokens: number;
+}
+
+export interface DailyUsage {
+  date: string;
+  interactions: number;
+  inputTokens: number;
+  outputTokens: number;
+}
+
 export interface AIStats {
   interactions: number;
   inputTokens: number;
   outputTokens: number;
   activeDays: number;
-  byModel: any[];
-  daily: any[];
+  byModel: ModelUsage[];
+  daily: DailyUsage[];
 }
 
 export interface StatsData {
@@ -49,11 +62,17 @@ export interface StatsData {
 
 // Formatted display helpers
 export const formatNumber = (num: number): string => {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'M';
+  // Handle edge cases
+  if (!Number.isFinite(num)) return '0';
+  
+  const absNum = Math.abs(num);
+  const sign = num < 0 ? '-' : '';
+  
+  if (absNum >= 1000000) {
+    return sign + (absNum / 1000000).toFixed(1) + 'M';
   }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K';
+  if (absNum >= 1000) {
+    return sign + (absNum / 1000).toFixed(1) + 'K';
   }
   return num.toLocaleString();
 };

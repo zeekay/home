@@ -22,6 +22,7 @@ export interface DockCallbacks {
   onFaceTimeClick?: () => void;
   onMusicClick?: () => void;
   onTerminalClick?: () => void;
+  onTextEditClick?: () => void;
   onHanzoClick?: () => void;
   onLuxClick?: () => void;
   onZooClick?: () => void;
@@ -79,14 +80,20 @@ export const createDockItems = (callbacks: DockCallbacks): DockItemType[] => {
       onClick: callbacks.onMusicClick,
       useCustomIcon: true,
     },
-    { 
+    {
       id: 'terminal',
-      label: 'Terminal', 
+      label: 'Terminal',
       onClick: callbacks.onTerminalClick,
       useCustomIcon: true,
     },
+    {
+      id: 'textedit',
+      label: 'TextEdit',
+      onClick: callbacks.onTextEditClick,
+      useCustomIcon: true,
+    },
     // Separator would go here (handled in ZDock)
-    { 
+    {
       id: 'hanzo',
       label: 'Hanzo AI', 
       onClick: callbacks.onHanzoClick,

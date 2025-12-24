@@ -1,6 +1,7 @@
 import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { EXTERNAL_LINKS } from '@/config/links';
 import {
   HanzoLogo,
   LuxLogo,
@@ -137,9 +138,9 @@ const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
 
   // External website links
   const externalLinks = [
-    { label: 'hanzo.ai', url: 'https://hanzo.ai', icon: <HanzoLogo className="w-7 h-7 text-white" /> },
-    { label: 'lux.network', url: 'https://lux.network', icon: <LuxLogo className="w-7 h-7 text-cyan-400" /> },
-    { label: 'zoo.ngo', url: 'https://zoo.ngo', icon: <ZooLogo className="w-full h-full" /> },
+    { label: 'hanzo.ai', url: EXTERNAL_LINKS.hanzoAI, icon: <HanzoLogo className="w-7 h-7 text-white" /> },
+    { label: 'lux.network', url: EXTERNAL_LINKS.luxNetwork, icon: <LuxLogo className="w-7 h-7 text-cyan-400" /> },
+    { label: 'zoo.ngo', url: EXTERNAL_LINKS.zooLabs, icon: <ZooLogo className="w-full h-full" /> },
   ];
 
   return (
@@ -152,6 +153,7 @@ const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
 
       {/* Popover - centered and animated from bottom */}
       <div
+        data-popover
         className={cn(
           "fixed bottom-24 left-1/2 -translate-x-1/2 z-[9999]",
           "w-[90vw] max-w-[560px]",

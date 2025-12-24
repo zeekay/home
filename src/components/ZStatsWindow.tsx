@@ -36,7 +36,8 @@ const ZStatsWindow: React.FC<ZStatsWindowProps> = ({ onClose }) => {
                 setIsLoading(true);
                 const iframe = document.getElementById('stats-iframe') as HTMLIFrameElement;
                 if (iframe) {
-                  iframe.src = iframe.src;
+                  // Force reload by setting src to itself (via contentWindow)
+                  iframe.contentWindow?.location.reload();
                 }
               }}
               className="p-2 glass-button rounded-lg text-white/70 hover:text-white"

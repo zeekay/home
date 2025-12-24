@@ -1,9 +1,11 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { WebContainer } from '@webcontainer/api';
-import { TerminalContextType, TerminalEntry } from '@/types/terminal';
+import { logger } from '@/lib/logger';
+import { TerminalContextType, TerminalEntry, EditorState } from '@/types/terminal';
 import { initializeWebContainer } from '@/utils/webContainerUtil';
 import { processCommand } from '@/utils/terminalCommandUtil';
+import { updateFileContent } from '@/utils/terminalFileSystem';
 
 // Create the context with default values
 const TerminalContext = createContext<TerminalContextType | null>(null);
@@ -25,6 +27,44 @@ Try 'cd Documents' for GitHub projects, 'ellipsis' for dotfiles`,
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [webContainerInstance, setWebContainerInstance] = useState<WebContainer | null>(null);
   const [isWebContainerReady, setIsWebContainerReady] = useState(false);
+  const [editorState, setEditorState] = useState<EditorState>({
+    isOpen: false,
+    fileName: '',
+    content: '',
+    isNewFile: false,
+  });
+
+  const openEditor = useCallback((fileName: string, content: string, isNewFile: boolean = false) => {
+    setEditorState({
+      isOpen: true,
+      fileName,
+      content,
+      isNewFile,
+    });
+  }, []);
+
+  const closeEditor = useCallback(() => {
+    setEditorState({
+      isOpen: false,
+      fileName: '',
+      content: '',
+      isNewFile: false,
+    });
+  }, []);
+
+  const saveFile = useCallback(async (fileName: string, content: string) => {
+    // Update virtual filesystem
+    updateFileContent(fileName, content);
+    
+    // Also update WebContainer if available
+    if (webContainerInstance && isWebContainerReady) {
+      try {
+        await webContainerInstance.fs.writeFile(fileName, content);
+      } catch (error) {
+        logger.error('Failed to write to WebContainer:', error);
+      }
+    }
+  }, [webContainerInstance, isWebContainerReady]);
 
   const addEntry = useCallback((entry: Omit<TerminalEntry, 'id'> & { id?: number }) => {
     setEntries(prev => [
@@ -59,7 +99,8 @@ Try 'cd Documents' for GitHub projects, 'ellipsis' for dotfiles`,
       isWebContainerReady,
       addEntry,
       clearEntries,
-      commandHistory
+      commandHistory,
+      openEditor
     );
   };
 
@@ -71,7 +112,11 @@ Try 'cd Documents' for GitHub projects, 'ellipsis' for dotfiles`,
     isWebContainerReady,
     commandHistory,
     setCommandHistory,
-    clearEntries
+    clearEntries,
+    editorState,
+    openEditor,
+    closeEditor,
+    saveFile,
   };
 
   return (

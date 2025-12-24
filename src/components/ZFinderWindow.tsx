@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ZWindow from './ZWindow';
+import { toast } from '@/hooks/use-toast';
 import {
   Folder,
   FileText,
@@ -19,7 +20,16 @@ import {
   Columns,
   GalleryHorizontal,
   X,
-  ExternalLink
+  ExternalLink,
+  Copy,
+  Trash2,
+  Info,
+  FolderOpen,
+  Share,
+  Eye,
+  Edit,
+  FolderPlus,
+  FilePlus
 } from 'lucide-react';
 
 interface ZFinderWindowProps {
@@ -37,11 +47,30 @@ interface FileItem {
   url?: string;
 }
 
+interface ContextMenuState {
+  x: number;
+  y: number;
+  item: FileItem | null;
+  isBackground: boolean;
+}
+
 const ZFinderWindow: React.FC<ZFinderWindowProps> = ({ onClose, onFocus }) => {
   const [currentPath, setCurrentPath] = useState<string[]>(['Home']);
   const [viewMode, setViewMode] = useState<'icons' | 'list' | 'columns' | 'gallery'>('icons');
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+  const [showGetInfo, setShowGetInfo] = useState<FileItem | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setContextMenu(null);
+    if (contextMenu) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [contextMenu]);
 
   // Sidebar favorites
   const favorites = [
@@ -288,6 +317,86 @@ ZIPs: https://zips.zoo.ngo
     setSelectedItem(null);
   };
 
+  // Context menu handlers
+  const handleContextMenu = (e: React.MouseEvent, item?: FileItem) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Get position relative to the content area
+    const rect = contentRef.current?.getBoundingClientRect();
+    const x = rect ? Math.min(e.clientX - rect.left, rect.width - 200) : e.clientX;
+    const y = rect ? Math.min(e.clientY - rect.top, rect.height - 300) : e.clientY;
+
+    setContextMenu({
+      x,
+      y,
+      item: item || null,
+      isBackground: !item
+    });
+
+    if (item) {
+      setSelectedItem(item.name);
+    }
+  };
+
+  const handleContextAction = (action: string) => {
+    const item = contextMenu?.item;
+    setContextMenu(null);
+
+    switch (action) {
+      case 'open':
+        if (item) {
+          if (item.type === 'folder') {
+            if (item.url) {
+              window.open(item.url, '_blank');
+            } else {
+              setCurrentPath([...currentPath, item.name]);
+            }
+          } else if (item.url) {
+            window.open(item.url, '_blank');
+          }
+        }
+        break;
+      case 'quicklook':
+        if (item && item.content) {
+          setPreviewFile(item);
+        }
+        break;
+      case 'getinfo':
+        if (item) {
+          setShowGetInfo(item);
+        }
+        break;
+      case 'copy':
+        if (item) {
+          navigator.clipboard?.writeText(item.name);
+        }
+        break;
+      case 'copypath':
+        if (item) {
+          navigator.clipboard?.writeText([...currentPath, item.name].join('/'));
+        }
+        break;
+      case 'newfolder':
+        // Would create a new folder - simulated for now
+        toast({ title: 'New Folder', description: `Creating folder in ${currentPath.join('/')}` });
+        break;
+      case 'newfile':
+        // Would create a new file - simulated for now
+        toast({ title: 'New File', description: `Creating file in ${currentPath.join('/')}` });
+        break;
+      case 'trash':
+        // Would move to trash - simulated for now
+        toast({ title: 'Move to Trash', description: `${item?.name || 'Item'} moved to trash` });
+        break;
+      case 'share':
+        if (item?.url) {
+          navigator.clipboard?.writeText(item.url);
+        }
+        break;
+    }
+  };
+
   return (
     <ZWindow
       title="Finder"
@@ -298,8 +407,8 @@ ZIPs: https://zips.zoo.ngo
       windowType="default"
     >
       <div className="flex flex-col h-full bg-[#1e1e1e]">
-        {/* Toolbar */}
-        <div className="flex items-center justify-between px-3 py-2 bg-[#2d2d2d] border-b border-white/10">
+        {/* Toolbar - macOS style with subtle gradient */}
+        <div className="flex items-center justify-between px-3 py-2 bg-gradient-to-b from-[#3d3d3d] to-[#2d2d2d] border-b border-black/30">
           {/* Navigation buttons */}
           <div className="flex items-center gap-2">
             <button
@@ -359,10 +468,10 @@ ZIPs: https://zips.zoo.ngo
         </div>
 
         <div className="flex flex-1 overflow-hidden">
-          {/* Sidebar */}
-          <div className="w-48 bg-[#252525] border-r border-white/10 overflow-y-auto">
-            <div className="p-2">
-              <div className="text-[10px] font-semibold text-white/40 uppercase tracking-wider px-2 py-1">
+          {/* Sidebar - macOS style with translucent background */}
+          <div className="w-48 bg-[#1a1a1a]/95 border-r border-white/5 overflow-y-auto">
+            <div className="p-2 pt-1">
+              <div className="text-[11px] font-medium text-white/50 uppercase tracking-wide px-2 py-1.5">
                 Favorites
               </div>
               {favorites.map((item) => (
@@ -376,8 +485,8 @@ ZIPs: https://zips.zoo.ngo
                 </button>
               ))}
             </div>
-            <div className="p-2">
-              <div className="text-[10px] font-semibold text-white/40 uppercase tracking-wider px-2 py-1">
+            <div className="p-2 pt-1">
+              <div className="text-[11px] font-medium text-white/50 uppercase tracking-wide px-2 py-1.5">
                 Locations
               </div>
               {locations.map((item) => (
@@ -391,8 +500,8 @@ ZIPs: https://zips.zoo.ngo
                 </button>
               ))}
             </div>
-            <div className="p-2">
-              <div className="text-[10px] font-semibold text-white/40 uppercase tracking-wider px-2 py-1">
+            <div className="p-2 pt-1">
+              <div className="text-[11px] font-medium text-white/50 uppercase tracking-wide px-2 py-1.5">
                 Tags
               </div>
               <button className="w-full flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 text-sm text-white/80">
@@ -410,8 +519,12 @@ ZIPs: https://zips.zoo.ngo
             </div>
           </div>
 
-          {/* Main content area */}
-          <div className="flex-1 p-4 overflow-y-auto">
+          {/* Main content area - slightly lighter than sidebar */}
+          <div
+            ref={contentRef}
+            className="flex-1 p-4 overflow-y-auto bg-[#232323] relative"
+            onContextMenu={(e) => handleContextMenu(e)}
+          >
             {viewMode === 'icons' && (
               <div className="grid grid-cols-6 gap-4">
                 {files.map((file) => (
@@ -422,6 +535,7 @@ ZIPs: https://zips.zoo.ngo
                     }`}
                     onClick={() => handleItemClick(file)}
                     onDoubleClick={() => handleItemDoubleClick(file)}
+                    onContextMenu={(e) => handleContextMenu(e, file)}
                   >
                     {file.icon}
                     <span className="text-xs text-white/80 mt-1 text-center truncate w-full">
@@ -447,6 +561,7 @@ ZIPs: https://zips.zoo.ngo
                     }`}
                     onClick={() => handleItemClick(file)}
                     onDoubleClick={() => handleItemDoubleClick(file)}
+                    onContextMenu={(e) => handleContextMenu(e, file)}
                   >
                     <span className="flex items-center gap-2 flex-1">
                       {file.type === 'folder' ? (
@@ -475,6 +590,7 @@ ZIPs: https://zips.zoo.ngo
                     }`}
                     onClick={() => handleItemClick(file)}
                     onDoubleClick={() => handleItemDoubleClick(file)}
+                    onContextMenu={(e) => handleContextMenu(e, file)}
                   >
                     {file.icon}
                     <span className="text-xs text-white/80 mt-1 text-center truncate w-full">
@@ -482,6 +598,118 @@ ZIPs: https://zips.zoo.ngo
                     </span>
                   </button>
                 ))}
+              </div>
+            )}
+
+            {/* Context Menu */}
+            {contextMenu && (
+              <div
+                className="absolute bg-[#2a2a2a]/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl py-1 min-w-[200px] z-50"
+                style={{ left: contextMenu.x, top: contextMenu.y }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {contextMenu.isBackground ? (
+                  // Background context menu
+                  <>
+                    <button
+                      onClick={() => handleContextAction('newfolder')}
+                      className="w-full flex items-center gap-3 px-3 py-1.5 text-sm text-white/90 hover:bg-blue-500 rounded-sm"
+                    >
+                      <FolderPlus className="w-4 h-4 text-white/60" />
+                      New Folder
+                    </button>
+                    <button
+                      onClick={() => handleContextAction('newfile')}
+                      className="w-full flex items-center gap-3 px-3 py-1.5 text-sm text-white/90 hover:bg-blue-500 rounded-sm"
+                    >
+                      <FilePlus className="w-4 h-4 text-white/60" />
+                      New Document
+                    </button>
+                    <div className="h-px bg-white/10 my-1 mx-2" />
+                    <button
+                      onClick={() => setViewMode('icons')}
+                      className="w-full flex items-center gap-3 px-3 py-1.5 text-sm text-white/90 hover:bg-blue-500 rounded-sm"
+                    >
+                      <LayoutGrid className="w-4 h-4 text-white/60" />
+                      View as Icons
+                    </button>
+                    <button
+                      onClick={() => setViewMode('list')}
+                      className="w-full flex items-center gap-3 px-3 py-1.5 text-sm text-white/90 hover:bg-blue-500 rounded-sm"
+                    >
+                      <List className="w-4 h-4 text-white/60" />
+                      View as List
+                    </button>
+                    <div className="h-px bg-white/10 my-1 mx-2" />
+                    <button
+                      onClick={() => handleContextAction('getinfo')}
+                      className="w-full flex items-center gap-3 px-3 py-1.5 text-sm text-white/90 hover:bg-blue-500 rounded-sm"
+                    >
+                      <Info className="w-4 h-4 text-white/60" />
+                      Get Info
+                    </button>
+                  </>
+                ) : (
+                  // File/Folder context menu
+                  <>
+                    <button
+                      onClick={() => handleContextAction('open')}
+                      className="w-full flex items-center gap-3 px-3 py-1.5 text-sm text-white/90 hover:bg-blue-500 rounded-sm font-medium"
+                    >
+                      <FolderOpen className="w-4 h-4 text-white/60" />
+                      Open
+                    </button>
+                    {contextMenu.item?.content && (
+                      <button
+                        onClick={() => handleContextAction('quicklook')}
+                        className="w-full flex items-center gap-3 px-3 py-1.5 text-sm text-white/90 hover:bg-blue-500 rounded-sm"
+                      >
+                        <Eye className="w-4 h-4 text-white/60" />
+                        Quick Look
+                      </button>
+                    )}
+                    <div className="h-px bg-white/10 my-1 mx-2" />
+                    <button
+                      onClick={() => handleContextAction('getinfo')}
+                      className="w-full flex items-center gap-3 px-3 py-1.5 text-sm text-white/90 hover:bg-blue-500 rounded-sm"
+                    >
+                      <Info className="w-4 h-4 text-white/60" />
+                      Get Info
+                    </button>
+                    <div className="h-px bg-white/10 my-1 mx-2" />
+                    <button
+                      onClick={() => handleContextAction('copy')}
+                      className="w-full flex items-center gap-3 px-3 py-1.5 text-sm text-white/90 hover:bg-blue-500 rounded-sm"
+                    >
+                      <Copy className="w-4 h-4 text-white/60" />
+                      Copy
+                    </button>
+                    <button
+                      onClick={() => handleContextAction('copypath')}
+                      className="w-full flex items-center gap-3 px-3 py-1.5 text-sm text-white/90 hover:bg-blue-500 rounded-sm"
+                    >
+                      <Copy className="w-4 h-4 text-white/60" />
+                      Copy Path
+                    </button>
+                    {contextMenu.item?.url && (
+                      <button
+                        onClick={() => handleContextAction('share')}
+                        className="w-full flex items-center gap-3 px-3 py-1.5 text-sm text-white/90 hover:bg-blue-500 rounded-sm"
+                      >
+                        <Share className="w-4 h-4 text-white/60" />
+                        Copy Link
+                      </button>
+                    )}
+                    <div className="h-px bg-white/10 my-1 mx-2" />
+                    <button
+                      onClick={() => handleContextAction('trash')}
+                      className="w-full flex items-center gap-3 px-3 py-1.5 text-sm text-red-400 hover:bg-red-500/20 rounded-sm"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Move to Trash
+                    </button>
+                  </>
+                )}
               </div>
             )}
 
@@ -493,9 +721,9 @@ ZIPs: https://zips.zoo.ngo
           </div>
         </div>
 
-        {/* Status bar */}
-        <div className="px-3 py-1.5 bg-[#2d2d2d] border-t border-white/10 text-xs text-white/50">
-          {files.length} items
+        {/* Status bar - macOS style */}
+        <div className="px-3 py-1.5 bg-gradient-to-b from-[#2a2a2a] to-[#252525] border-t border-black/30 text-xs text-white/60">
+          {files.length} item{files.length !== 1 ? 's' : ''}
         </div>
 
         {/* Quick Look Preview Modal */}

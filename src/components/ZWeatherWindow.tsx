@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ZWindow from './ZWindow';
-import { Sun, Cloud, CloudRain, CloudSnow, Wind, Droplets, Eye, Gauge, MapPin, Plus } from 'lucide-react';
+import { logger } from '@/lib/logger';
+import { Sun, Cloud, CloudRain, CloudSnow, Wind, Droplets, Eye, Gauge, MapPin, Loader2, RefreshCw, CloudFog, CloudLightning, Cloudy } from 'lucide-react';
 
 interface ZWeatherWindowProps {
   onClose: () => void;
@@ -8,10 +9,11 @@ interface ZWeatherWindowProps {
 
 interface WeatherData {
   city: string;
+  country: string;
   temp: number;
   high: number;
   low: number;
-  condition: 'sunny' | 'cloudy' | 'rainy' | 'snowy';
+  condition: string;
   humidity: number;
   wind: number;
   visibility: number;
@@ -20,94 +22,26 @@ interface WeatherData {
   daily: { day: string; high: number; low: number; condition: string }[];
 }
 
-const weatherData: Record<string, WeatherData> = {
-  'San Francisco': {
-    city: 'San Francisco',
-    temp: 62,
-    high: 68,
-    low: 54,
-    condition: 'cloudy',
-    humidity: 72,
-    wind: 12,
-    visibility: 10,
-    pressure: 30.1,
-    hourly: [
-      { time: 'Now', temp: 62, condition: 'cloudy' },
-      { time: '1PM', temp: 64, condition: 'cloudy' },
-      { time: '2PM', temp: 66, condition: 'sunny' },
-      { time: '3PM', temp: 68, condition: 'sunny' },
-      { time: '4PM', temp: 67, condition: 'sunny' },
-      { time: '5PM', temp: 64, condition: 'cloudy' },
-      { time: '6PM', temp: 60, condition: 'cloudy' },
-    ],
-    daily: [
-      { day: 'Today', high: 68, low: 54, condition: 'cloudy' },
-      { day: 'Tue', high: 72, low: 56, condition: 'sunny' },
-      { day: 'Wed', high: 70, low: 55, condition: 'sunny' },
-      { day: 'Thu', high: 65, low: 52, condition: 'rainy' },
-      { day: 'Fri', high: 63, low: 50, condition: 'rainy' },
-      { day: 'Sat', high: 67, low: 53, condition: 'cloudy' },
-      { day: 'Sun', high: 71, low: 55, condition: 'sunny' },
-    ],
-  },
-  'New York': {
-    city: 'New York',
-    temp: 78,
-    high: 85,
-    low: 72,
-    condition: 'sunny',
-    humidity: 55,
-    wind: 8,
-    visibility: 10,
-    pressure: 30.2,
-    hourly: [
-      { time: 'Now', temp: 78, condition: 'sunny' },
-      { time: '1PM', temp: 81, condition: 'sunny' },
-      { time: '2PM', temp: 84, condition: 'sunny' },
-      { time: '3PM', temp: 85, condition: 'sunny' },
-      { time: '4PM', temp: 83, condition: 'cloudy' },
-      { time: '5PM', temp: 80, condition: 'cloudy' },
-      { time: '6PM', temp: 76, condition: 'cloudy' },
-    ],
-    daily: [
-      { day: 'Today', high: 85, low: 72, condition: 'sunny' },
-      { day: 'Tue', high: 88, low: 74, condition: 'sunny' },
-      { day: 'Wed', high: 86, low: 73, condition: 'cloudy' },
-      { day: 'Thu', high: 82, low: 70, condition: 'rainy' },
-      { day: 'Fri', high: 79, low: 68, condition: 'rainy' },
-      { day: 'Sat', high: 81, low: 69, condition: 'sunny' },
-      { day: 'Sun', high: 84, low: 71, condition: 'sunny' },
-    ],
-  },
-  'Tokyo': {
-    city: 'Tokyo',
-    temp: 82,
-    high: 88,
-    low: 76,
-    condition: 'sunny',
-    humidity: 68,
-    wind: 5,
-    visibility: 8,
-    pressure: 29.9,
-    hourly: [
-      { time: 'Now', temp: 82, condition: 'sunny' },
-      { time: '1PM', temp: 85, condition: 'sunny' },
-      { time: '2PM', temp: 87, condition: 'sunny' },
-      { time: '3PM', temp: 88, condition: 'sunny' },
-      { time: '4PM', temp: 86, condition: 'cloudy' },
-      { time: '5PM', temp: 83, condition: 'cloudy' },
-      { time: '6PM', temp: 80, condition: 'cloudy' },
-    ],
-    daily: [
-      { day: 'Today', high: 88, low: 76, condition: 'sunny' },
-      { day: 'Tue', high: 86, low: 75, condition: 'cloudy' },
-      { day: 'Wed', high: 84, low: 74, condition: 'rainy' },
-      { day: 'Thu', high: 82, low: 73, condition: 'rainy' },
-      { day: 'Fri', high: 85, low: 74, condition: 'cloudy' },
-      { day: 'Sat', high: 87, low: 76, condition: 'sunny' },
-      { day: 'Sun', high: 89, low: 77, condition: 'sunny' },
-    ],
-  },
+interface GeoLocation {
+  name: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+}
+
+const STORAGE_KEY = 'zos-weather-location';
+
+// Map WMO weather codes to conditions
+const getConditionFromWMO = (code: number): string => {
+  if (code === 0) return 'sunny';
+  if (code <= 3) return 'cloudy';
+  if (code <= 49) return 'foggy';
+  if (code <= 69) return 'rainy';
+  if (code <= 79) return 'snowy';
+  if (code <= 82) return 'rainy';
+  if (code <= 86) return 'snowy';
+  if (code <= 99) return 'stormy';
+  return 'cloudy';
 };
 
 const getWeatherIcon = (condition: string, size: 'sm' | 'md' | 'lg' = 'md') => {
@@ -121,8 +55,12 @@ const getWeatherIcon = (condition: string, size: 'sm' | 'md' | 'lg' = 'md') => {
       return <CloudRain className={`${sizeClass} text-blue-400`} />;
     case 'snowy':
       return <CloudSnow className={`${sizeClass} text-blue-200`} />;
+    case 'foggy':
+      return <CloudFog className={`${sizeClass} text-gray-400`} />;
+    case 'stormy':
+      return <CloudLightning className={`${sizeClass} text-yellow-300`} />;
     default:
-      return <Sun className={`${sizeClass} text-yellow-400`} />;
+      return <Cloudy className={`${sizeClass} text-gray-300`} />;
   }
 };
 
@@ -136,14 +74,238 @@ const getGradient = (condition: string) => {
       return 'from-gray-500 via-gray-600 to-gray-700';
     case 'snowy':
       return 'from-blue-200 via-blue-300 to-blue-400';
+    case 'foggy':
+      return 'from-gray-300 via-gray-400 to-gray-500';
+    case 'stormy':
+      return 'from-gray-600 via-gray-700 to-gray-800';
     default:
       return 'from-blue-400 via-blue-500 to-blue-600';
   }
 };
 
+const getDayName = (dateStr: string, index: number): string => {
+  if (index === 0) return 'Today';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { weekday: 'short' });
+};
+
+const formatHour = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  const now = new Date();
+  if (Math.abs(date.getTime() - now.getTime()) < 30 * 60 * 1000) return 'Now';
+  return date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+};
+
 const ZWeatherWindow: React.FC<ZWeatherWindowProps> = ({ onClose }) => {
-  const [selectedCity, setSelectedCity] = useState('San Francisco');
-  const weather = weatherData[selectedCity];
+  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<GeoLocation[]>([]);
+  const [showSearch, setShowSearch] = useState(false);
+  const [location, setLocation] = useState<GeoLocation | null>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // localStorage unavailable or corrupted - use defaults
+    }
+    return null;
+  });
+
+  // Fetch weather data from Open-Meteo
+  const fetchWeather = useCallback(async (lat: number, lon: number, cityName: string, country: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+        `&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,surface_pressure` +
+        `&hourly=temperature_2m,weather_code` +
+        `&daily=weather_code,temperature_2m_max,temperature_2m_min` +
+        `&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`
+      );
+
+      if (!response.ok) throw new Error('Failed to fetch weather');
+
+      const data = await response.json();
+
+      // Parse current weather
+      const current = data.current;
+      const hourly = data.hourly;
+      const daily = data.daily;
+
+      // Get hourly forecast (next 12 hours starting from current hour)
+      const currentHour = new Date().getHours();
+      const hourlyForecast = [];
+      for (let i = 0; i < 12; i++) {
+        const hourIndex = currentHour + i;
+        if (hourIndex < hourly.time.length) {
+          hourlyForecast.push({
+            time: formatHour(hourly.time[hourIndex]),
+            temp: Math.round(hourly.temperature_2m[hourIndex]),
+            condition: getConditionFromWMO(hourly.weather_code[hourIndex])
+          });
+        }
+      }
+
+      // Get 7-day forecast
+      const dailyForecast = daily.time.slice(0, 7).map((time: string, i: number) => ({
+        day: getDayName(time, i),
+        high: Math.round(daily.temperature_2m_max[i]),
+        low: Math.round(daily.temperature_2m_min[i]),
+        condition: getConditionFromWMO(daily.weather_code[i])
+      }));
+
+      setWeather({
+        city: cityName,
+        country: country,
+        temp: Math.round(current.temperature_2m),
+        high: Math.round(daily.temperature_2m_max[0]),
+        low: Math.round(daily.temperature_2m_min[0]),
+        condition: getConditionFromWMO(current.weather_code),
+        humidity: current.relative_humidity_2m,
+        wind: Math.round(current.wind_speed_10m),
+        visibility: 10, // Open-Meteo doesn't provide visibility in free tier
+        pressure: Math.round(current.surface_pressure * 0.02953), // hPa to inHg
+        hourly: hourlyForecast,
+        daily: dailyForecast
+      });
+    } catch (err) {
+      setError('Unable to fetch weather data');
+      logger.error('Weather fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Search for cities using Open-Meteo Geocoding API
+  const searchCities = useCallback(async (query: string) => {
+    if (query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`
+      );
+
+      if (!response.ok) return;
+
+      const data = await response.json();
+      if (data.results) {
+        setSearchResults(data.results.map((r: { name: string; country?: string; latitude: number; longitude: number }) => ({
+          name: r.name,
+          country: r.country || '',
+          latitude: r.latitude,
+          longitude: r.longitude
+        })));
+      } else {
+        setSearchResults([]);
+      }
+    } catch (err) {
+      logger.error('Search error:', err);
+    }
+  }, []);
+
+  // Get user's location on mount
+  useEffect(() => {
+    if (location) {
+      fetchWeather(location.latitude, location.longitude, location.name, location.country);
+    } else if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          // Reverse geocode to get city name
+          try {
+            const response = await fetch(
+              `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${latitude}&longitude=${longitude}&count=1`
+            );
+            const data = await response.json();
+            const cityName = data.results?.[0]?.name || 'Current Location';
+            const country = data.results?.[0]?.country || '';
+            const newLocation = { name: cityName, country, latitude, longitude };
+            setLocation(newLocation);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(newLocation));
+            fetchWeather(latitude, longitude, cityName, country);
+          } catch {
+            fetchWeather(latitude, longitude, 'Current Location', '');
+          }
+        },
+        () => {
+          // Default to San Francisco if geolocation fails
+          const defaultLocation = { name: 'San Francisco', country: 'United States', latitude: 37.7749, longitude: -122.4194 };
+          setLocation(defaultLocation);
+          fetchWeather(37.7749, -122.4194, 'San Francisco', 'United States');
+        }
+      );
+    } else {
+      // Default to San Francisco
+      const defaultLocation = { name: 'San Francisco', country: 'United States', latitude: 37.7749, longitude: -122.4194 };
+      setLocation(defaultLocation);
+      fetchWeather(37.7749, -122.4194, 'San Francisco', 'United States');
+    }
+  }, [fetchWeather, location]);
+
+  const selectCity = (city: GeoLocation) => {
+    setLocation(city);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(city));
+    setShowSearch(false);
+    setSearchQuery('');
+    setSearchResults([]);
+    fetchWeather(city.latitude, city.longitude, city.name, city.country);
+  };
+
+  const refresh = () => {
+    if (location) {
+      fetchWeather(location.latitude, location.longitude, location.name, location.country);
+    }
+  };
+
+  if (loading && !weather) {
+    return (
+      <ZWindow
+        title="Weather"
+        onClose={onClose}
+        initialPosition={{ x: 160, y: 60 }}
+        initialSize={{ width: 380, height: 580 }}
+        windowType="system"
+      >
+        <div className="flex flex-col items-center justify-center h-full bg-gradient-to-b from-blue-400 to-blue-600">
+          <Loader2 className="w-12 h-12 text-white animate-spin mb-4" />
+          <p className="text-white/80">Loading weather data...</p>
+        </div>
+      </ZWindow>
+    );
+  }
+
+  if (error && !weather) {
+    return (
+      <ZWindow
+        title="Weather"
+        onClose={onClose}
+        initialPosition={{ x: 160, y: 60 }}
+        initialSize={{ width: 380, height: 580 }}
+        windowType="system"
+      >
+        <div className="flex flex-col items-center justify-center h-full bg-gradient-to-b from-gray-400 to-gray-600">
+          <Cloud className="w-16 h-16 text-white/50 mb-4" />
+          <p className="text-white/80 mb-4">{error}</p>
+          <button
+            onClick={refresh}
+            className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-white transition-colors"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Try Again
+          </button>
+        </div>
+      </ZWindow>
+    );
+  }
+
+  if (!weather) return null;
 
   return (
     <ZWindow
@@ -156,20 +318,64 @@ const ZWeatherWindow: React.FC<ZWeatherWindowProps> = ({ onClose }) => {
       <div className={`flex flex-col h-full bg-gradient-to-b ${getGradient(weather.condition)}`}>
         {/* City Selector */}
         <div className="flex items-center justify-between px-4 py-3 bg-black/10">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-white/80" />
-            <select
-              value={selectedCity}
-              onChange={(e) => setSelectedCity(e.target.value)}
-              className="bg-transparent text-white font-medium text-lg outline-none cursor-pointer"
-            >
-              {Object.keys(weatherData).map((city) => (
-                <option key={city} value={city} className="bg-gray-800 text-white">
-                  {city}
-                </option>
-              ))}
-            </select>
+          <div className="flex-1 relative">
+            {showSearch ? (
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    searchCities(e.target.value);
+                  }}
+                  placeholder="Search city..."
+                  className="w-full bg-white/20 text-white placeholder:text-white/50 px-3 py-1 rounded-lg outline-none"
+                  autoFocus
+                  onBlur={() => {
+                    setTimeout(() => {
+                      if (!searchResults.length) {
+                        setShowSearch(false);
+                        setSearchQuery('');
+                      }
+                    }, 200);
+                  }}
+                />
+                {searchResults.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 rounded-lg shadow-xl border border-white/20 overflow-hidden z-20">
+                    {searchResults.map((city, i) => (
+                      <button
+                        key={i}
+                        onClick={() => selectCity(city)}
+                        className="w-full px-3 py-2 text-left text-white hover:bg-white/10 transition-colors flex items-center gap-2"
+                      >
+                        <MapPin className="w-4 h-4 text-white/50" />
+                        <span>{city.name}</span>
+                        <span className="text-white/50 text-sm">{city.country}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowSearch(true)}
+                className="flex items-center gap-2 hover:bg-white/10 px-2 py-1 rounded-lg transition-colors"
+              >
+                <MapPin className="w-4 h-4 text-white/80" />
+                <span className="text-white font-medium text-lg">{weather.city}</span>
+                {weather.country && (
+                  <span className="text-white/60 text-sm">{weather.country}</span>
+                )}
+              </button>
+            )}
           </div>
+          <button
+            onClick={refresh}
+            disabled={loading}
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+          >
+            <RefreshCw className={`w-4 h-4 text-white/80 ${loading ? 'animate-spin' : ''}`} />
+          </button>
         </div>
 
         {/* Main Weather Display */}
@@ -209,7 +415,7 @@ const ZWeatherWindow: React.FC<ZWeatherWindowProps> = ({ onClose }) => {
                 <div className="w-20 h-1 bg-white/20 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-blue-300 to-orange-300 rounded-full"
-                    style={{ width: `${((day.high - day.low) / 30) * 100}%` }}
+                    style={{ width: `${((day.high - day.low) / 50) * 100}%` }}
                   />
                 </div>
                 <span className="text-white text-sm">{day.high}°</span>

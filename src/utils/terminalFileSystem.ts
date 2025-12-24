@@ -1013,6 +1013,44 @@ export const resetFileSystem = (): void => {
   currentPath = [];
 };
 
+// Update or create file content
+export const updateFileContent = (fileName: string, content: string): void => {
+  const currentDir = getCurrentDir();
+
+  if (currentDir[fileName]) {
+    // Update existing file
+    currentDir[fileName].content = content;
+  } else {
+    // Create new file
+    currentDir[fileName] = {
+      name: fileName,
+      type: 'file',
+      content,
+    };
+  }
+};
+
+// Get file content for editing
+export const getFileForEditing = (fileName: string): { content: string; isNewFile: boolean } | null => {
+  const currentDir = getCurrentDir();
+
+  if (currentDir[fileName]) {
+    if (currentDir[fileName].type === 'directory') {
+      return null; // Can't edit directories
+    }
+    return {
+      content: currentDir[fileName].content || '',
+      isNewFile: false,
+    };
+  }
+
+  // New file
+  return {
+    content: '',
+    isNewFile: true,
+  };
+};
+
 // Change directory
 export const changeDirectory = (args: string[]): CommandResult => {
   if (!args[0]) {
@@ -1180,4 +1218,101 @@ export const readFile = (fileName: string): string | null => {
   }
 
   return null;
+};
+
+// Copy file
+export const copyFile = (source: string, dest: string): CommandResult => {
+  const currentDir = getCurrentDir();
+  const sourceFile = currentDir[source];
+
+  if (!sourceFile) {
+    return { output: `cp: ${source}: No such file or directory`, isError: true };
+  }
+
+  if (sourceFile.type === 'directory') {
+    return { output: `cp: ${source}: Is a directory (use -r)`, isError: true };
+  }
+
+  currentDir[dest] = {
+    name: dest,
+    type: 'file',
+    content: sourceFile.content || ''
+  };
+
+  return { output: '' };
+};
+
+// Move/rename file
+export const moveFile = (source: string, dest: string): CommandResult => {
+  const currentDir = getCurrentDir();
+  const sourceFile = currentDir[source];
+
+  if (!sourceFile) {
+    return { output: `mv: ${source}: No such file or directory`, isError: true };
+  }
+
+  currentDir[dest] = {
+    ...sourceFile,
+    name: dest
+  };
+  delete currentDir[source];
+
+  return { output: '' };
+};
+
+// Grep - search for pattern in files
+export const grepFile = (pattern: string, fileName: string): { matches: string[]; lineNumbers: number[] } | null => {
+  const content = readFile(fileName);
+  if (content === null) return null;
+
+  const lines = content.split('\n');
+  const matches: string[] = [];
+  const lineNumbers: number[] = [];
+
+  try {
+    const regex = new RegExp(pattern, 'gi');
+    lines.forEach((line, index) => {
+      if (regex.test(line)) {
+        matches.push(line);
+        lineNumbers.push(index + 1);
+      }
+    });
+  } catch {
+    // If regex fails, do literal search
+    lines.forEach((line, index) => {
+      if (line.toLowerCase().includes(pattern.toLowerCase())) {
+        matches.push(line);
+        lineNumbers.push(index + 1);
+      }
+    });
+  }
+
+  return { matches, lineNumbers };
+};
+
+// Get head of file (first n lines)
+export const headFile = (fileName: string, lines: number = 10): string | null => {
+  const content = readFile(fileName);
+  if (content === null) return null;
+  return content.split('\n').slice(0, lines).join('\n');
+};
+
+// Get tail of file (last n lines)
+export const tailFile = (fileName: string, lines: number = 10): string | null => {
+  const content = readFile(fileName);
+  if (content === null) return null;
+  const allLines = content.split('\n');
+  return allLines.slice(-lines).join('\n');
+};
+
+// Word count
+export const wcFile = (fileName: string): { lines: number; words: number; chars: number } | null => {
+  const content = readFile(fileName);
+  if (content === null) return null;
+
+  const lines = content.split('\n').length;
+  const words = content.split(/\s+/).filter(w => w.length > 0).length;
+  const chars = content.length;
+
+  return { lines, words, chars };
 };

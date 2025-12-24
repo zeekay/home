@@ -131,22 +131,20 @@ export const SocialsIcon: React.FC<{ className?: string }> = ({ className = "w-1
   </svg>
 );
 
-// Phone/FaceTime Icon
+// FaceTime Icon - Video camera on green background (macOS style)
 export const PhoneIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <linearGradient id="phoneGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <linearGradient id="faceTimeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
         <stop offset="0%" stopColor="#5AF158" />
         <stop offset="100%" stopColor="#32D74B" />
       </linearGradient>
     </defs>
-    <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#phoneGrad)" />
-    {/* Phone receiver - classic handset shape */}
-    <g transform="rotate(-135 32 32)">
-      <rect x="28" y="12" width="8" height="40" rx="4" fill="white" />
-      <ellipse cx="32" cy="14" rx="10" ry="6" fill="white" />
-      <ellipse cx="32" cy="50" rx="10" ry="6" fill="white" />
-    </g>
+    <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#faceTimeGrad)" />
+    {/* Video camera body - rounded rectangle */}
+    <rect x="10" y="22" width="30" height="20" rx="4" fill="white" />
+    {/* Video camera lens/viewfinder triangle */}
+    <path d="M42 24 L54 18 L54 46 L42 40 Z" fill="white" />
   </svg>
 );
 
@@ -386,7 +384,30 @@ export const SettingsIcon: React.FC<{ className?: string }> = ({ className = "w-
   </svg>
 );
 
-// Notes/TextPad Icon
+// TextEdit Icon - Notepad with lines and red margin (macOS style)
+export const TextEditIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
+  <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <clipPath id="textEditClip">
+        <rect x="4" y="4" width="56" height="56" rx="12" />
+      </clipPath>
+    </defs>
+    {/* White background with rounded corners */}
+    <rect x="4" y="4" width="56" height="56" rx="12" fill="white" />
+    {/* Clipped content */}
+    <g clipPath="url(#textEditClip)">
+      {/* Red margin line - full height */}
+      <line x1="16" y1="0" x2="16" y2="64" stroke="#E85D5D" strokeWidth="1.5" />
+      {/* Horizontal ruled lines - full width */}
+      <line x1="0" y1="18" x2="64" y2="18" stroke="#C8C8CD" strokeWidth="1" />
+      <line x1="0" y1="28" x2="64" y2="28" stroke="#C8C8CD" strokeWidth="1" />
+      <line x1="0" y1="38" x2="64" y2="38" stroke="#C8C8CD" strokeWidth="1" />
+      <line x1="0" y1="48" x2="64" y2="48" stroke="#C8C8CD" strokeWidth="1" />
+    </g>
+  </svg>
+);
+
+// Notes Icon - Yellow notepad (macOS style)
 export const NotesIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
     <defs>
