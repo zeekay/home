@@ -50,6 +50,48 @@ const ZGitHubStatsWindow: React.FC<ZGitHubStatsWindowProps> = ({ onClose }) => {
   const { data: soData, loading: soLoading } = useStackOverflow('641766');
   const [activeTab, setActiveTab] = useState<'overview' | 'activity' | 'repos' | 'stackoverflow'>('overview');
 
+  // Memoize chart data transformations - must be before early returns (React rules of hooks)
+  const recentCommits = useMemo(() => 
+    stats?.monthlyCommits.slice(-24).map(item => ({
+      month: item.month.slice(2), // "2024-01" -> "24-01"
+      commits: item.commits
+    })) ?? [], [stats?.monthlyCommits]
+  );
+
+  const recentLoc = useMemo(() => 
+    stats?.cumulativeLoc.slice(-24).map(item => ({
+      month: item.month.slice(2),
+      loc: item.loc / 1000000 // Convert to millions
+    })) ?? [], [stats?.cumulativeLoc]
+  );
+
+  const topReposData = useMemo(() => 
+    stats?.topRepos.slice(0, 7).map((repo, idx) => ({
+      name: repo.repo.split('/')[1] || repo.repo,
+      fullName: repo.repo,
+      commits: repo.commits,
+      fill: COLORS[idx % COLORS.length]
+    })) ?? [], [stats?.topRepos]
+  );
+
+  const dayOfWeekData = useMemo(() => 
+    stats?.byDayOfWeek.map((item, idx) => ({
+      ...item,
+      fill: COLORS[idx % COLORS.length]
+    })) ?? [], [stats?.byDayOfWeek]
+  );
+
+  // Memoize yearly summary calculation
+  const yearlySummary = useMemo(() => 
+    stats ? Object.entries(
+      stats.monthlyCommits.reduce((acc, item) => {
+        const year = item.month.slice(0, 4);
+        acc[year] = (acc[year] || 0) + item.commits;
+        return acc;
+      }, {} as Record<string, number>)
+    ).reverse().slice(0, 10) : [], [stats]
+  );
+
   if (loading) {
     return (
       <ZWindow
@@ -79,48 +121,6 @@ const ZGitHubStatsWindow: React.FC<ZGitHubStatsWindowProps> = ({ onClose }) => {
       </ZWindow>
     );
   }
-
-  // Memoize chart data transformations - only recalculate when stats change
-  const recentCommits = useMemo(() => 
-    stats.monthlyCommits.slice(-24).map(item => ({
-      month: item.month.slice(2), // "2024-01" -> "24-01"
-      commits: item.commits
-    })), [stats.monthlyCommits]
-  );
-
-  const recentLoc = useMemo(() => 
-    stats.cumulativeLoc.slice(-24).map(item => ({
-      month: item.month.slice(2),
-      loc: item.loc / 1000000 // Convert to millions
-    })), [stats.cumulativeLoc]
-  );
-
-  const topReposData = useMemo(() => 
-    stats.topRepos.slice(0, 7).map((repo, idx) => ({
-      name: repo.repo.split('/')[1] || repo.repo,
-      fullName: repo.repo,
-      commits: repo.commits,
-      fill: COLORS[idx % COLORS.length]
-    })), [stats.topRepos]
-  );
-
-  const dayOfWeekData = useMemo(() => 
-    stats.byDayOfWeek.map((item, idx) => ({
-      ...item,
-      fill: COLORS[idx % COLORS.length]
-    })), [stats.byDayOfWeek]
-  );
-
-  // Memoize yearly summary calculation
-  const yearlySummary = useMemo(() => 
-    Object.entries(
-      stats.monthlyCommits.reduce((acc, item) => {
-        const year = item.month.slice(0, 4);
-        acc[year] = (acc[year] || 0) + item.commits;
-        return acc;
-      }, {} as Record<string, number>)
-    ).reverse().slice(0, 10), [stats.monthlyCommits]
-  );
 
   return (
     <ZWindow
