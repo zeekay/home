@@ -51,6 +51,7 @@
     "@replit/codemirror-vim": "^6.3.0",
     "@tanstack/react-query": "^5.56.2",
     "@webcontainer/api": "^1.5.1-internal.10",
+    "@z-os/apps": "github:z-os4/apps",
     "@zeekay/logo": "github:zeekay/logo",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
