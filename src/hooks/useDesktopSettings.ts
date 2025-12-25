@@ -149,13 +149,13 @@ export function useDesktopSettings(): DesktopSettings & DesktopSettingsActions {
     getStorageValue(STORAGE_KEYS.dockPosition, 'bottom') as DockPosition
   );
   const [dockSize, setDockSizeState] = useState(() => 
-    getStorageValue(STORAGE_KEYS.dockSize, 64)
+    getStorageValue(STORAGE_KEYS.dockSize, 44)
   );
   const [dockMagnification, setDockMagnificationState] = useState(() => 
     getStorageValue(STORAGE_KEYS.dockMagnification, true)
   );
   const [dockMagnificationSize, setDockMagnificationSizeState] = useState(() => 
-    getStorageValue(STORAGE_KEYS.dockMagnificationSize, 128)
+    getStorageValue(STORAGE_KEYS.dockMagnificationSize, 88)
   );
   const [dockAutoHide, setDockAutoHideState] = useState(() => 
     getStorageValue(STORAGE_KEYS.dockAutoHide, false)

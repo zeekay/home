@@ -40,7 +40,7 @@ describe('useDesktopSettings', () => {
 
     it('has correct default dockSize', () => {
       const { result } = renderHook(() => useDesktopSettings());
-      expect(result.current.dockSize).toBe(64);
+      expect(result.current.dockSize).toBe(44);
     });
 
     it('has correct default dockMagnification', () => {
