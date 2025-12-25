@@ -174,7 +174,7 @@ const ZDock: React.FC<ZDockProps> = ({
   // Decide how many items to show directly in the dock based on screen size
   const getMainDockItems = () => {
     if (isMobile) {
-      return mainApps.slice(0, 5);
+      return mainApps.slice(0, 6);
     }
     return mainApps;
   };
@@ -182,7 +182,7 @@ const ZDock: React.FC<ZDockProps> = ({
   // Get overflow items for mobile
   const getOverflowItems = () => {
     if (isMobile) {
-      return [...mainApps.slice(5), ...customApps];
+      return [...mainApps.slice(6), ...customApps];
     }
     return [];
   };
