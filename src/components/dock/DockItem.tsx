@@ -142,14 +142,15 @@ const DockItem: React.FC<DockItemProps> = ({
 
   const hoverScale = getHoverScale();
 
-  // Calculate dynamic margin to prevent icons from touching when magnified
-  const getDynamicMargin = (): number => {
+  // Calculate horizontal padding to push icons apart (dock stays same height, icons grow upward)
+  const getHorizontalPadding = (): number => {
     if (!magnificationEnabled || isMobile) return 0;
-    // Add margin proportional to scale increase (0 at scale 1, max ~6px at scale 1.33)
-    return (hoverScale - 1) * 18;
+    const base = 48; // base icon size
+    // Add padding equal to half the size increase on each side
+    return ((hoverScale - 1) * base) / 2;
   };
 
-  const dynamicMargin = getDynamicMargin();
+  const horizontalPadding = getHorizontalPadding();
 
   // Get dynamic icon size based on device
   const getIconSize = () => {
@@ -228,7 +229,7 @@ const DockItem: React.FC<DockItemProps> = ({
     <button
       ref={dragRef}
       className={cn(
-        "group relative flex items-end justify-center px-0.5",
+        "group relative flex items-end justify-center",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-xl",
         isFocused && "ring-2 ring-white/70 ring-offset-2 ring-offset-transparent",
         isDragging && "opacity-50",
@@ -236,11 +237,11 @@ const DockItem: React.FC<DockItemProps> = ({
         introAnimation && !hasIntroAnimated && "opacity-0 translate-y-8",
         introAnimation && hasIntroAnimated && "opacity-100 translate-y-0 transition-all duration-500 ease-out"
       )}
-      style={magnificationEnabled && !isMobile && dynamicMargin > 0 ? {
-        marginLeft: `${dynamicMargin}px`,
-        marginRight: `${dynamicMargin}px`,
-        transition: 'margin 150ms ease-out'
-      } : undefined}
+      style={magnificationEnabled && !isMobile ? {
+        paddingLeft: `${horizontalPadding}px`,
+        paddingRight: `${horizontalPadding}px`,
+        transition: 'padding 100ms ease-out'
+      } : { paddingLeft: '2px', paddingRight: '2px' }}
       onClick={onClick}
       onKeyDown={handleKeyDown}
       tabIndex={tabIndex}
@@ -254,9 +255,10 @@ const DockItem: React.FC<DockItemProps> = ({
     >
       <div
         className={cn(
-          "flex items-center justify-center rounded-xl overflow-hidden transition-transform duration-150 ease-out",
+          "flex items-center justify-center rounded-xl overflow-hidden",
           getIconSize(),
-          !magnificationEnabled && "group-hover:scale-110",
+          !magnificationEnabled && "transition-transform duration-150 ease-out group-hover:scale-110",
+          magnificationEnabled && "transition-transform duration-100 ease-out origin-bottom",
           "group-active:scale-95",
           bgGradient || '',
           isDropTarget && "ring-2 ring-white/50 scale-110",
