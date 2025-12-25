@@ -95,23 +95,20 @@ export const createDockItems = (callbacks: DockCallbacks): DockItemType[] => {
     // Separator would go here (handled in ZDock)
     {
       id: 'hanzo',
-      label: 'Hanzo AI', 
+      label: 'Hanzo AI',
       onClick: callbacks.onHanzoClick,
-      bgGradient: 'bg-gradient-to-br from-orange-500 via-red-500 to-purple-600',
       useCustomIcon: true,
     },
-    { 
+    {
       id: 'lux',
-      label: 'Lux Wallet', 
+      label: 'Lux Wallet',
       onClick: callbacks.onLuxClick,
-      bgGradient: 'bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600',
       useCustomIcon: true,
     },
-    { 
+    {
       id: 'zoo',
-      label: 'Zoo', 
+      label: 'Zoo',
       onClick: callbacks.onZooClick,
-      bgGradient: 'bg-gradient-to-br from-emerald-500 via-teal-400 to-cyan-500',
       useCustomIcon: true,
     },
   ];
