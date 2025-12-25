@@ -94,7 +94,7 @@ interface Size {
   height: number;
 }
 
-const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ }) => {
+const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose, onFocus }) => {
   const [modelViewerLoaded, setModelViewerLoaded] = useState(false);
   const [currentTip, setCurrentTip] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);

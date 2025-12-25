@@ -15,7 +15,7 @@ interface SystemTabsNavProps {
   setActiveTab: (tab: string) => void;
 }
 
-const SystemTabsNav: React.FC<SystemTabsNavProps> = ({ }) => {
+const SystemTabsNav: React.FC<SystemTabsNavProps> = ({ activeTab: _activeTab, setActiveTab: _setActiveTab }) => {
   return (
     <div className="grid grid-cols-6 gap-2 mb-4">
       <TabsList className="grid grid-cols-6 gap-2">

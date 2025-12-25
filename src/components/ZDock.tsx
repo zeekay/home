@@ -210,16 +210,18 @@ const ZDock: React.FC<ZDockProps> = ({
     if (totalItems === 0) return;
 
     switch (e.key) {
-      case 'ArrowRight':
+      case 'ArrowRight': {
         e.preventDefault();
         const nextIndex = focusedIndex < 0 ? 0 : (focusedIndex + 1) % totalItems;
         focusItem(nextIndex);
         break;
-      case 'ArrowLeft':
+      }
+      case 'ArrowLeft': {
         e.preventDefault();
         const prevIndex = focusedIndex <= 0 ? totalItems - 1 : focusedIndex - 1;
         focusItem(prevIndex);
         break;
+      }
       case 'Home':
         e.preventDefault();
         focusItem(0);
