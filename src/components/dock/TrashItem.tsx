@@ -52,29 +52,45 @@ const TrashItem: React.FC<TrashItemProps> = ({
     setTimeout(() => setIsTrashOpen(false), 3000); // Auto-close after 3 seconds
   };
 
-  // Calculate magnified size based on distance from mouse
-  const getMagnifiedSize = (): number => {
-    if (!magnificationEnabled || mouseX === null) {
-      return baseSize;
+  // Calculate hover scale based on distance from mouse
+  const getHoverScale = (): number => {
+    if (!magnificationEnabled || mouseX === null || isMobile || !buttonRef.current) {
+      return 1;
     }
 
-    const itemWidth = baseSize + 8;
-    const itemCenter = index * itemWidth + itemWidth / 2;
+    // Get actual element position relative to dock
+    const dock = buttonRef.current.closest('[data-dock]');
+    if (!dock) return 1;
+
+    const dockRect = dock.getBoundingClientRect();
+    const itemRect = buttonRef.current.getBoundingClientRect();
+    const itemCenter = (itemRect.left + itemRect.width / 2) - dockRect.left;
+
+    // Distance from mouse to item center
     const distance = Math.abs(mouseX - itemCenter);
-    const magnificationRange = itemWidth * 2.5;
+
+    // Magnification range - affects nearby items
+    const itemWidth = baseSize + 8;
+    const magnificationRange = itemWidth * 2;
 
     if (distance > magnificationRange) {
-      return baseSize;
+      return 1;
     }
 
     const scaleFactor = Math.cos((distance / magnificationRange) * (Math.PI / 2));
-    const sizeIncrease = (maxSize - baseSize) * scaleFactor;
-
-    return baseSize + sizeIncrease;
+    return 1 + (0.33 * scaleFactor); // 1.0 to 1.33 (33% max)
   };
 
-  const magnifiedSize = getMagnifiedSize();
-  const useMagnification = magnificationEnabled && !isMobile;
+  const hoverScale = getHoverScale();
+
+  // Calculate dynamic margin to prevent icons from touching when magnified
+  const getDynamicMargin = (): number => {
+    if (!magnificationEnabled || isMobile) return 0;
+    // Add margin proportional to scale increase (0 at scale 1, max ~6px at scale 1.33)
+    return (hoverScale - 1) * 18;
+  };
+
+  const dynamicMargin = getDynamicMargin();
 
   // Match DockItem sizing
   const getIconSize = () => {
@@ -92,6 +108,11 @@ const TrashItem: React.FC<TrashItemProps> = ({
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent",
               isFocused && "ring-2 ring-white/70 ring-offset-2 ring-offset-transparent"
             )}
+            style={magnificationEnabled && !isMobile && dynamicMargin > 0 ? {
+              marginLeft: `${dynamicMargin}px`,
+              marginRight: `${dynamicMargin}px`,
+              transition: 'margin 150ms ease-out'
+            } : undefined}
             onClick={handleTrashClick}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
@@ -104,14 +125,13 @@ const TrashItem: React.FC<TrashItemProps> = ({
           >
             <div
               className={cn(
-                "flex items-center justify-center",
-                !useMagnification && getIconSize(),
-                !useMagnification && "transition-transform duration-200 group-hover:scale-110 group-active:scale-95",
-                useMagnification && "transition-[width,height] duration-100 ease-out"
+                "flex items-center justify-center transition-transform duration-150 ease-out",
+                getIconSize(),
+                !magnificationEnabled && "group-hover:scale-110",
+                "group-active:scale-95"
               )}
-              style={useMagnification ? {
-                width: `${magnifiedSize}px`,
-                height: `${magnifiedSize}px`,
+              style={magnificationEnabled && !isMobile ? {
+                transform: `scale(${hoverScale})`,
               } : undefined}
             >
               <MacTrashIcon className="w-full h-full" />

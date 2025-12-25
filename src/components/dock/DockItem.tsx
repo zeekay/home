@@ -110,36 +110,46 @@ const DockItem: React.FC<DockItemProps> = ({
     };
   }, [onRegisterRef]);
 
-  // Calculate magnified size based on distance from mouse
-  const getMagnifiedSize = (): number => {
-    if (!magnificationEnabled || mouseX === null) {
-      return baseSize;
+  // Calculate hover scale based on distance from mouse
+  const getHoverScale = (): number => {
+    if (!magnificationEnabled || mouseX === null || isMobile || !dragRef.current) {
+      return 1;
     }
 
-    // Each item takes up roughly baseSize + padding (4px on each side)
-    const itemWidth = baseSize + 8;
-    // Center position of this item in the dock
-    const itemCenter = index * itemWidth + itemWidth / 2;
+    // Get actual element position relative to dock
+    const dock = dragRef.current.closest('[data-dock]');
+    if (!dock) return 1;
+
+    const dockRect = dock.getBoundingClientRect();
+    const itemRect = dragRef.current.getBoundingClientRect();
+    const itemCenter = (itemRect.left + itemRect.width / 2) - dockRect.left;
+
     // Distance from mouse to item center
     const distance = Math.abs(mouseX - itemCenter);
 
-    // Magnification range - items within this distance are affected
-    // Use 2.5 item widths for smooth falloff (affects ~2 neighbors on each side)
-    const magnificationRange = itemWidth * 2.5;
+    // Magnification range - affects nearby items
+    const itemWidth = baseSize + 8;
+    const magnificationRange = itemWidth * 2;
 
     if (distance > magnificationRange) {
-      return baseSize;
+      return 1;
     }
 
-    // Calculate scale using cosine for smooth, natural curve (like macOS)
-    // cos(0) = 1 (full magnification at center), cos(PI/2) = 0 (no magnification at edge)
+    // Scale: max 33% increase (1.33) using smooth cosine curve
     const scaleFactor = Math.cos((distance / magnificationRange) * (Math.PI / 2));
-    const sizeIncrease = (maxSize - baseSize) * scaleFactor;
-
-    return baseSize + sizeIncrease;
+    return 1 + (0.33 * scaleFactor); // 1.0 to 1.33 (33% max)
   };
 
-  const magnifiedSize = getMagnifiedSize();
+  const hoverScale = getHoverScale();
+
+  // Calculate dynamic margin to prevent icons from touching when magnified
+  const getDynamicMargin = (): number => {
+    if (!magnificationEnabled || isMobile) return 0;
+    // Add margin proportional to scale increase (0 at scale 1, max ~6px at scale 1.33)
+    return (hoverScale - 1) * 18;
+  };
+
+  const dynamicMargin = getDynamicMargin();
 
   // Get dynamic icon size based on device
   const getIconSize = () => {
@@ -214,9 +224,6 @@ const DockItem: React.FC<DockItemProps> = ({
     }
   };
 
-  // Use magnification or fall back to base behavior
-  const useMagnification = magnificationEnabled && !isMobile;
-
   const button = (
     <button
       ref={dragRef}
@@ -229,6 +236,11 @@ const DockItem: React.FC<DockItemProps> = ({
         introAnimation && !hasIntroAnimated && "opacity-0 translate-y-8",
         introAnimation && hasIntroAnimated && "opacity-100 translate-y-0 transition-all duration-500 ease-out"
       )}
+      style={magnificationEnabled && !isMobile && dynamicMargin > 0 ? {
+        marginLeft: `${dynamicMargin}px`,
+        marginRight: `${dynamicMargin}px`,
+        transition: 'margin 150ms ease-out'
+      } : undefined}
       onClick={onClick}
       onKeyDown={handleKeyDown}
       tabIndex={tabIndex}
@@ -242,17 +254,16 @@ const DockItem: React.FC<DockItemProps> = ({
     >
       <div
         className={cn(
-          "flex items-center justify-center rounded-xl overflow-hidden",
-          !useMagnification && getIconSize(),
-          !useMagnification && "transition-transform duration-200 group-hover:scale-110 group-active:scale-95",
-          useMagnification && "transition-[width,height] duration-100 ease-out",
+          "flex items-center justify-center rounded-xl overflow-hidden transition-transform duration-150 ease-out",
+          getIconSize(),
+          !magnificationEnabled && "group-hover:scale-110",
+          "group-active:scale-95",
           bgGradient || '',
           isDropTarget && "ring-2 ring-white/50 scale-110",
           isDragging && "scale-90"
         )}
-        style={useMagnification ? {
-          width: `${magnifiedSize}px`,
-          height: `${magnifiedSize}px`,
+        style={magnificationEnabled && !isMobile ? {
+          transform: `scale(${hoverScale})`,
         } : undefined}
       >
         {customIcon ? (
