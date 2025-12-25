@@ -9,8 +9,12 @@ interface ZTextPadWindowProps {
 }
 
 const ZTextPadWindow: React.FC<ZTextPadWindowProps> = ({ onClose, onFocus }) => {
+  // Check if this is the first open (intro animation plays once)
+  const isIntroSession = !sessionStorage.getItem('textedit-intro-played');
   const [text, setText] = useState('');
-  const [isTyping, setIsTyping] = useState(true);
+  const [isTyping, setIsTyping] = useState(isIntroSession);
+  const [isEditable, setIsEditable] = useState(!isIntroSession);
+
   const fullText = `👋 Hi, I'm Z
 
 Open Sourceror. Cypherpunk building decentralized intelligence.
@@ -20,6 +24,13 @@ Open Sourceror. Cypherpunk building decentralized intelligence.
 🧬 Architect of ZOO — regenerative finance
 
 Say hi: curl -sL zeekay.chat | sh`;
+
+  // Initialize text if not intro session
+  useEffect(() => {
+    if (!isIntroSession) {
+      setText(fullText);
+    }
+  }, [isIntroSession, fullText]);
 
   // Typing animation effect
   useEffect(() => {
@@ -32,6 +43,8 @@ Say hi: curl -sL zeekay.chat | sh`;
         return () => clearTimeout(typingTimer);
       } else {
         setIsTyping(false);
+        setIsEditable(true);
+        sessionStorage.setItem('textedit-intro-played', 'true');
       }
     }
   }, [text, isTyping, fullText]);
@@ -71,7 +84,7 @@ Say hi: curl -sL zeekay.chat | sh`;
       title="TextEdit"
       onClose={onClose}
       onFocus={onFocus}
-      className="animate-scale-in shadow-lg"
+      className="shadow-lg"
       initialPosition={{ x: Math.max(20, window.innerWidth / 2 - windowWidth / 2), y: Math.max(60, window.innerHeight / 2 - windowHeight / 2) }}
       initialSize={{ width: windowWidth, height: windowHeight }}
       windowType="textpad"
@@ -82,6 +95,14 @@ Say hi: curl -sL zeekay.chat | sh`;
             {text}
             <span className="terminal-cursor animate-blink bg-gray-300">|</span>
           </div>
+        ) : isEditable ? (
+          <textarea
+            className="w-full h-full p-3 sm:p-4 font-mono text-xs sm:text-sm text-gray-300 whitespace-pre-wrap leading-relaxed bg-transparent border-none outline-none resize-none"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Start typing..."
+            autoFocus
+          />
         ) : (
           <div className="w-full h-full p-3 sm:p-4 font-mono text-xs sm:text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">
             {renderTextWithLinks()}

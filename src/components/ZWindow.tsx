@@ -32,7 +32,10 @@ const ZWindow: React.FC<ZWindowProps> = ({
   customControls,
 }) => {
   const isMobile = useIsMobile();
-  
+
+  // Window animation state
+  const [isClosing, setIsClosing] = useState(false);
+
   // Get responsive size and position
   const responsiveSize = getResponsiveWindowSize(initialSize);
   const responsivePosition = getResponsiveWindowPosition(initialPosition);
@@ -167,15 +170,24 @@ const ZWindow: React.FC<ZWindowProps> = ({
   // For touch events on mobile
   useEffect(() => {
     if (!isMobile) return;
-    
+
     const handleTouchStart = () => {
       bringToFront();
     };
-    
+
     return () => {
       // Cleanup if needed
     };
   }, [isMobile, bringToFront]);
+
+  // Handle close with animation
+  const handleClose = useCallback(() => {
+    setIsClosing(true);
+    // Wait for animation to complete before calling onClose
+    setTimeout(() => {
+      onClose();
+    }, 200); // Match animation duration
+  }, [onClose]);
 
   return (
     <div
@@ -183,6 +195,8 @@ const ZWindow: React.FC<ZWindowProps> = ({
         'fixed overflow-hidden glass-window',
         getWindowStyle(windowType),
         isMobile ? 'transition-all duration-300' : '',
+        !isClosing && 'animate-window-open',
+        isClosing && 'animate-window-close',
         className
       )}
       style={{
@@ -201,7 +215,7 @@ const ZWindow: React.FC<ZWindowProps> = ({
         title={title}
         windowType={windowType}
         onMouseDown={handleMouseDown}
-        onClose={onClose}
+        onClose={handleClose}
         onMinimize={toggleMinimize}
         onMaximize={toggleMaximize}
         isMaximized={isMaximized}
