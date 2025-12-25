@@ -93,6 +93,9 @@ const ZDock: React.FC<ZDockProps> = ({
   const isMobile = useIsMobile();
   const { dockOrder, isItemInDock } = useDock();
   const { dockMagnification, dockMagnificationSize, dockSize } = useDesktopSettings();
+  
+  // Use smaller icons on mobile for better fit
+  const effectiveDockSize = isMobile ? Math.min(dockSize, 40) : dockSize;
 
   // Track mouse position relative to dock for magnification
   const dockRef = useRef<HTMLDivElement>(null);
@@ -174,7 +177,7 @@ const ZDock: React.FC<ZDockProps> = ({
   // Decide how many items to show directly in the dock based on screen size
   const getMainDockItems = () => {
     if (isMobile) {
-      return mainApps.slice(0, 6);
+      return mainApps.slice(0, 5);
     }
     return mainApps;
   };
@@ -182,7 +185,7 @@ const ZDock: React.FC<ZDockProps> = ({
   // Get overflow items for mobile
   const getOverflowItems = () => {
     if (isMobile) {
-      return [...mainApps.slice(6), ...customApps];
+      return [...mainApps.slice(5), ...customApps];
     }
     return [];
   };
@@ -304,7 +307,7 @@ const ZDock: React.FC<ZDockProps> = ({
                 mouseX={mouseX}
                 index={index}
                 magnificationEnabled={dockMagnification && !isMobile}
-                baseSize={dockSize}
+                baseSize={effectiveDockSize}
                 maxSize={dockMagnificationSize}
                 isFocused={focusedIndex === navIndex}
                 tabIndex={focusedIndex === -1 ? (navIndex === 0 ? 0 : -1) : (focusedIndex === navIndex ? 0 : -1)}
@@ -359,7 +362,7 @@ const ZDock: React.FC<ZDockProps> = ({
                 mouseX={mouseX}
                 index={dockItems.length + index}
                 magnificationEnabled={dockMagnification && !isMobile}
-                baseSize={dockSize}
+                baseSize={effectiveDockSize}
                 maxSize={dockMagnificationSize}
                 isFocused={focusedIndex === navIndex}
                 tabIndex={focusedIndex === -1 ? -1 : (focusedIndex === navIndex ? 0 : -1)}
@@ -384,7 +387,7 @@ const ZDock: React.FC<ZDockProps> = ({
                 mouseX={mouseX}
                 index={dockItems.length + customApps.length}
                 magnificationEnabled={dockMagnification && !isMobile}
-                baseSize={dockSize}
+                baseSize={effectiveDockSize}
                 maxSize={dockMagnificationSize}
                 isFocused={focusedIndex === navIndex}
                 tabIndex={focusedIndex === -1 ? -1 : (focusedIndex === navIndex ? 0 : -1)}
@@ -406,7 +409,7 @@ const ZDock: React.FC<ZDockProps> = ({
                 mouseX={mouseX}
                 index={dockItems.length + customApps.length + 1}
                 magnificationEnabled={dockMagnification && !isMobile}
-                baseSize={dockSize}
+                baseSize={effectiveDockSize}
                 maxSize={dockMagnificationSize}
                 isFocused={focusedIndex === navIndex}
                 tabIndex={focusedIndex === -1 ? -1 : (focusedIndex === navIndex ? 0 : -1)}
@@ -426,7 +429,7 @@ const ZDock: React.FC<ZDockProps> = ({
                 mouseX={mouseX}
                 index={dockItems.length + customApps.length + 2}
                 magnificationEnabled={dockMagnification && !isMobile}
-                baseSize={dockSize}
+                baseSize={effectiveDockSize}
                 maxSize={dockMagnificationSize}
               />
             );
