@@ -6,6 +6,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 interface WindowTitleBarProps {
   title: string;
+  titleId?: string;
   windowType: 'default' | 'terminal' | 'safari' | 'itunes' | 'textpad';
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   onClose: () => void;
@@ -17,6 +18,7 @@ interface WindowTitleBarProps {
 
 const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
   title,
+  titleId,
   windowType,
   onMouseDown,
   onClose,
@@ -65,7 +67,7 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
     >
       <WindowControls onClose={onClose} onMinimize={onMinimize} onMaximize={onMaximize} isMaximized={isMaximized} />
       {showTitle && (
-        <div className="text-center flex-1 text-xs font-medium select-none">
+        <div id={titleId} className="text-center flex-1 text-xs font-medium select-none">
           {title}
         </div>
       )}

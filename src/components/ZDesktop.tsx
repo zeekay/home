@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSystem } from '@/App';
+import { ANIMATION_DURATIONS } from '@/utils/animationConstants';
 import ZDock from './ZDock';
 import ZMenuBar from './ZMenuBar';
 // Lightweight windows loaded synchronously
@@ -105,7 +106,7 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
       // Start intro sequence after a brief delay
       const timer = setTimeout(() => {
         setIntroPhase('dock');
-      }, 500);
+      }, ANIMATION_DURATIONS.INTRO_START_DELAY);
       return () => clearTimeout(timer);
     } else {
       setIntroPhase('complete');
@@ -114,25 +115,28 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
 
   // Sequence: dock animation -> window open
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
     if (introPhase === 'dock') {
       // After dock animation plays, open window
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         setIntroPhase('window');
         setLaunchingApp('textedit');
         openWindowRef.current('TextEdit');
         // Mark intro as complete
         sessionStorage.setItem('zos-intro-complete', 'true');
-      }, 800); // Wait for dock intro animation
-      return () => clearTimeout(timer);
-    }
-    if (introPhase === 'window') {
+      }, ANIMATION_DURATIONS.INTRO_WINDOW_DELAY);
+    } else if (introPhase === 'window') {
       // Clear launching state after bounce animation
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         setLaunchingApp(null);
         setIntroPhase('complete');
-      }, 1000);
-      return () => clearTimeout(timer);
+      }, ANIMATION_DURATIONS.APP_LAUNCH);
     }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [introPhase]);
 
   // Handle app launch with bounce animation
@@ -140,7 +144,8 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
     setLaunchingApp(appId);
     openFn?.();
     // Clear launching state after animation
-    setTimeout(() => setLaunchingApp(null), 800);
+    const timer = setTimeout(() => setLaunchingApp(null), ANIMATION_DURATIONS.DOCK_BOUNCE);
+    return () => clearTimeout(timer);
   }, []);
 
   // Handle right-click context menu

@@ -55,20 +55,30 @@ const DockItem: React.FC<DockItemProps> = ({
 
   // Handle bounce animation when launching
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
     if (isLaunching && !isBouncing) {
       setIsBouncing(true);
       // Stop bouncing after animation
-      const timer = setTimeout(() => setIsBouncing(false), 800);
-      return () => clearTimeout(timer);
+      timer = setTimeout(() => setIsBouncing(false), 800);
     }
-  }, [isLaunching]);
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [isLaunching, isBouncing]);
 
   // Handle intro animation
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
     if (introAnimation && !hasIntroAnimated) {
-      const timer = setTimeout(() => setHasIntroAnimated(true), introDelay);
-      return () => clearTimeout(timer);
+      timer = setTimeout(() => setHasIntroAnimated(true), introDelay);
     }
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [introAnimation, introDelay, hasIntroAnimated]);
 
   // Get dynamic icon size based on device
