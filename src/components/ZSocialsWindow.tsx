@@ -15,17 +15,16 @@ import {
   Plus,
   Globe,
   Mail,
-  Phone,
   MapPin,
-  Building2,
   Star,
   Share2,
 } from 'lucide-react';
-import { socialProfiles, professionalInfo, pinnedProjects } from '@/data/socials';
+import { socialProfiles, professionalInfo } from '@/data/socials';
 import { SoraIcon } from './dock/icons';
 
-interface ZSocialsWindowProps {
+export interface ZSocialsWindowProps {
   onClose: () => void;
+  onFocus?: () => void;
 }
 
 // Define contact cards - different identities/usernames across platforms

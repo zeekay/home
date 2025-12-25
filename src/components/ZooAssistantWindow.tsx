@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Sparkles, Heart, Lightbulb, HelpCircle, Coffee, Zap, ChevronLeft, ChevronRight, Move, Maximize2, Send, MessageCircle } from 'lucide-react';
+import { X, Sparkles, Heart, Lightbulb, HelpCircle, Coffee, Zap, Move, Maximize2, Send, MessageCircle } from 'lucide-react';
 
 // Dynamic import of model-viewer for better code splitting (~500KB savings)
 // The import happens when component mounts, not at bundle time
@@ -94,7 +94,7 @@ interface Size {
   height: number;
 }
 
-const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
+const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ }) => {
   const [modelViewerLoaded, setModelViewerLoaded] = useState(false);
   const [currentTip, setCurrentTip] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -204,7 +204,7 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
     }, 400);
   };
 
-  const goToPrevTip = () => {
+  const _goToPrevTip = () => {
     setIsAnimating(true);
     setTimeout(() => {
       setCurrentTip((prev) => (prev - 1 + ZOO_TIPS.length) % ZOO_TIPS.length);
@@ -422,7 +422,6 @@ const ZooAssistantWindow: React.FC<ZooAssistantWindowProps> = ({ onClose }) => {
     const spaceLeft = position.x;
     const spaceRight = window.innerWidth - position.x - size.width;
     const spaceTop = position.y;
-    const spaceBottom = window.innerHeight - position.y - size.height;
 
     // Prefer left side, but if not enough space, try other sides
     if (spaceLeft >= bubbleWidth + padding) {

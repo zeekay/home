@@ -7,9 +7,8 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
-import { CalendarClock, Clock, User, Users } from 'lucide-react';
+import { CalendarClock, Users } from 'lucide-react';
 import ZWindow from './ZWindow';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 const timeSlots = [
   '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM',
@@ -19,7 +18,12 @@ const timeSlots = [
   '5:00 PM', '5:30 PM'
 ];
 
-const ZCalendarWindow = ({ onClose }: { onClose: () => void }) => {
+interface ZCalendarWindowProps {
+  onClose: () => void;
+  onFocus?: () => void;
+}
+
+const ZCalendarWindow: React.FC<ZCalendarWindowProps> = ({ onClose }) => {
   const [date, setDate] = useState<Date>(addDays(new Date(), 1));
   const [timeSlot, setTimeSlot] = useState('10:00 AM');
   const [name, setName] = useState('');

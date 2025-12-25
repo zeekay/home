@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import ZWindow from './ZWindow';
 import { useGitHubStats } from '@/hooks/useGitHubStats';
 import { useStackOverflow } from '@/hooks/useStackOverflow';
-import { formatNumber, formatLargeNumber } from '@/types/stats';
+import { formatNumber } from '@/types/stats';
 import { Github, GitCommit, Code, Calendar, TrendingUp, BarChart3, Activity, Flame, Clock, Star, Award, MessageSquare, HelpCircle } from 'lucide-react';
 import {
   AreaChart,
@@ -20,8 +20,9 @@ import {
   Legend
 } from 'recharts';
 
-interface ZGitHubStatsWindowProps {
+export interface ZGitHubStatsWindowProps {
   onClose: () => void;
+  onFocus?: () => void;
 }
 
 const COLORS = ['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#6366f1'];

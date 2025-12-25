@@ -235,7 +235,7 @@ const Terminal: React.FC<TerminalProps> = ({
       )}
         style={{ padding: `${customPadding}px` }}
       >
-        {entries.map((entry, index) => (
+        {entries.map((entry) => (
           <div key={entry.id} className="mb-2">
             {entry.command && (
               <div className="flex items-center" style={{ fontSize: `${customFontSize}px` }}>

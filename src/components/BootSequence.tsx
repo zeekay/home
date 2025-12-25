@@ -40,7 +40,7 @@ const bootLines = [
   { text: '', delay: 3000 },
 ];
 
-const BootSequence: React.FC<BootSequenceProps> = ({ onComplete, skipDelay = 3500 }) => {
+const BootSequence: React.FC<BootSequenceProps> = ({ onComplete }) => {
   const [visibleLines, setVisibleLines] = useState<number>(0);
   const [isExiting, setIsExiting] = useState(false);
   const [cursorVisible, setCursorVisible] = useState(true);
@@ -80,7 +80,7 @@ const BootSequence: React.FC<BootSequenceProps> = ({ onComplete, skipDelay = 350
   }, [onComplete, isComplete, visibleLines]);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (_e: KeyboardEvent) => {
       // Only allow skip when boot sequence is complete
       if (isComplete) {
         handleSkip();

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import ZWindow from './ZWindow';
-import { cn } from '@/lib/utils';
-import { ExternalLink } from 'lucide-react';
 
 interface ZTextPadWindowProps {
   onClose: () => void;

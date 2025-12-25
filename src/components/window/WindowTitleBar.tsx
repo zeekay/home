@@ -7,7 +7,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 interface WindowTitleBarProps {
   title: string;
   titleId?: string;
-  windowType: 'default' | 'terminal' | 'safari' | 'itunes' | 'textpad';
+  windowType: 'default' | 'terminal' | 'safari' | 'itunes' | 'textpad' | 'system' | 'about';
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   onClose: () => void;
   onMinimize: () => void;

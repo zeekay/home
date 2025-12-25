@@ -14,8 +14,18 @@ export interface ZWindowProps {
   onFocus?: () => void;
   initialPosition?: { x: number; y: number };
   initialSize?: { width: number; height: number };
+  /** @deprecated Use initialSize.width */
+  defaultWidth?: number;
+  /** @deprecated Use initialSize.height */
+  defaultHeight?: number;
+  /** @deprecated Use initialSize */
+  minWidth?: number;
+  /** @deprecated Use initialSize */
+  minHeight?: number;
+  /** @deprecated Use initialPosition */
+  defaultPosition?: { x: number; y: number };
   children: ReactNode;
-  windowType?: 'default' | 'terminal' | 'safari' | 'itunes' | 'textpad';
+  windowType?: 'default' | 'terminal' | 'safari' | 'itunes' | 'textpad' | 'system' | 'about';
   resizable?: boolean;
   customControls?: ReactNode;
 }
@@ -25,21 +35,32 @@ const ZWindow: React.FC<ZWindowProps> = ({
   className,
   onClose,
   onFocus,
-  initialPosition = { x: 100, y: 100 },
-  initialSize = { width: 700, height: 500 },
+  initialPosition,
+  initialSize,
+  defaultWidth,
+  defaultHeight,
+  defaultPosition,
   children,
   windowType = 'default',
   resizable = true,
   customControls,
 }) => {
+  // Support both naming conventions
+  const effectivePosition = initialPosition ?? defaultPosition ?? { x: 100, y: 100 };
+  const effectiveSize = initialSize ?? {
+    width: defaultWidth ?? 700,
+    height: defaultHeight ?? 500
+  };
   const isMobile = useIsMobile();
 
   // Window animation state
   const [isClosing, setIsClosing] = useState(false);
+  const [isMinimizing, setIsMinimizing] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
 
   // Get responsive size and position
-  const responsiveSize = getResponsiveWindowSize(initialSize);
-  const responsivePosition = getResponsiveWindowPosition(initialPosition);
+  const responsiveSize = getResponsiveWindowSize(effectiveSize);
+  const responsivePosition = getResponsiveWindowPosition(effectivePosition);
   
   const [position, setPosition] = useState(responsivePosition);
   const [size, setSize] = useState(responsiveSize);
@@ -102,9 +123,34 @@ const ZWindow: React.FC<ZWindowProps> = ({
     bringToFront();
   };
 
-  const toggleMinimize = () => {
-    setIsMinimized(!isMinimized);
-  };
+  // Ref for minimize animation timer
+  const minimizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const toggleMinimize = useCallback(() => {
+    if (isMinimizing || isRestoring) return; // Prevent double-click during animation
+
+    if (isMinimized) {
+      // Restore from minimized
+      setIsRestoring(true);
+      setIsMinimized(false);
+
+      minimizeTimerRef.current = setTimeout(() => {
+        if (isMountedRef.current) {
+          setIsRestoring(false);
+        }
+      }, ANIMATION_DURATIONS.WINDOW_MINIMIZE);
+    } else {
+      // Minimize
+      setIsMinimizing(true);
+
+      minimizeTimerRef.current = setTimeout(() => {
+        if (isMountedRef.current) {
+          setIsMinimized(true);
+          setIsMinimizing(false);
+        }
+      }, ANIMATION_DURATIONS.WINDOW_MINIMIZE);
+    }
+  }, [isMinimized, isMinimizing, isRestoring]);
 
   const toggleMaximize = () => {
     if (isMobile) return; // Disable maximize on mobile
@@ -168,17 +214,11 @@ const ZWindow: React.FC<ZWindowProps> = ({
     };
   }, [isDragging, isResizing, dragOffset, resizeStartPos, startSize, position.x, position.y, size.width]);
 
-  // For touch events on mobile
+  // For touch events on mobile - bring to front on interaction
   useEffect(() => {
-    if (!isMobile) return;
-
-    const handleTouchStart = () => {
+    if (isMobile) {
       bringToFront();
-    };
-
-    return () => {
-      // Cleanup if needed
-    };
+    }
   }, [isMobile, bringToFront]);
 
   // Track mounted state to prevent state updates after unmount
@@ -192,6 +232,9 @@ const ZWindow: React.FC<ZWindowProps> = ({
       isMountedRef.current = false;
       if (closeTimerRef.current) {
         clearTimeout(closeTimerRef.current);
+      }
+      if (minimizeTimerRef.current) {
+        clearTimeout(minimizeTimerRef.current);
       }
     };
   }, []);
@@ -222,16 +265,24 @@ const ZWindow: React.FC<ZWindowProps> = ({
         'fixed overflow-hidden glass-window',
         getWindowStyle(windowType),
         isMobile ? 'transition-all duration-300' : '',
-        !isClosing && 'animate-window-open',
+        // Opening animation (only when not in any other animation state)
+        !isClosing && !isMinimizing && !isRestoring && !isMinimized && 'animate-window-open',
+        // Closing animation
         isClosing && 'animate-window-close',
+        // Minimize animation
+        isMinimizing && 'animate-window-minimize',
+        // Restore animation
+        isRestoring && 'animate-window-restore',
+        // Hidden when minimized (after animation completes)
+        isMinimized && !isRestoring && 'invisible',
         className
       )}
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
         width: `${size.width}px`,
-        height: isMinimized ? '32px' : `${size.height}px`,
-        transition: (isMinimized || isMaximized || preMaximizeState)
+        height: `${size.height}px`,
+        transition: (isMaximized || preMaximizeState)
           ? 'all 0.2s ease-in-out'
           : 'opacity 0.2s ease-in-out',
         zIndex: zIndex,
@@ -250,15 +301,11 @@ const ZWindow: React.FC<ZWindowProps> = ({
         customControls={customControls}
       />
 
-      {!isMinimized && (
-        <>
-          <div id={`${windowId}-content`} className="h-[calc(100%-32px)] flex flex-col">
-            {children}
-          </div>
+      <div id={`${windowId}-content`} className="h-[calc(100%-32px)] flex flex-col">
+        {children}
+      </div>
 
-          {resizable && !isMobile && !isMaximized && <WindowResizeHandle onResizeStart={handleResizeStart} />}
-        </>
-      )}
+      {resizable && !isMobile && !isMaximized && <WindowResizeHandle onResizeStart={handleResizeStart} />}
     </div>
   );
 };

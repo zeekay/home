@@ -2,11 +2,16 @@ import React, { useState } from 'react';
 import ZWindow from './ZWindow';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Image, Upload, Plus, Search, ExternalLink, Instagram, Github, Building2 } from 'lucide-react';
+import { Upload, Search, ExternalLink, Instagram, Github } from 'lucide-react';
 import { toast } from 'sonner';
-import { socialProfiles, pinnedProjects, professionalInfo } from '@/data/socials';
+import { socialProfiles, pinnedProjects } from '@/data/socials';
 
-const ZPhotosWindow = ({ onClose }: { onClose: () => void }) => {
+interface ZPhotosWindowProps {
+  onClose: () => void;
+  onFocus?: () => void;
+}
+
+const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'photos' | 'projects' | 'brands'>('photos');

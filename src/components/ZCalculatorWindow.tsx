@@ -130,10 +130,6 @@ const ZCalculatorWindow: React.FC<ZCalculatorWindowProps> = ({ onClose }) => {
       onClose={onClose}
       initialPosition={{ x: 200, y: 100 }}
       initialSize={{ width: 240, height: 360 }}
-      minWidth={240}
-      minHeight={360}
-      maxWidth={240}
-      maxHeight={360}
       windowType="system"
     >
       <div className="flex flex-col h-full bg-[#1c1c1c] select-none">

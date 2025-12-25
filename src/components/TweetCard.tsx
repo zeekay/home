@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Twitter, Heart, MessageCircle, Repeat, Share } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 export interface TweetProps {
   id: string;
@@ -23,7 +22,6 @@ const formatDate = (dateString: string): string => {
 };
 
 const TweetCard: React.FC<TweetProps> = ({
-  id,
   text,
   likes,
   retweets,

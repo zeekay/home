@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, Play, Pause, SkipBack, SkipForward, Volume2, User, List, Music } from 'lucide-react';
+import { SkipBack, SkipForward, User, List, Music, Play, Volume2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
@@ -8,18 +8,11 @@ interface ZITunesWindowProps {
   onClose: () => void;
 }
 
-interface PlaylistType {
-  id: string;
-  name: string;
-  description: string;
-  imageUrl: string;
-}
-
 const ZITunesWindow: React.FC<ZITunesWindowProps> = ({ onClose }) => {
   const [position, setPosition] = useState({ x: 150, y: 150 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [size, setSize] = useState({ width: 800, height: 600 });
+  const [size] = useState({ width: 800, height: 600 });
   const [view, setView] = useState<'profile' | 'playlist'>('profile');
   const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null);
   

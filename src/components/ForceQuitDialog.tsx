@@ -12,6 +12,7 @@ import {
   Image,
   Video,
   FileText,
+  FileEdit,
   Github,
   Activity,
   Wallet,
@@ -37,7 +38,7 @@ const ZooLogo: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 export type AppType = 'Finder' | 'Terminal' | 'Safari' | 'Music' | 'Mail' | 'Calendar' |
-               'System Preferences' | 'Photos' | 'FaceTime' | 'Notes' |
+               'System Preferences' | 'Photos' | 'FaceTime' | 'TextEdit' | 'Notes' |
                'GitHub Stats' | 'Messages' | 'Activity Monitor' | 'Hanzo AI' |
                'Lux Wallet' | 'Zoo' | 'Calculator' | 'Clock' | 'Weather' | 'Stickies';
 
@@ -58,6 +59,7 @@ const appIcons: Record<AppType, React.ReactNode> = {
   'System Preferences': <Settings className="w-5 h-5" />,
   'Photos': <Image className="w-5 h-5" />,
   'FaceTime': <Video className="w-5 h-5" />,
+  'TextEdit': <FileEdit className="w-5 h-5" />,
   'Notes': <FileText className="w-5 h-5" />,
   'GitHub Stats': <Github className="w-5 h-5" />,
   'Messages': <MessageSquare className="w-5 h-5" />,

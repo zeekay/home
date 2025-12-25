@@ -15,7 +15,6 @@ import {
 // Menu dimensions for edge detection
 const MENU_WIDTH = 220;
 const MENU_HEIGHT = 400;
-const SUBMENU_WIDTH = 180;
 
 interface ContextMenuPosition {
   x: number;

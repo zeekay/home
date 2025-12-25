@@ -1,6 +1,5 @@
 
-import React from 'react';
-import { User, Image, Heart, MessageCircle, MapPin } from 'lucide-react';
+import { Heart, MapPin } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 

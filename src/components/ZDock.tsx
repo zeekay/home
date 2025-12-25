@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { Separator } from "@/components/ui/separator";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useDesktopSettings } from '@/hooks/useDesktopSettings';
 import DockItem from './dock/DockItem';
 import TrashItem from './dock/TrashItem';
 import MobileOverflow from './dock/MobileOverflow';
@@ -91,6 +92,46 @@ const ZDock: React.FC<ZDockProps> = ({
 }) => {
   const isMobile = useIsMobile();
   const { dockOrder, isItemInDock } = useDock();
+  const { dockMagnification, dockMagnificationSize, dockSize } = useDesktopSettings();
+
+  // Track mouse position relative to dock for magnification
+  const dockRef = useRef<HTMLDivElement>(null);
+  const [mouseX, setMouseX] = useState<number | null>(null);
+
+  // Keyboard navigation state
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const itemRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
+
+  // Handle mouse movement for magnification effect
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!dockMagnification || isMobile) return;
+    const rect = dockRef.current?.getBoundingClientRect();
+    if (rect) {
+      setMouseX(e.clientX - rect.left);
+    }
+  }, [dockMagnification, isMobile]);
+
+  const handleMouseLeave = useCallback(() => {
+    setMouseX(null);
+  }, []);
+
+  // Register item ref for focus management
+  const registerItemRef = useCallback((index: number, ref: HTMLButtonElement | null) => {
+    if (ref) {
+      itemRefs.current.set(index, ref);
+    } else {
+      itemRefs.current.delete(index);
+    }
+  }, []);
+
+  // Focus the item at the given index
+  const focusItem = useCallback((index: number) => {
+    const ref = itemRefs.current.get(index);
+    if (ref) {
+      ref.focus();
+      setFocusedIndex(index);
+    }
+  }, []);
 
   // Create all dock items
   const allDockItems = createDockItems({
@@ -149,15 +190,81 @@ const ZDock: React.FC<ZDockProps> = ({
   const dockItems = getMainDockItems();
   const overflowItems = getOverflowItems();
 
+  // Calculate total navigable items count
+  const getTotalNavigableItems = useCallback(() => {
+    let count = dockItems.length;
+    if (isMobile) {
+      count += 1; // Downloads folder
+    } else {
+      count += customApps.length; // Hanzo, Lux, Zoo
+      count += 2; // Applications and Downloads folders
+      count += 1; // Trash
+    }
+    return count;
+  }, [dockItems.length, customApps.length, isMobile]);
+
+  const totalItems = getTotalNavigableItems();
+
+  // Handle keyboard navigation
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (totalItems === 0) return;
+
+    switch (e.key) {
+      case 'ArrowRight':
+        e.preventDefault();
+        const nextIndex = focusedIndex < 0 ? 0 : (focusedIndex + 1) % totalItems;
+        focusItem(nextIndex);
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        const prevIndex = focusedIndex <= 0 ? totalItems - 1 : focusedIndex - 1;
+        focusItem(prevIndex);
+        break;
+      case 'Home':
+        e.preventDefault();
+        focusItem(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        focusItem(totalItems - 1);
+        break;
+    }
+  }, [focusedIndex, totalItems, focusItem]);
+
+  // Reset focused index when dock loses focus
+  const handleBlur = useCallback((e: React.FocusEvent) => {
+    // Only reset if focus moved outside the dock
+    if (!dockRef.current?.contains(e.relatedTarget as Node)) {
+      setFocusedIndex(-1);
+    }
+  }, []);
+
+  // Handle focus entering the dock
+  const handleFocus = useCallback((e: React.FocusEvent) => {
+    // If focus entered dock but no item is focused, find which item got focus
+    if (focusedIndex < 0 && dockRef.current?.contains(e.target as Node)) {
+      const focusedItem = Array.from(itemRefs.current.entries()).find(
+        ([_, ref]) => ref === e.target
+      );
+      if (focusedItem) {
+        setFocusedIndex(focusedItem[0]);
+      }
+    }
+  }, [focusedIndex]);
+
+  // Track navigation index for each rendered item
+  let currentNavIndex = 0;
+
   return (
     <TooltipProvider>
       <div
+        ref={dockRef}
         data-dock
         role="toolbar"
         aria-label="Application dock"
         className={cn(
           'fixed left-1/2 transform -translate-x-1/2',
-          'inline-flex items-center justify-center',
+          'inline-flex items-end justify-center',
           'px-2 py-2',
           'glass-lg',
           'rounded-2xl',
@@ -169,24 +276,40 @@ const ZDock: React.FC<ZDockProps> = ({
           bottom: isMobile ? '10px' : '16px',
           zIndex: 9999
         }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        onKeyDown={handleKeyDown}
+        onBlur={handleBlur}
+        onFocus={handleFocus}
       >
-        <div className="flex items-center space-x-0.5 py-0.5">
+        <div className="flex items-end space-x-0.5 py-0.5">
           {/* Main app icons */}
-          {dockItems.map((item: DockItemType, index: number) => (
-            <DockItem
-              key={item.id}
-              id={item.id}
-              label={item.label}
-              onClick={item.onClick}
-              customIcon={item.useCustomIcon ? getIconComponent(item.id) : undefined}
-              icon={item.icon}
-              bgGradient={item.bgGradient}
-              isActive={activeApps.includes(item.id)}
-              isLaunching={launchingApp === item.id}
-              introAnimation={introAnimation}
-              introDelay={index * 50}
-            />
-          ))}
+          {dockItems.map((item: DockItemType, index: number) => {
+            const navIndex = currentNavIndex++;
+            return (
+              <DockItem
+                key={item.id}
+                id={item.id}
+                label={item.label}
+                onClick={item.onClick}
+                customIcon={item.useCustomIcon ? getIconComponent(item.id) : undefined}
+                icon={item.icon}
+                bgGradient={item.bgGradient}
+                isActive={activeApps.includes(item.id)}
+                isLaunching={launchingApp === item.id}
+                introAnimation={introAnimation}
+                introDelay={index * 50}
+                mouseX={mouseX}
+                index={index}
+                magnificationEnabled={dockMagnification && !isMobile}
+                baseSize={dockSize}
+                maxSize={dockMagnificationSize}
+                isFocused={focusedIndex === navIndex}
+                tabIndex={focusedIndex === -1 ? (navIndex === 0 ? 0 : -1) : (focusedIndex === navIndex ? 0 : -1)}
+                onRegisterRef={(ref) => registerItemRef(navIndex, ref)}
+              />
+            );
+          })}
 
           {/* More apps button (only on mobile) */}
           {isMobile && overflowItems.length > 0 && (
@@ -197,62 +320,115 @@ const ZDock: React.FC<ZDockProps> = ({
           )}
 
           {/* Downloads Folder - shown on mobile too */}
-          {isMobile && (
-            <DockItem
-              id="downloads"
-              label="Downloads"
-              onClick={onDownloadsClick}
-              customIcon={<MacFolderIcon className="w-full h-full" badgeType="downloads" />}
-              isDraggable={false}
-            />
-          )}
+          {isMobile && (() => {
+            const navIndex = currentNavIndex++;
+            return (
+              <DockItem
+                id="downloads"
+                label="Downloads"
+                onClick={onDownloadsClick}
+                customIcon={<MacFolderIcon className="w-full h-full" badgeType="downloads" />}
+                isDraggable={false}
+                isFocused={focusedIndex === navIndex}
+                tabIndex={focusedIndex === -1 ? -1 : (focusedIndex === navIndex ? 0 : -1)}
+                onRegisterRef={(ref) => registerItemRef(navIndex, ref)}
+              />
+            );
+          })()}
 
           {/* Separator before Hanzo/Lux/Zoo apps */}
           {!isMobile && customApps.length > 0 && <Separator orientation="vertical" className="h-10 bg-white/20 mx-1" />}
 
           {/* Hanzo, Lux, Zoo apps */}
-          {!isMobile && customApps.map((item: DockItemType, index: number) => (
-            <DockItem
-              key={item.id}
-              id={item.id}
-              label={item.label}
-              onClick={item.onClick}
-              customIcon={item.useCustomIcon ? getIconComponent(item.id) : undefined}
-              bgGradient={item.bgGradient}
-              isActive={activeApps.includes(item.id)}
-              isLaunching={launchingApp === item.id}
-              introAnimation={introAnimation}
-              introDelay={(dockItems.length + index) * 50}
-            />
-          ))}
+          {!isMobile && customApps.map((item: DockItemType, index: number) => {
+            const navIndex = currentNavIndex++;
+            return (
+              <DockItem
+                key={item.id}
+                id={item.id}
+                label={item.label}
+                onClick={item.onClick}
+                customIcon={item.useCustomIcon ? getIconComponent(item.id) : undefined}
+                bgGradient={item.bgGradient}
+                isActive={activeApps.includes(item.id)}
+                isLaunching={launchingApp === item.id}
+                introAnimation={introAnimation}
+                introDelay={(dockItems.length + index) * 50}
+                mouseX={mouseX}
+                index={dockItems.length + index}
+                magnificationEnabled={dockMagnification && !isMobile}
+                baseSize={dockSize}
+                maxSize={dockMagnificationSize}
+                isFocused={focusedIndex === navIndex}
+                tabIndex={focusedIndex === -1 ? -1 : (focusedIndex === navIndex ? 0 : -1)}
+                onRegisterRef={(ref) => registerItemRef(navIndex, ref)}
+              />
+            );
+          })}
 
           {/* Separator before folders */}
           {!isMobile && <Separator orientation="vertical" className="h-10 bg-white/20 mx-1" />}
 
           {/* Applications Folder */}
-          {!isMobile && (
-            <DockItem
-              id="applications"
-              label="Applications"
-              onClick={onApplicationsClick}
-              customIcon={<MacFolderIcon className="w-full h-full" badgeType="apps" />}
-              isDraggable={false}
-            />
-          )}
+          {!isMobile && (() => {
+            const navIndex = currentNavIndex++;
+            return (
+              <DockItem
+                id="applications"
+                label="Applications"
+                onClick={onApplicationsClick}
+                customIcon={<MacFolderIcon className="w-full h-full" badgeType="apps" />}
+                isDraggable={false}
+                mouseX={mouseX}
+                index={dockItems.length + customApps.length}
+                magnificationEnabled={dockMagnification && !isMobile}
+                baseSize={dockSize}
+                maxSize={dockMagnificationSize}
+                isFocused={focusedIndex === navIndex}
+                tabIndex={focusedIndex === -1 ? -1 : (focusedIndex === navIndex ? 0 : -1)}
+                onRegisterRef={(ref) => registerItemRef(navIndex, ref)}
+              />
+            );
+          })()}
 
           {/* Downloads Folder */}
-          {!isMobile && (
-            <DockItem
-              id="downloads"
-              label="Downloads"
-              onClick={onDownloadsClick}
-              customIcon={<MacFolderIcon className="w-full h-full" badgeType="downloads" />}
-              isDraggable={false}
-            />
-          )}
+          {!isMobile && (() => {
+            const navIndex = currentNavIndex++;
+            return (
+              <DockItem
+                id="downloads"
+                label="Downloads"
+                onClick={onDownloadsClick}
+                customIcon={<MacFolderIcon className="w-full h-full" badgeType="downloads" />}
+                isDraggable={false}
+                mouseX={mouseX}
+                index={dockItems.length + customApps.length + 1}
+                magnificationEnabled={dockMagnification && !isMobile}
+                baseSize={dockSize}
+                maxSize={dockMagnificationSize}
+                isFocused={focusedIndex === navIndex}
+                tabIndex={focusedIndex === -1 ? -1 : (focusedIndex === navIndex ? 0 : -1)}
+                onRegisterRef={(ref) => registerItemRef(navIndex, ref)}
+              />
+            );
+          })()}
 
           {/* Trash - Only visible on desktop */}
-          {!isMobile && <TrashItem />}
+          {!isMobile && (() => {
+            const navIndex = currentNavIndex++;
+            return (
+              <TrashItem
+                isFocused={focusedIndex === navIndex}
+                tabIndex={focusedIndex === -1 ? -1 : (focusedIndex === navIndex ? 0 : -1)}
+                onRegisterRef={(ref) => registerItemRef(navIndex, ref)}
+                mouseX={mouseX}
+                index={dockItems.length + customApps.length + 2}
+                magnificationEnabled={dockMagnification && !isMobile}
+                baseSize={dockSize}
+                maxSize={dockMagnificationSize}
+              />
+            );
+          })()}
         </div>
       </div>
     </TooltipProvider>

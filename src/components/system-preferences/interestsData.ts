@@ -1,12 +1,4 @@
 
-import React from 'react';
-import { 
-  Code, 
-  Cpu, 
-  Bot, 
-  Palette, 
-  Library 
-} from 'lucide-react';
 import { InterestCategory } from './types';
 
 export const interests: InterestCategory[] = [

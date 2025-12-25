@@ -69,7 +69,7 @@ const VimEditor: React.FC<VimEditorProps> = ({
   const editorRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const [mode, setMode] = useState<'normal' | 'insert' | 'visual' | 'command'>('normal');
-  const [commandLine, setCommandLine] = useState('');
+  useState(''); // Reserved for command line feature
   const [statusMessage, setStatusMessage] = useState(isNewFile ? '[New File]' : '');
   const [modified, setModified] = useState(false);
   const modifiedRef = useRef(modified);
