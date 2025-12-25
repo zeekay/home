@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { LucideIcon } from 'lucide-react';
 import {
   Tooltip,
@@ -26,6 +26,9 @@ interface DockItemProps {
   bgGradient?: string;
   isActive?: boolean;
   isDraggable?: boolean;
+  isLaunching?: boolean; // Bounce animation when launching
+  introAnimation?: boolean; // Slide-in animation on intro
+  introDelay?: number; // Delay for staggered intro animation
 }
 
 const DockItem: React.FC<DockItemProps> = ({
@@ -37,13 +40,36 @@ const DockItem: React.FC<DockItemProps> = ({
   onClick,
   bgGradient,
   isActive = false,
-  isDraggable = true
+  isDraggable = true,
+  isLaunching = false,
+  introAnimation = false,
+  introDelay = 0
 }) => {
   const isMobile = useIsMobile();
   const { reorderItems, removeFromDock, isItemPinned, pinItem, unpinItem } = useDock();
   const [isDragging, setIsDragging] = useState(false);
   const [isDropTarget, setIsDropTarget] = useState(false);
+  const [isBouncing, setIsBouncing] = useState(false);
+  const [hasIntroAnimated, setHasIntroAnimated] = useState(!introAnimation);
   const dragRef = useRef<HTMLButtonElement>(null);
+
+  // Handle bounce animation when launching
+  useEffect(() => {
+    if (isLaunching && !isBouncing) {
+      setIsBouncing(true);
+      // Stop bouncing after animation
+      const timer = setTimeout(() => setIsBouncing(false), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [isLaunching]);
+
+  // Handle intro animation
+  useEffect(() => {
+    if (introAnimation && !hasIntroAnimated) {
+      const timer = setTimeout(() => setHasIntroAnimated(true), introDelay);
+      return () => clearTimeout(timer);
+    }
+  }, [introAnimation, introDelay, hasIntroAnimated]);
 
   // Get dynamic icon size based on device
   const getIconSize = () => {
@@ -125,7 +151,10 @@ const DockItem: React.FC<DockItemProps> = ({
         "group relative flex items-center justify-center px-0.5 transition-all duration-150",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-xl",
         isDragging && "opacity-50 scale-90",
-        isDropTarget && "scale-110"
+        isDropTarget && "scale-110",
+        isBouncing && "animate-dock-bounce",
+        introAnimation && !hasIntroAnimated && "opacity-0 translate-y-8",
+        introAnimation && hasIntroAnimated && "opacity-100 translate-y-0 transition-all duration-500 ease-out"
       )}
       onClick={onClick}
       onKeyDown={handleKeyDown}

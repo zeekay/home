@@ -22,7 +22,7 @@ const Index = () => {
   }, [activeSection]);
 
   return (
-    <div className="h-full w-full overflow-auto relative">
+    <div className="h-full w-full overflow-hidden relative">
       {/* Main content - no header needed, ZMenuBar handles it */}
       <div className="p-6">
         <ProfileSection

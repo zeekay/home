@@ -30,6 +30,8 @@ interface ZDockProps extends DockCallbacks {
   onApplicationsClick?: () => void;
   onDownloadsClick?: () => void;
   activeApps?: string[];
+  launchingApp?: string | null;
+  introAnimation?: boolean;
 }
 
 // Map of item IDs to their custom icon components
@@ -83,7 +85,9 @@ const ZDock: React.FC<ZDockProps> = ({
   onZooClick,
   onApplicationsClick,
   onDownloadsClick,
-  activeApps = []
+  activeApps = [],
+  launchingApp,
+  introAnimation = false
 }) => {
   const isMobile = useIsMobile();
   const { dockOrder, isItemInDock } = useDock();
@@ -168,7 +172,7 @@ const ZDock: React.FC<ZDockProps> = ({
       >
         <div className="flex items-center space-x-0.5 py-0.5">
           {/* Main app icons */}
-          {dockItems.map((item: DockItemType) => (
+          {dockItems.map((item: DockItemType, index: number) => (
             <DockItem
               key={item.id}
               id={item.id}
@@ -178,6 +182,9 @@ const ZDock: React.FC<ZDockProps> = ({
               icon={item.icon}
               bgGradient={item.bgGradient}
               isActive={activeApps.includes(item.id)}
+              isLaunching={launchingApp === item.id}
+              introAnimation={introAnimation}
+              introDelay={index * 50}
             />
           ))}
 
@@ -204,7 +211,7 @@ const ZDock: React.FC<ZDockProps> = ({
           {!isMobile && customApps.length > 0 && <Separator orientation="vertical" className="h-10 bg-white/20 mx-1" />}
 
           {/* Hanzo, Lux, Zoo apps */}
-          {!isMobile && customApps.map((item: DockItemType) => (
+          {!isMobile && customApps.map((item: DockItemType, index: number) => (
             <DockItem
               key={item.id}
               id={item.id}
@@ -213,6 +220,9 @@ const ZDock: React.FC<ZDockProps> = ({
               customIcon={item.useCustomIcon ? getIconComponent(item.id) : undefined}
               bgGradient={item.bgGradient}
               isActive={activeApps.includes(item.id)}
+              isLaunching={launchingApp === item.id}
+              introAnimation={introAnimation}
+              introDelay={(dockItems.length + index) * 50}
             />
           ))}
 

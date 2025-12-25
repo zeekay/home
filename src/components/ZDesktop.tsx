@@ -89,17 +89,59 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
   // Context menu state
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
 
-  // Auto open TextEdit with welcome message on mount
+  // Intro animation state - triggers after boot completes
+  const [introPhase, setIntroPhase] = useState<'waiting' | 'dock' | 'window' | 'complete'>('waiting');
+  const [launchingApp, setLaunchingApp] = useState<string | null>(null);
+
+  // Auto open TextEdit with welcome message after boot
   // Using ref to avoid stale closure - openWindow is stable via useCallback
   const openWindowRef = React.useRef(windows.openWindow);
   openWindowRef.current = windows.openWindow;
 
+  // Check if just finished booting (only run intro once per session)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      openWindowRef.current('TextEdit');
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []); // Intentionally run once on mount - openWindowRef is a ref, not a dependency
+    const hasRunIntro = sessionStorage.getItem('zos-intro-complete');
+    if (!hasRunIntro) {
+      // Start intro sequence after a brief delay
+      const timer = setTimeout(() => {
+        setIntroPhase('dock');
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      setIntroPhase('complete');
+    }
+  }, []);
+
+  // Sequence: dock animation -> window open
+  useEffect(() => {
+    if (introPhase === 'dock') {
+      // After dock animation plays, open window
+      const timer = setTimeout(() => {
+        setIntroPhase('window');
+        setLaunchingApp('textedit');
+        openWindowRef.current('TextEdit');
+        // Mark intro as complete
+        sessionStorage.setItem('zos-intro-complete', 'true');
+      }, 800); // Wait for dock intro animation
+      return () => clearTimeout(timer);
+    }
+    if (introPhase === 'window') {
+      // Clear launching state after bounce animation
+      const timer = setTimeout(() => {
+        setLaunchingApp(null);
+        setIntroPhase('complete');
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [introPhase]);
+
+  // Handle app launch with bounce animation
+  const handleAppLaunch = useCallback((appId: string, openFn?: () => void) => {
+    setLaunchingApp(appId);
+    openFn?.();
+    // Clear launching state after animation
+    setTimeout(() => setLaunchingApp(null), 800);
+  }, []);
 
   // Handle right-click context menu
   const handleContextMenu = useCallback((e: React.MouseEvent) => {
@@ -397,22 +439,24 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
 
       {/* Dock */}
       <ZDock
-        onFinderClick={() => windows.openWindow('Finder')}
-        onTerminalClick={() => windows.openWindow('Terminal')}
-        onTextEditClick={() => windows.openWindow('TextEdit')}
-        onSafariClick={() => windows.openWindow('Safari')}
-        onMusicClick={() => windows.openWindow('Music')}
-        onSocialsClick={() => windows.openWindow('Messages')}
-        onMailClick={() => windows.openWindow('Mail')}
-        onCalendarClick={() => windows.openWindow('Calendar')}
-        onPhotosClick={() => windows.openWindow('Photos')}
-        onFaceTimeClick={() => windows.openWindow('FaceTime')}
-        onHanzoClick={() => windows.openWindow('Hanzo AI')}
-        onLuxClick={() => windows.openWindow('Lux Wallet')}
-        onZooClick={() => windows.openWindow('Zoo')}
+        onFinderClick={() => handleAppLaunch('finder', () => windows.openWindow('Finder'))}
+        onTerminalClick={() => handleAppLaunch('terminal', () => windows.openWindow('Terminal'))}
+        onTextEditClick={() => handleAppLaunch('textedit', () => windows.openWindow('TextEdit'))}
+        onSafariClick={() => handleAppLaunch('safari', () => windows.openWindow('Safari'))}
+        onMusicClick={() => handleAppLaunch('music', () => windows.openWindow('Music'))}
+        onSocialsClick={() => handleAppLaunch('socials', () => windows.openWindow('Messages'))}
+        onMailClick={() => handleAppLaunch('mail', () => windows.openWindow('Mail'))}
+        onCalendarClick={() => handleAppLaunch('calendar', () => windows.openWindow('Calendar'))}
+        onPhotosClick={() => handleAppLaunch('photos', () => windows.openWindow('Photos'))}
+        onFaceTimeClick={() => handleAppLaunch('facetime', () => windows.openWindow('FaceTime'))}
+        onHanzoClick={() => handleAppLaunch('hanzo', () => windows.openWindow('Hanzo AI'))}
+        onLuxClick={() => handleAppLaunch('lux', () => windows.openWindow('Lux Wallet'))}
+        onZooClick={() => handleAppLaunch('zoo', () => windows.openWindow('Zoo'))}
         onApplicationsClick={overlays.toggleApplications}
         onDownloadsClick={overlays.toggleDownloads}
         activeApps={activeDockApps}
+        launchingApp={launchingApp}
+        introAnimation={introPhase === 'dock'}
       />
     </div>
   );
