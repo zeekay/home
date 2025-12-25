@@ -2,7 +2,7 @@
 import { TerminalEntry } from '@/types/terminal';
 import { WebContainer } from '@webcontainer/api';
 import { executeWebContainerCommand } from './webContainerUtil';
-import { readFile, getFileForEditing, getCurrentDir, writeFile, copyFile, moveFile, grepFile, headFile, tailFile, wcFile } from './terminalFileSystem';
+import { readFile, getFileForEditing, copyFile, moveFile, grepFile, headFile, tailFile, wcFile } from './terminalFileSystem';
 
 // Alias mappings (like .zshrc aliases)
 const aliases: Record<string, string> = {

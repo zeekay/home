@@ -1,15 +1,19 @@
 
 import React, { useState } from 'react';
-import { Send, User, Inbox, Mail, AtSign, Paperclip } from 'lucide-react';
+import { Send, AtSign } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import ZWindow from './ZWindow';
 import InstagramProfileEmbed from './InstagramProfileEmbed';
 
-const ZEmailWindow = ({ onClose }: { onClose: () => void }) => {
+interface ZEmailWindowProps {
+  onClose: () => void;
+  onFocus?: () => void;
+}
+
+const ZEmailWindow: React.FC<ZEmailWindowProps> = ({ onClose }) => {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [showInstagram, setShowInstagram] = useState(false);

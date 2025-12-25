@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import {
   Wifi,
-  WifiOff,
   Battery,
   BatteryCharging,
   Search,
@@ -13,11 +12,8 @@ import {
   BluetoothOff,
   Moon,
   Sun,
-  Monitor,
   Airplay,
   Keyboard,
-  Focus,
-  Bell,
   Music,
   Pause,
   Play,
@@ -84,7 +80,7 @@ interface ZMenuBarProps {
 }
 
 interface MenuItemType {
-  label: string;
+  label?: string;
   shortcut?: string;
   type?: 'separator';
   hasSubmenu?: boolean;
@@ -402,7 +398,7 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
   const [batteryLevel, setBatteryLevel] = useState(87);
   const [isCharging, setIsCharging] = useState(false);
   const [wifiEnabled, setWifiEnabled] = useState(true);
-  const [wifiNetwork, setWifiNetwork] = useState('Home Network');
+  useState('Home Network'); // Reserved for wifi network name
   const [bluetoothEnabled, setBluetoothEnabled] = useState(true);
   const [volume, setVolume] = useState([75]);
   const [brightness, setBrightness] = useState([80]);
@@ -724,7 +720,7 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
           "flex items-center justify-between mx-1.5 px-3 py-[6px] rounded-[5px] hover:bg-blue-500 cursor-pointer transition-colors",
           item.disabled && "opacity-40 cursor-default hover:bg-transparent"
         )}
-        onClick={() => handleMenuItemClick(item.label)}
+        onClick={() => item.label && handleMenuItemClick(item.label)}
       >
         <span className="flex items-center gap-2">
           {item.checked && <Check className="w-3.5 h-3.5" />}

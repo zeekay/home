@@ -30,7 +30,7 @@ const systemApps = [
 ];
 
 const AppLauncher: React.FC<AppLauncherProps> = ({ onHanzoClick, onLuxClick, onZooClick }) => {
-  const isMobile = useIsMobile();
+  useIsMobile(); // Hook for responsive behavior
 
   return (
     <Popover>

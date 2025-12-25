@@ -45,7 +45,7 @@ const SystemPreferencesSidebar: React.FC<SystemPreferencesSidebarProps> = ({ act
     { id: 'arts', name: 'Arts & Media', icon: Music },
   ];
 
-  const renderCategory = (category: PreferenceCategory, isFirst: boolean = false) => {
+  const renderCategory = (category: PreferenceCategory, _isFirst: boolean = false) => {
     const Icon = category.icon;
     const isActive = activeTab === category.id;
 

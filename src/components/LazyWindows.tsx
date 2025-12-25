@@ -61,10 +61,10 @@ class LazyWindowErrorBoundary extends React.Component<
 function createLazyWindow<P extends { onClose: () => void }>(
   importFn: () => Promise<{ default: ComponentType<P> }>,
   displayName: string
-): React.FC<P> {
+) {
   const LazyComponent = lazy(importFn);
 
-  const WrappedComponent: React.FC<P> = (props) => (
+  const WrappedComponent = (props: P) => (
     <LazyWindowErrorBoundary fallback={displayName}>
       <Suspense fallback={<WindowLoading title={displayName} />}>
         <LazyComponent {...props} />

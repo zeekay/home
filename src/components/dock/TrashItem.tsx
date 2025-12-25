@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Folder } from 'lucide-react';
 import {
   Tooltip,
@@ -7,15 +7,74 @@ import {
 } from "@/components/ui/tooltip";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MacTrashIcon } from './icons';
+import { cn } from '@/lib/utils';
 
-const TrashItem: React.FC = () => {
+interface TrashItemProps {
+  isFocused?: boolean;
+  tabIndex?: number;
+  onRegisterRef?: (ref: HTMLButtonElement | null) => void;
+  // Magnification props
+  mouseX?: number | null;
+  index?: number;
+  magnificationEnabled?: boolean;
+  baseSize?: number;
+  maxSize?: number;
+}
+
+const TrashItem: React.FC<TrashItemProps> = ({
+  isFocused = false,
+  tabIndex,
+  onRegisterRef,
+  mouseX = null,
+  index = 0,
+  magnificationEnabled = false,
+  baseSize = 48,
+  maxSize = 72
+}) => {
   const [isTrashOpen, setIsTrashOpen] = useState(false);
   const isMobile = useIsMobile();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Register ref for keyboard navigation
+  useEffect(() => {
+    if (onRegisterRef) {
+      onRegisterRef(buttonRef.current);
+    }
+    return () => {
+      if (onRegisterRef) {
+        onRegisterRef(null);
+      }
+    };
+  }, [onRegisterRef]);
 
   const handleTrashClick = () => {
     setIsTrashOpen(true);
     setTimeout(() => setIsTrashOpen(false), 3000); // Auto-close after 3 seconds
   };
+
+  // Calculate magnified size based on distance from mouse
+  const getMagnifiedSize = (): number => {
+    if (!magnificationEnabled || mouseX === null) {
+      return baseSize;
+    }
+
+    const itemWidth = baseSize + 8;
+    const itemCenter = index * itemWidth + itemWidth / 2;
+    const distance = Math.abs(mouseX - itemCenter);
+    const magnificationRange = itemWidth * 2.5;
+
+    if (distance > magnificationRange) {
+      return baseSize;
+    }
+
+    const scaleFactor = Math.cos((distance / magnificationRange) * (Math.PI / 2));
+    const sizeIncrease = (maxSize - baseSize) * scaleFactor;
+
+    return baseSize + sizeIncrease;
+  };
+
+  const magnifiedSize = getMagnifiedSize();
+  const useMagnification = magnificationEnabled && !isMobile;
 
   // Match DockItem sizing
   const getIconSize = () => {
@@ -27,10 +86,34 @@ const TrashItem: React.FC = () => {
       <Tooltip>
         <TooltipTrigger asChild>
           <button
-            className="group relative flex items-center justify-center px-0.5 outline-none focus:outline-none focus:ring-0 active:outline-none"
+            ref={buttonRef}
+            className={cn(
+              "group relative flex items-end justify-center px-0.5 rounded-xl",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent",
+              isFocused && "ring-2 ring-white/70 ring-offset-2 ring-offset-transparent"
+            )}
             onClick={handleTrashClick}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleTrashClick();
+              }
+            }}
+            tabIndex={tabIndex}
+            aria-label="Open Trash"
           >
-            <div className={`flex items-center justify-center ${getIconSize()} transition-transform duration-200 group-hover:scale-110 group-active:scale-95`}>
+            <div
+              className={cn(
+                "flex items-center justify-center",
+                !useMagnification && getIconSize(),
+                !useMagnification && "transition-transform duration-200 group-hover:scale-110 group-active:scale-95",
+                useMagnification && "transition-[width,height] duration-100 ease-out"
+              )}
+              style={useMagnification ? {
+                width: `${magnifiedSize}px`,
+                height: `${magnifiedSize}px`,
+              } : undefined}
+            >
               <MacTrashIcon className="w-full h-full" />
             </div>
             {/* Active indicator dot */}

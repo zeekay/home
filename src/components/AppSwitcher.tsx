@@ -12,6 +12,7 @@ import {
   Image,
   Video,
   FileText,
+  FileEdit,
   Github,
   Activity,
   Wallet,
@@ -36,7 +37,7 @@ const ZooLogo: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 export type AppType = 'Finder' | 'Terminal' | 'Safari' | 'Music' | 'Mail' | 'Calendar' |
-               'System Preferences' | 'Photos' | 'FaceTime' | 'Notes' |
+               'System Preferences' | 'Photos' | 'FaceTime' | 'TextEdit' | 'Notes' |
                'GitHub Stats' | 'Messages' | 'Activity Monitor' | 'Hanzo AI' |
                'Lux Wallet' | 'Zoo' | 'Calculator' | 'Clock' | 'Weather' | 'Stickies';
 
@@ -58,6 +59,7 @@ const appIcons: Record<AppType, React.ReactNode> = {
   'System Preferences': <Settings className="w-10 h-10" />,
   'Photos': <Image className="w-10 h-10" />,
   'FaceTime': <Video className="w-10 h-10" />,
+  'TextEdit': <FileEdit className="w-10 h-10" />,
   'Notes': <FileText className="w-10 h-10" />,
   'GitHub Stats': <Github className="w-10 h-10" />,
   'Messages': <MessageSquare className="w-10 h-10" />,
@@ -81,6 +83,7 @@ const appColors: Record<AppType, string> = {
   'System Preferences': 'from-gray-400 to-gray-600',
   'Photos': 'from-yellow-400 via-orange-400 to-pink-500',
   'FaceTime': 'from-green-400 to-green-600',
+  'TextEdit': 'from-gray-600 to-gray-800',
   'Notes': 'from-yellow-300 to-yellow-500',
   'GitHub Stats': 'from-gray-700 to-gray-900',
   'Messages': 'from-green-400 to-green-600',

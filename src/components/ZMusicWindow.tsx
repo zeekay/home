@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ZWindow from './ZWindow';
 import { cn } from '@/lib/utils';
-import { Music, Radio, Heart, Play, Pause, SkipForward, SkipBack, Volume2, ExternalLink, ListMusic, Headphones, RefreshCw, Loader2 } from 'lucide-react';
+import { Music, Radio, Heart, ExternalLink, ListMusic, RefreshCw, Loader2 } from 'lucide-react';
 import { socialProfiles } from '@/data/socials';
 
 interface ZMusicWindowProps {
@@ -10,9 +10,6 @@ interface ZMusicWindowProps {
 }
 
 type TabType = 'spotify' | 'soundcloud';
-
-// Spotify embed config - using zeek4y's profile
-const SPOTIFY_USER_ID = 'zeek4y';
 const SPOTIFY_EMBED_THEME = 'theme=0'; // 0 = dark theme
 
 // Featured playlists to embed - you can add more playlist/album IDs here

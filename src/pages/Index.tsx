@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ProfileSection from '@/components/sections/ProfileSection';
 import TerminalSection from '@/components/sections/TerminalSection';
 import GitHubSection from '@/components/sections/GitHubSection';
@@ -6,7 +6,7 @@ import TwitterSection from '@/components/sections/TwitterSection';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('profile');
-  const [animationCompleted, setAnimationCompleted] = useState(false);
+  const [, setAnimationCompleted] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {

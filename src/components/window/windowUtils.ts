@@ -13,7 +13,7 @@ export const getNextZIndex = () => ++globalZIndex;
  * @param windowType The type of window
  * @returns CSS class string for the window style
  */
-export const getWindowStyle = (windowType: 'default' | 'terminal' | 'safari' | 'itunes' | 'textpad') => {
+export const getWindowStyle = (windowType: 'default' | 'terminal' | 'safari' | 'itunes' | 'textpad' | 'system' | 'about') => {
   switch (windowType) {
     case 'terminal':
       return 'bg-black text-white rounded-lg';
@@ -23,6 +23,10 @@ export const getWindowStyle = (windowType: 'default' | 'terminal' | 'safari' | '
       return 'bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border-gray-300/40 dark:border-gray-600/40';
     case 'textpad':
       return 'bg-black/80 text-gray-300 border-white/20'; // Matched to dock styling
+    case 'system':
+      return 'bg-white/90 dark:bg-gray-800/90 backdrop-blur-md';
+    case 'about':
+      return 'bg-white/90 dark:bg-gray-800/90 backdrop-blur-md';
     default:
       return 'bg-white/90 dark:bg-gray-800/90 backdrop-blur-md';
   }

@@ -71,7 +71,6 @@ const ZClockWindow: React.FC<ZClockWindowProps> = ({ onClose }) => {
   };
 
   const getTimeDifference = (timezone: string) => {
-    const localOffset = currentTime.getTimezoneOffset();
     const targetDate = new Date(currentTime.toLocaleString('en-US', { timeZone: timezone }));
     const localDate = new Date(currentTime.toLocaleString('en-US'));
     const diff = (targetDate.getTime() - localDate.getTime()) / (1000 * 60 * 60);

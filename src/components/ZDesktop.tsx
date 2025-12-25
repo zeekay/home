@@ -188,7 +188,9 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
 
   // App action handlers
   const handleQuitCurrentApp = useCallback(() => {
-    windows.closeWindow(windows.activeApp);
+    if (windows.activeApp) {
+      windows.closeWindow(windows.activeApp);
+    }
   }, [windows]);
 
   const handleOpenSettings = useCallback(() => {
@@ -254,7 +256,7 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
     <div className="relative w-full h-screen overflow-hidden" onContextMenu={handleContextMenu}>
       {/* Menu Bar */}
       <ZMenuBar
-        appName={windows.activeApp}
+        appName={windows.activeApp ?? undefined}
         onQuitApp={handleQuitCurrentApp}
         onOpenSettings={handleOpenSettings}
         onAboutMac={overlays.openAbout}
@@ -401,7 +403,7 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
         isOpen={overlays.appSwitcher}
         onClose={overlays.closeAppSwitcher}
         openApps={windows.openApps}
-        currentApp={windows.activeApp}
+        currentApp={windows.activeApp ?? 'Finder'}
         onSelectApp={(app) => { windows.openWindow(app); overlays.closeAppSwitcher(); }}
       />
 

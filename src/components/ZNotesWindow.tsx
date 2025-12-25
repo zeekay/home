@@ -19,10 +19,8 @@ import {
   ChevronDown,
   FileText,
   Folder,
-  MoreHorizontal,
   Pin,
   Share,
-  Lock,
 } from 'lucide-react';
 
 interface ZNotesWindowProps {

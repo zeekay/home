@@ -1,10 +1,8 @@
 
 import React, { useEffect, useRef } from 'react';
-import { calculateDynamicPeaks } from '@/utils/animationUtils';
-import { 
-  getWaveAnimationInitialState, 
-  getThemeColor, 
-  animateEnhancedWaves 
+import {
+  getThemeColor,
+  animateEnhancedWaves
 } from '@/utils/waveAnimationUtils';
 
 interface WaveAnimationCanvasProps {

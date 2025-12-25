@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import ZWindow from './ZWindow';
 import { logger } from '@/lib/logger';
 import { Plus, Trash2, Palette } from 'lucide-react';

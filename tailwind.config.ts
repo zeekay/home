@@ -167,6 +167,10 @@ export default {
 				'window-minimize': {
 					'0%': { transform: 'scale(1) translateY(0)', opacity: '1' },
 					'100%': { transform: 'scale(0.5) translateY(100px)', opacity: '0' }
+				},
+				'window-restore': {
+					'0%': { transform: 'scale(0.5) translateY(100px)', opacity: '0' },
+					'100%': { transform: 'scale(1) translateY(0)', opacity: '1' }
 				}
 			},
 			animation: {
@@ -186,7 +190,8 @@ export default {
 				'dock-bounce': 'dock-bounce 0.8s ease-out',
 				'window-open': 'window-open 0.25s ease-out forwards',
 				'window-close': 'window-close 0.2s ease-in forwards',
-				'window-minimize': 'window-minimize 0.3s ease-in forwards'
+				'window-minimize': 'window-minimize 0.3s ease-in forwards',
+				'window-restore': 'window-restore 0.3s ease-out forwards'
 			}
 		}
 	},

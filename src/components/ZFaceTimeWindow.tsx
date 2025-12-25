@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ZWindow from './ZWindow';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Search, Video, VideoOff, Mic, MicOff, Phone, Mail, Bot, User } from 'lucide-react';
+import { Search, Video, VideoOff, Mic, MicOff, Phone, Mail, Bot } from 'lucide-react';
 import { toast } from 'sonner';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { contacts } from '@/data/socials';
 
-const ZFaceTimeWindow = ({ onClose }: { onClose: () => void }) => {
+interface ZFaceTimeWindowProps {
+  onClose: () => void;
+  onFocus?: () => void;
+}
+
+const ZFaceTimeWindow: React.FC<ZFaceTimeWindowProps> = ({ onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCallActive, setIsCallActive] = useState(false);
   const [isMuted, setIsMuted] = useState(false);

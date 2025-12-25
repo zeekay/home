@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Mail, MapPin, Calendar, Link2, Github, Twitter, Linkedin, Globe, Code, GitCommit, BarChart3, Flame } from 'lucide-react';
+import { Mail, MapPin, Calendar, Link2, Github, Twitter, Linkedin, Code, GitCommit, BarChart3, Flame } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { useGitHubStats } from '@/hooks/useGitHubStats';
 import { formatNumber } from '@/types/stats';

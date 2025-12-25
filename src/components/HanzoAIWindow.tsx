@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ZWindow from './ZWindow';
-import { Send, Sparkles, Bot, User, Zap } from 'lucide-react';
+import { Send, Sparkles, User, Zap } from 'lucide-react';
 import { HanzoLogo } from './dock/logos';
 
-interface HanzoAIWindowProps {
+export interface HanzoAIWindowProps {
   onClose: () => void;
+  onFocus?: () => void;
 }
 
 interface Message {

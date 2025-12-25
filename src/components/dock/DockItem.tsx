@@ -29,6 +29,15 @@ interface DockItemProps {
   isLaunching?: boolean; // Bounce animation when launching
   introAnimation?: boolean; // Slide-in animation on intro
   introDelay?: number; // Delay for staggered intro animation
+  isFocused?: boolean; // Keyboard navigation focus state
+  tabIndex?: number; // For roving tabindex pattern
+  onRegisterRef?: (ref: HTMLButtonElement | null) => void; // Register ref for focus management
+  // Magnification props
+  mouseX?: number | null; // Mouse X position relative to dock
+  index?: number; // Item index in dock for position calculation
+  magnificationEnabled?: boolean; // Whether magnification is active
+  baseSize?: number; // Base icon size in pixels
+  maxSize?: number; // Maximum magnified size in pixels
 }
 
 const DockItem: React.FC<DockItemProps> = ({
@@ -43,7 +52,15 @@ const DockItem: React.FC<DockItemProps> = ({
   isDraggable = true,
   isLaunching = false,
   introAnimation = false,
-  introDelay = 0
+  introDelay = 0,
+  isFocused = false,
+  tabIndex,
+  onRegisterRef,
+  mouseX = null,
+  index = 0,
+  magnificationEnabled = false,
+  baseSize = 48,
+  maxSize = 72
 }) => {
   const isMobile = useIsMobile();
   const { reorderItems, removeFromDock, isItemPinned, pinItem, unpinItem } = useDock();
@@ -80,6 +97,49 @@ const DockItem: React.FC<DockItemProps> = ({
       if (timer) clearTimeout(timer);
     };
   }, [introAnimation, introDelay, hasIntroAnimated]);
+
+  // Register ref for keyboard navigation focus management
+  useEffect(() => {
+    if (onRegisterRef) {
+      onRegisterRef(dragRef.current);
+    }
+    return () => {
+      if (onRegisterRef) {
+        onRegisterRef(null);
+      }
+    };
+  }, [onRegisterRef]);
+
+  // Calculate magnified size based on distance from mouse
+  const getMagnifiedSize = (): number => {
+    if (!magnificationEnabled || mouseX === null) {
+      return baseSize;
+    }
+
+    // Each item takes up roughly baseSize + padding (4px on each side)
+    const itemWidth = baseSize + 8;
+    // Center position of this item in the dock
+    const itemCenter = index * itemWidth + itemWidth / 2;
+    // Distance from mouse to item center
+    const distance = Math.abs(mouseX - itemCenter);
+
+    // Magnification range - items within this distance are affected
+    // Use 2.5 item widths for smooth falloff (affects ~2 neighbors on each side)
+    const magnificationRange = itemWidth * 2.5;
+
+    if (distance > magnificationRange) {
+      return baseSize;
+    }
+
+    // Calculate scale using cosine for smooth, natural curve (like macOS)
+    // cos(0) = 1 (full magnification at center), cos(PI/2) = 0 (no magnification at edge)
+    const scaleFactor = Math.cos((distance / magnificationRange) * (Math.PI / 2));
+    const sizeIncrease = (maxSize - baseSize) * scaleFactor;
+
+    return baseSize + sizeIncrease;
+  };
+
+  const magnifiedSize = getMagnifiedSize();
 
   // Get dynamic icon size based on device
   const getIconSize = () => {
@@ -154,20 +214,24 @@ const DockItem: React.FC<DockItemProps> = ({
     }
   };
 
+  // Use magnification or fall back to base behavior
+  const useMagnification = magnificationEnabled && !isMobile;
+
   const button = (
     <button
       ref={dragRef}
       className={cn(
-        "group relative flex items-center justify-center px-0.5 transition-all duration-150",
+        "group relative flex items-end justify-center px-0.5",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-xl",
-        isDragging && "opacity-50 scale-90",
-        isDropTarget && "scale-110",
+        isFocused && "ring-2 ring-white/70 ring-offset-2 ring-offset-transparent",
+        isDragging && "opacity-50",
         isBouncing && "animate-dock-bounce",
         introAnimation && !hasIntroAnimated && "opacity-0 translate-y-8",
         introAnimation && hasIntroAnimated && "opacity-100 translate-y-0 transition-all duration-500 ease-out"
       )}
       onClick={onClick}
       onKeyDown={handleKeyDown}
+      tabIndex={tabIndex}
       aria-label={`Open ${label}`}
       draggable={isDraggable && !isMobile && !!id}
       onDragStart={handleDragStart}
@@ -178,11 +242,18 @@ const DockItem: React.FC<DockItemProps> = ({
     >
       <div
         className={cn(
-          `flex items-center justify-center ${getIconSize()} rounded-xl transition-transform duration-200 group-hover:scale-110 group-active:scale-95 overflow-hidden`,
+          "flex items-center justify-center rounded-xl overflow-hidden",
+          !useMagnification && getIconSize(),
+          !useMagnification && "transition-transform duration-200 group-hover:scale-110 group-active:scale-95",
+          useMagnification && "transition-[width,height] duration-100 ease-out",
           bgGradient || '',
-          isDropTarget && "ring-2 ring-white/50"
+          isDropTarget && "ring-2 ring-white/50 scale-110",
+          isDragging && "scale-90"
         )}
-        style={bgGradient ? {} : undefined}
+        style={useMagnification ? {
+          width: `${magnifiedSize}px`,
+          height: `${magnifiedSize}px`,
+        } : undefined}
       >
         {customIcon ? (
           <div className="w-full h-full flex items-center justify-center">

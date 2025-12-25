@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import ZWindow from './ZWindow';
-import { Wallet, Send, ArrowDownLeft, ArrowUpRight, RefreshCw, Copy, Check, TrendingUp, Shield, Zap, Globe } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, RefreshCw, Copy, Check, TrendingUp, Shield, Zap, Globe } from 'lucide-react';
 
-interface LuxWalletWindowProps {
+export interface LuxWalletWindowProps {
   onClose: () => void;
+  onFocus?: () => void;
 }
 
 interface Transaction {
@@ -16,7 +17,7 @@ interface Transaction {
 }
 
 const LuxWalletWindow: React.FC<LuxWalletWindowProps> = ({ onClose }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'send' | 'receive'>('overview');
+  const [, setActiveTab] = useState<'overview' | 'send' | 'receive'>('overview');
   const [copied, setCopied] = useState(false);
 
   const walletAddress = '0xZ3eK...4y2F';

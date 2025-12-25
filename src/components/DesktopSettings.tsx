@@ -36,7 +36,7 @@ const DesktopSettings: React.FC<DesktopSettingsProps> = ({
   const [localPadding, setLocalPadding] = useState(currentPadding);
   const [localOpacity, setLocalOpacity] = useState(currentOpacity);
   const [localTheme, setLocalTheme] = useState(currentTheme);
-  const [localBgUrl, setLocalBgUrl] = useState(currentBgUrl);
+  const [, setLocalBgUrl] = useState(currentBgUrl);
   const [uploadedImagePreview, setUploadedImagePreview] = useState<string | null>(null);
 
   const handlePaddingChange = (value: number[]) => {

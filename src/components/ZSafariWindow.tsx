@@ -6,8 +6,9 @@ import SafariNavBar from './safari/SafariNavBar';
 import SafariContent from './safari/SafariContent';
 import { calculateSizeReduction, checkIfInIframe } from './safari/safariUtils';
 
-interface ZSafariWindowProps {
+export interface ZSafariWindowProps {
   onClose: () => void;
+  onFocus?: () => void;
   initialUrl?: string;
   depth?: number;
 }
@@ -22,7 +23,7 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
   const [history, setHistory] = useState<string[]>([initialUrl]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [iframeKey, setIframeKey] = useState(Date.now());
-  const [isInIframe, setIsInIframe] = useState(false);
+  const [, setIsInIframe] = useState(false);
 
   // Scale factor for UI elements based on depth
   const scaleFactor = Math.pow(0.9, depth);

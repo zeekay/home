@@ -4,16 +4,13 @@ import { toast } from '@/hooks/use-toast';
 import {
   Folder,
   FileText,
-  Home,
   Download,
   Image,
   Music,
   Film,
   HardDrive,
   Cloud,
-  Star,
   Clock,
-  Tag,
   ChevronRight,
   List,
   LayoutGrid,
@@ -27,7 +24,6 @@ import {
   FolderOpen,
   Share,
   Eye,
-  Edit,
   FolderPlus,
   FilePlus
 } from 'lucide-react';
@@ -60,7 +56,7 @@ const ZFinderWindow: React.FC<ZFinderWindowProps> = ({ onClose, onFocus }) => {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
-  const [showGetInfo, setShowGetInfo] = useState<FileItem | null>(null);
+  const [, setShowGetInfo] = useState<FileItem | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Close context menu when clicking outside

@@ -54,7 +54,7 @@ export function useKeyboardShortcuts({ shortcuts, enabled = true }: UseKeyboardS
       const metaMatch = shortcut.meta ? (event.metaKey || event.ctrlKey) : !event.metaKey;
       const shiftMatch = shortcut.shift ? event.shiftKey : !event.shiftKey;
       const altMatch = shortcut.alt ? event.altKey : !event.altKey;
-      const ctrlMatch = shortcut.ctrl ? event.ctrlKey : true; // ctrl is optional
+      const _ctrlMatch = shortcut.ctrl ? event.ctrlKey : true; // ctrl is optional - reserved for future use
 
       // For shortcuts with modifiers, allow even when typing
       const hasModifiers = shortcut.meta || shortcut.alt || shortcut.ctrl;
