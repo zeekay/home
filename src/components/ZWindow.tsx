@@ -1,10 +1,11 @@
 
-import React, { useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import WindowTitleBar from './window/WindowTitleBar';
 import WindowResizeHandle from './window/WindowResizeHandle';
 import { getWindowStyle, getNextZIndex, getResponsiveWindowSize, getResponsiveWindowPosition } from './window/windowUtils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ANIMATION_DURATIONS } from '@/utils/animationConstants';
 
 export interface ZWindowProps {
   title: string;
@@ -180,17 +181,43 @@ const ZWindow: React.FC<ZWindowProps> = ({
     };
   }, [isMobile, bringToFront]);
 
+  // Track mounted state to prevent state updates after unmount
+  const isMountedRef = useRef(true);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
+    };
+  }, []);
+
   // Handle close with animation
   const handleClose = useCallback(() => {
+    if (isClosing) return; // Prevent double-close
     setIsClosing(true);
+
     // Wait for animation to complete before calling onClose
-    setTimeout(() => {
-      onClose();
-    }, 200); // Match animation duration
-  }, [onClose]);
+    closeTimerRef.current = setTimeout(() => {
+      if (isMountedRef.current) {
+        onClose();
+      }
+    }, ANIMATION_DURATIONS.WINDOW_CLOSE);
+  }, [onClose, isClosing]);
+
+  // Generate unique ID for ARIA labelling
+  const windowId = `window-${title.toLowerCase().replace(/\s+/g, '-')}`;
 
   return (
     <div
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby={`${windowId}-title`}
+      aria-describedby={`${windowId}-content`}
       className={cn(
         'fixed overflow-hidden glass-window',
         getWindowStyle(windowType),
@@ -213,6 +240,7 @@ const ZWindow: React.FC<ZWindowProps> = ({
     >
       <WindowTitleBar
         title={title}
+        titleId={`${windowId}-title`}
         windowType={windowType}
         onMouseDown={handleMouseDown}
         onClose={handleClose}
@@ -224,10 +252,10 @@ const ZWindow: React.FC<ZWindowProps> = ({
 
       {!isMinimized && (
         <>
-          <div className="h-[calc(100%-32px)] flex flex-col">
+          <div id={`${windowId}-content`} className="h-[calc(100%-32px)] flex flex-col">
             {children}
           </div>
-          
+
           {resizable && !isMobile && !isMaximized && <WindowResizeHandle onResizeStart={handleResizeStart} />}
         </>
       )}
