@@ -152,6 +152,17 @@ const DockItem: React.FC<DockItemProps> = ({
 
   const horizontalPadding = getHorizontalPadding();
 
+  // Calculate tooltip offset based on magnification
+  // Icons grow upward (origin-bottom), so tooltip needs more offset when magnified
+  const getTooltipOffset = (): number => {
+    if (!magnificationEnabled || isMobile) return 8; // Default offset
+    // Add extra offset based on how much the icon has grown
+    const extraHeight = (hoverScale - 1) * baseSize;
+    return 8 + extraHeight;
+  };
+
+  const tooltipOffset = getTooltipOffset();
+
   // Get dynamic icon size based on device
   const getIconSize = () => {
     return isMobile ? 'w-11 h-11' : 'w-12 h-12';
@@ -229,9 +240,14 @@ const DockItem: React.FC<DockItemProps> = ({
     <button
       ref={dragRef}
       className={cn(
-        "group relative flex items-end justify-center",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-xl",
-        isFocused && "ring-2 ring-white/70 ring-offset-2 ring-offset-transparent",
+        "group relative flex items-end justify-center rounded-xl",
+        // Remove ALL focus/outline/ring styling completely
+        "outline-none ring-0 shadow-none",
+        "[&]:outline-none [&]:ring-0 [&]:shadow-none [&]:border-0",
+        "[&:focus]:outline-none [&:focus]:ring-0 [&:focus]:shadow-none [&:focus]:border-0",
+        "[&:focus-visible]:outline-none [&:focus-visible]:ring-0 [&:focus-visible]:shadow-none [&:focus-visible]:border-0",
+        "[&:active]:outline-none [&:active]:ring-0 [&:active]:shadow-none [&:active]:border-0",
+        // No visible focus indicator - rely on scale/bounce animation instead
         isDragging && "opacity-50",
         isBouncing && "animate-dock-bounce",
         introAnimation && !hasIntroAnimated && "opacity-0 translate-y-8",
@@ -291,7 +307,11 @@ const DockItem: React.FC<DockItemProps> = ({
         <TooltipTrigger asChild>
           {button}
         </TooltipTrigger>
-        <TooltipContent side={isMobile ? "bottom" : "top"} className="bg-black/90 text-white border-0 rounded-md px-3 py-1.5 text-sm">
+        <TooltipContent
+          side={isMobile ? "bottom" : "top"}
+          sideOffset={tooltipOffset}
+          className="bg-black/90 text-white border-0 rounded-md px-3 py-1.5 text-sm"
+        >
           {label}
         </TooltipContent>
       </Tooltip>
@@ -306,7 +326,11 @@ const DockItem: React.FC<DockItemProps> = ({
           <TooltipTrigger asChild>
             {button}
           </TooltipTrigger>
-          <TooltipContent side="top" className="bg-black/90 text-white border-0 rounded-md px-3 py-1.5 text-sm">
+          <TooltipContent
+            side="top"
+            sideOffset={tooltipOffset}
+            className="bg-black/90 text-white border-0 rounded-md px-3 py-1.5 text-sm"
+          >
             {label}
           </TooltipContent>
         </Tooltip>

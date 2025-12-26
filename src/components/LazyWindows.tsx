@@ -156,3 +156,15 @@ export const LazyZooAssistantWindow = createLazyWindow(
   () => import('./ZooAssistantWindow'),
   'Zoo'
 );
+
+// Xcode - IDE for editing zOS source
+export const LazyZCodeWindow = createLazyWindow(
+  () => import('./ZCodeWindow'),
+  'Xcode'
+);
+
+// App Store - Browse and install apps
+export const LazyZAppStoreWindow = createLazyWindow(
+  () => import('./ZAppStoreWindow'),
+  'App Store'
+);

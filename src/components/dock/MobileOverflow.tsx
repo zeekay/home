@@ -80,8 +80,8 @@ const MobileOverflow: React.FC<MobileOverflowProps> = ({ items }) => {
       <Tooltip>
         <TooltipTrigger asChild>
           <PopoverTrigger asChild>
-            <button className="group relative flex flex-col items-center justify-center">
-              <div className="w-10 h-10 flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-110 shadow-lg group-hover:shadow-xl border border-white/15">
+            <button className="group relative flex flex-col items-center justify-center outline-none focus:outline-none focus-visible:outline-none">
+              <div className="w-10 h-10 flex items-center justify-center bg-black/60 rounded-xl hover:bg-gray-900/80 transition-all duration-200 hover:scale-110 shadow-lg group-hover:shadow-xl border border-white/15 focus-visible:ring-2 focus-visible:ring-white/70">
                 <MoreHorizontal className="w-5 h-5 text-white group-hover:animate-pulse transition-all duration-300" />
               </div>
               <div className="w-1 h-1 rounded-full bg-white mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import {
   Wifi,
   Battery,
@@ -70,6 +71,7 @@ interface ZMenuBarProps {
   onQuitApp?: () => void;
   onOpenSettings?: () => void;
   onAboutMac?: () => void;
+  onAboutApp?: (appName: string) => void;
   onMinimize?: () => void;
   onSleep?: () => void;
   onRestart?: () => void;
@@ -386,6 +388,7 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
   onQuitApp,
   onOpenSettings,
   onAboutMac,
+  onAboutApp,
   onMinimize,
   onSleep,
   onRestart,
@@ -611,74 +614,506 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
     setActiveMenu(null);
     setActiveSystemMenu(null);
     setMenuBarActive(false);
-    
-    // Route actions based on label
+
+    // ========================================
+    // App Menu Actions
+    // ========================================
+
+    // About {appName} - call onAboutApp
+    if (label === `About ${appName}`) {
+      if (onAboutApp) {
+        onAboutApp(appName);
+      } else {
+        toast.info(`About ${appName}`, {
+          description: `${appName} is part of zOS`
+        });
+      }
+      return;
+    }
+
+    // Quit app
     if (label === `Quit ${appName}` && onQuitApp) {
       onQuitApp();
-    } else if (label === 'Settings...' && onOpenSettings) {
-      onOpenSettings();
-    } else if (label === 'System Settings...' && onOpenSettings) {
-      onOpenSettings();
-    } else if (label === 'About zOS' && onAboutMac) {
-      onAboutMac();
-    } else if (label === 'Minimize' && onMinimize) {
-      onMinimize();
-    } else if (label === `Hide ${appName}`) {
-      // Could implement hide functionality
-    } else if (label === 'Sleep' && onSleep) {
-      onSleep();
-    } else if (label === 'Restart...' && onRestart) {
-      onRestart();
-    } else if (label === 'Shut Down...' && onShutdown) {
-      onShutdown();
-    } else if (label === 'Lock Screen' && onLockScreen) {
-      onLockScreen();
-    } else if (label === 'Log Out Z...' && onLockScreen) {
-      // Log out goes to lock screen
-      onLockScreen();
+      return;
     }
-    // Edit menu actions - use document.execCommand for compatibility
-    else if (label === 'Undo') {
+
+    // Settings
+    if ((label === 'Settings...' || label === 'System Settings...') && onOpenSettings) {
+      onOpenSettings();
+      return;
+    }
+
+    // About zOS (system menu)
+    if (label === 'About zOS' && onAboutMac) {
+      onAboutMac();
+      return;
+    }
+
+    // Minimize
+    if (label === 'Minimize' && onMinimize) {
+      onMinimize();
+      return;
+    }
+
+    // Hide {appName} - minimize/hide window
+    if (label === `Hide ${appName}`) {
+      if (onMinimize) {
+        onMinimize();
+      }
+      // Also dispatch custom event for window manager
+      window.dispatchEvent(new CustomEvent('zos:hide-app', { detail: { appName } }));
+      return;
+    }
+
+    // Hide Others - minimize all other windows
+    if (label === 'Hide Others') {
+      window.dispatchEvent(new CustomEvent('zos:hide-others', { detail: { appName } }));
+      toast.info('Hide Others', { description: 'All other windows minimized' });
+      return;
+    }
+
+    // Show All - restore all windows
+    if (label === 'Show All') {
+      window.dispatchEvent(new CustomEvent('zos:show-all'));
+      toast.info('Show All', { description: 'All windows restored' });
+      return;
+    }
+
+    // Sleep, Restart, Shutdown, Lock Screen
+    if (label === 'Sleep' && onSleep) {
+      onSleep();
+      return;
+    }
+    if (label === 'Restart...' && onRestart) {
+      onRestart();
+      return;
+    }
+    if (label === 'Shut Down...' && onShutdown) {
+      onShutdown();
+      return;
+    }
+    if (label === 'Lock Screen' && onLockScreen) {
+      onLockScreen();
+      return;
+    }
+    if (label === 'Log Out Z...' && onLockScreen) {
+      onLockScreen();
+      return;
+    }
+
+    // Force Quit - dispatch Cmd+Option+Escape
+    if (label === 'Force Quit...') {
+      window.dispatchEvent(new CustomEvent('zos:force-quit-dialog'));
+      toast.info('Force Quit Applications', { description: 'Use Cmd+Option+Escape to open Force Quit' });
+      return;
+    }
+
+    // ========================================
+    // File Menu Actions
+    // ========================================
+
+    if (label === 'New Window') {
+      window.dispatchEvent(new CustomEvent('zos:new-window', { detail: { appName } }));
+      toast.info('New Window', { description: 'Cmd+N' });
+      return;
+    }
+
+    if (label === 'New Tab') {
+      window.dispatchEvent(new CustomEvent('zos:new-tab', { detail: { appName } }));
+      toast.info('New Tab', { description: 'Cmd+T' });
+      return;
+    }
+
+    if (label === 'New Private Window') {
+      window.dispatchEvent(new CustomEvent('zos:new-private-window', { detail: { appName } }));
+      toast.info('New Private Window', { description: 'Shift+Cmd+N' });
+      return;
+    }
+
+    if (label === 'Close Window' || label === 'Close') {
+      window.dispatchEvent(new CustomEvent('zos:close-window', { detail: { appName } }));
+      if (onQuitApp) {
+        onQuitApp();
+      }
+      return;
+    }
+
+    if (label === 'Close Tab') {
+      window.dispatchEvent(new CustomEvent('zos:close-tab', { detail: { appName } }));
+      toast.info('Close Tab', { description: 'Shift+Cmd+W' });
+      return;
+    }
+
+    if (label === 'Close All Windows' || label === 'Close All') {
+      window.dispatchEvent(new CustomEvent('zos:close-all', { detail: { appName } }));
+      toast.info('Close All Windows', { description: 'Option+Cmd+W' });
+      return;
+    }
+
+    if (label === 'Save As...') {
+      toast.info('Save As...', { description: 'Cmd+S' });
+      return;
+    }
+
+    if (label === 'Open...' || label === 'Open File...') {
+      toast.info('Open File...', { description: 'Cmd+O' });
+      return;
+    }
+
+    if (label === 'Open Location...') {
+      toast.info('Open Location...', { description: 'Cmd+L' });
+      return;
+    }
+
+    if (label === 'Print...' || label === 'Print') {
+      window.print();
+      return;
+    }
+
+    // ========================================
+    // Edit Menu Actions
+    // ========================================
+
+    if (label === 'Undo') {
       document.execCommand('undo');
-    } else if (label === 'Redo') {
+      return;
+    }
+    if (label === 'Redo') {
       document.execCommand('redo');
-    } else if (label === 'Cut') {
+      return;
+    }
+    if (label === 'Cut') {
       document.execCommand('cut');
-    } else if (label === 'Copy') {
+      return;
+    }
+    if (label === 'Copy') {
       document.execCommand('copy');
-    } else if (label === 'Paste') {
-      // Paste requires user permission, try clipboard API first
+      return;
+    }
+    if (label === 'Paste' || label === 'Paste Escaped Text' || label === 'Paste Selection' || label === 'Paste and Match Style') {
       navigator.clipboard.readText().then(text => {
         document.execCommand('insertText', false, text);
       }).catch(() => {
         document.execCommand('paste');
       });
-    } else if (label === 'Select All') {
-      document.execCommand('selectAll');
+      return;
     }
-    // View menu actions
-    else if (label === 'Zoom In' || label === 'Bigger') {
+    if (label === 'Select All') {
+      document.execCommand('selectAll');
+      return;
+    }
+
+    // Find actions
+    if (label === 'Find...' || label === 'Find') {
+      window.dispatchEvent(new CustomEvent('zos:find', { detail: { appName } }));
+      toast.info('Find', { description: 'Use Cmd+F to search' });
+      return;
+    }
+    if (label === 'Find Next') {
+      window.dispatchEvent(new CustomEvent('zos:find-next', { detail: { appName } }));
+      toast.info('Find Next', { description: 'Use Cmd+G to find next' });
+      return;
+    }
+    if (label === 'Find Previous') {
+      window.dispatchEvent(new CustomEvent('zos:find-previous', { detail: { appName } }));
+      toast.info('Find Previous', { description: 'Use Shift+Cmd+G to find previous' });
+      return;
+    }
+
+    // Terminal-specific Edit actions
+    if (label === 'Clear to Previous Mark') {
+      window.dispatchEvent(new CustomEvent('zos:terminal-clear-mark', { detail: { appName } }));
+      toast.info('Clear to Previous Mark', { description: 'Cmd+L' });
+      return;
+    }
+    if (label === 'Clear to Start') {
+      window.dispatchEvent(new CustomEvent('zos:terminal-clear-start', { detail: { appName } }));
+      toast.info('Clear to Start', { description: 'Option+Cmd+L' });
+      return;
+    }
+    if (label === 'Clear Scrollback') {
+      window.dispatchEvent(new CustomEvent('zos:terminal-clear-scrollback', { detail: { appName } }));
+      toast.info('Clear Scrollback', { description: 'Terminal scrollback cleared' });
+      return;
+    }
+
+    // Terminal Shell actions
+    if (label === 'Export Text As...') {
+      window.dispatchEvent(new CustomEvent('zos:terminal-export', { detail: { appName } }));
+      toast.info('Export Text As...', { description: 'Export terminal output to file' });
+      return;
+    }
+    if (label === 'Split Horizontally') {
+      window.dispatchEvent(new CustomEvent('zos:terminal-split-h', { detail: { appName } }));
+      toast.info('Split Horizontally', { description: 'Cmd+D' });
+      return;
+    }
+    if (label === 'Split Vertically') {
+      window.dispatchEvent(new CustomEvent('zos:terminal-split-v', { detail: { appName } }));
+      toast.info('Split Vertically', { description: 'Shift+Cmd+D' });
+      return;
+    }
+
+    // ========================================
+    // View Menu Actions
+    // ========================================
+
+    if (label === 'Zoom In' || label === 'Bigger') {
       const currentZoom = parseFloat(document.body.style.zoom || '1');
       document.body.style.zoom = String(Math.min(currentZoom + 0.1, 2));
-    } else if (label === 'Zoom Out' || label === 'Smaller') {
+      return;
+    }
+    if (label === 'Zoom Out' || label === 'Smaller') {
       const currentZoom = parseFloat(document.body.style.zoom || '1');
       document.body.style.zoom = String(Math.max(currentZoom - 0.1, 0.5));
-    } else if (label === 'Actual Size' || label === 'Default Font Size') {
+      return;
+    }
+    if (label === 'Actual Size' || label === 'Default Font Size') {
       document.body.style.zoom = '1';
-    } else if (label === 'Enter Full Screen') {
+      return;
+    }
+    if (label === 'Enter Full Screen') {
       if (document.fullscreenElement) {
         document.exitFullscreen();
       } else {
         document.documentElement.requestFullscreen();
       }
-    } else if (label === 'Reload Page') {
-      window.location.reload();
+      return;
     }
-    // Window menu actions
-    else if (label === 'Bring All to Front') {
-      // Focus the window
+
+    // Safari-specific View actions
+    if (label === 'Reload Page') {
+      window.dispatchEvent(new CustomEvent('zos:safari-reload', { detail: { appName } }));
+      toast.info('Reload Page', { description: 'Cmd+R' });
+      return;
+    }
+    if (label === 'Stop') {
+      window.dispatchEvent(new CustomEvent('zos:safari-stop', { detail: { appName } }));
+      toast.info('Stop Loading', { description: 'Cmd+.' });
+      return;
+    }
+    if (label === 'Show Reader') {
+      window.dispatchEvent(new CustomEvent('zos:safari-reader', { detail: { appName } }));
+      toast.info('Show Reader', { description: 'Shift+Cmd+R' });
+      return;
+    }
+    if (label === 'Show Tab Bar') {
+      toast.info('Show Tab Bar', { description: 'Shift+Cmd+T' });
+      return;
+    }
+    if (label === 'Show All Tabs' || label === 'Show Tab Overview') {
+      toast.info('Show All Tabs', { description: 'Shift+Cmd+\\' });
+      return;
+    }
+
+    // View options (for Finder)
+    if (label === 'as Icons' || label === 'as List' || label === 'as Columns' || label === 'as Gallery') {
+      toast.info(`View ${label}`, { description: `Changed view mode` });
+      return;
+    }
+    if (label === 'Show Path Bar') {
+      toast.info('Show Path Bar', { description: 'Option+Cmd+P' });
+      return;
+    }
+    if (label === 'Show Status Bar') {
+      toast.info('Show Status Bar', { description: 'Cmd+/' });
+      return;
+    }
+    if (label === 'Show Sidebar') {
+      toast.info('Show Sidebar', { description: 'Option+Cmd+S' });
+      return;
+    }
+
+    // Terminal View options
+    if (label === 'Allow Mouse Reporting' || label === 'Enable Alternate Screen') {
+      toast.info(label, { description: 'Terminal option toggled' });
+      return;
+    }
+
+    // ========================================
+    // Safari Develop Menu
+    // ========================================
+
+    if (label === 'Show Web Inspector') {
+      window.dispatchEvent(new CustomEvent('zos:safari-inspector', { detail: { appName } }));
+      toast.info('Show Web Inspector', { description: 'Option+Cmd+I' });
+      return;
+    }
+    if (label === 'Show JavaScript Console') {
+      window.dispatchEvent(new CustomEvent('zos:safari-console', { detail: { appName } }));
+      toast.info('Show JavaScript Console', { description: 'Option+Cmd+C' });
+      return;
+    }
+    if (label === 'Show Page Source') {
+      window.dispatchEvent(new CustomEvent('zos:safari-source', { detail: { appName } }));
+      toast.info('Show Page Source', { description: 'Option+Cmd+U' });
+      return;
+    }
+    if (label === 'Empty Caches') {
+      window.dispatchEvent(new CustomEvent('zos:safari-empty-caches', { detail: { appName } }));
+      toast.info('Empty Caches', { description: 'Option+Cmd+E - Caches cleared' });
+      return;
+    }
+    if (label === 'Disable Caches') {
+      toast.info('Disable Caches', { description: 'Cache disabled for debugging' });
+      return;
+    }
+
+    // ========================================
+    // History Menu (Safari)
+    // ========================================
+
+    if (label === 'Back') {
+      window.dispatchEvent(new CustomEvent('zos:safari-back', { detail: { appName } }));
+      toast.info('Back', { description: 'Cmd+[' });
+      return;
+    }
+    if (label === 'Forward') {
+      window.dispatchEvent(new CustomEvent('zos:safari-forward', { detail: { appName } }));
+      toast.info('Forward', { description: 'Cmd+]' });
+      return;
+    }
+    if (label === 'Home') {
+      window.dispatchEvent(new CustomEvent('zos:safari-home', { detail: { appName } }));
+      toast.info('Home', { description: 'Shift+Cmd+H' });
+      return;
+    }
+    if (label === 'Show All History') {
+      toast.info('Show All History', { description: 'Cmd+Y' });
+      return;
+    }
+    if (label === 'Clear History...') {
+      toast.info('Clear History', { description: 'Browsing history will be cleared' });
+      return;
+    }
+    if (label === 'Reopen Last Closed Tab') {
+      window.dispatchEvent(new CustomEvent('zos:safari-reopen-tab', { detail: { appName } }));
+      toast.info('Reopen Last Closed Tab', { description: 'Shift+Cmd+T' });
+      return;
+    }
+
+    // ========================================
+    // Bookmarks Menu (Safari)
+    // ========================================
+
+    if (label === 'Show Bookmarks') {
+      toast.info('Show Bookmarks', { description: 'Option+Cmd+B' });
+      return;
+    }
+    if (label === 'Edit Bookmarks') {
+      toast.info('Edit Bookmarks', { description: 'Edit your bookmarks' });
+      return;
+    }
+    if (label === 'Add Bookmark...') {
+      toast.info('Add Bookmark', { description: 'Cmd+D' });
+      return;
+    }
+    if (label === 'Add Bookmark for These Tabs...') {
+      toast.info('Add Bookmark for These Tabs', { description: 'Bookmark all open tabs' });
+      return;
+    }
+
+    // ========================================
+    // Go Menu (Finder)
+    // ========================================
+
+    if (label === 'Enclosing Folder') {
+      toast.info('Enclosing Folder', { description: 'Cmd+Up Arrow' });
+      return;
+    }
+    if (label === 'Recents') {
+      toast.info('Recents', { description: 'Shift+Cmd+F' });
+      return;
+    }
+    if (label === 'Documents') {
+      toast.info('Documents', { description: 'Shift+Cmd+O' });
+      return;
+    }
+    if (label === 'Desktop') {
+      toast.info('Desktop', { description: 'Shift+Cmd+D' });
+      return;
+    }
+    if (label === 'Downloads') {
+      toast.info('Downloads', { description: 'Option+Cmd+L' });
+      return;
+    }
+    if (label === 'Computer') {
+      toast.info('Computer', { description: 'Shift+Cmd+C' });
+      return;
+    }
+    if (label === 'Applications') {
+      toast.info('Applications', { description: 'Shift+Cmd+A' });
+      return;
+    }
+    if (label === 'Go to Folder...') {
+      toast.info('Go to Folder...', { description: 'Shift+Cmd+G' });
+      return;
+    }
+
+    // ========================================
+    // Window Menu Actions
+    // ========================================
+
+    if (label === 'Zoom') {
+      window.dispatchEvent(new CustomEvent('zos:window-zoom', { detail: { appName } }));
+      toast.info('Zoom', { description: 'Window zoomed to fit content' });
+      return;
+    }
+
+    if (label === 'Move Window to Left Side of Screen') {
+      window.dispatchEvent(new CustomEvent('zos:window-left', { detail: { appName } }));
+      toast.info('Move Window Left', { description: 'Window moved to left side' });
+      return;
+    }
+
+    if (label === 'Move Window to Right Side of Screen') {
+      window.dispatchEvent(new CustomEvent('zos:window-right', { detail: { appName } }));
+      toast.info('Move Window Right', { description: 'Window moved to right side' });
+      return;
+    }
+
+    if (label === 'Cycle Through Windows') {
+      window.dispatchEvent(new CustomEvent('zos:cycle-windows', { detail: { appName } }));
+      toast.info('Cycle Through Windows', { description: 'Cmd+` to cycle windows' });
+      return;
+    }
+
+    if (label === 'Bring All to Front') {
+      window.dispatchEvent(new CustomEvent('zos:bring-all-front', { detail: { appName } }));
       window.focus();
+      toast.info('Bring All to Front', { description: 'All windows brought to front' });
+      return;
     }
+
+    // ========================================
+    // Profiles Menu (Terminal)
+    // ========================================
+
+    if (label === 'Default' || label === 'Basic' || label === 'Grass' || label === 'Homebrew' || label === 'Man Page' || label === 'Ocean' || label === 'Pro') {
+      window.dispatchEvent(new CustomEvent('zos:terminal-profile', { detail: { profile: label } }));
+      toast.info(`Profile: ${label}`, { description: 'Terminal profile changed' });
+      return;
+    }
+    if (label === 'Open Profiles...') {
+      toast.info('Open Profiles', { description: 'Manage terminal profiles' });
+      return;
+    }
+
+    // ========================================
+    // Help Menu
+    // ========================================
+
+    if (label === `${appName} Help`) {
+      toast.info(`${appName} Help`, { description: 'Help documentation' });
+      return;
+    }
+
+    // ========================================
+    // Generic fallback for unhandled actions
+    // ========================================
+
+    // If nothing matched, show a toast for the action
+    toast.info(label, { description: 'Menu action' });
   };
 
   const renderMenuItem = (item: MenuItemType, itemIndex: number) => {

@@ -4,9 +4,20 @@ import ZWindow from './ZWindow';
 interface ZTextPadWindowProps {
   onClose: () => void;
   onFocus?: () => void;
+  onOpenHanzo?: () => void;
+  onOpenLux?: () => void;
+  onOpenZoo?: () => void;
+  onOpenTerminal?: (command?: string) => void;
 }
 
-const ZTextPadWindow: React.FC<ZTextPadWindowProps> = ({ onClose, onFocus }) => {
+const ZTextPadWindow: React.FC<ZTextPadWindowProps> = ({
+  onClose,
+  onFocus,
+  onOpenHanzo,
+  onOpenLux,
+  onOpenZoo,
+  onOpenTerminal,
+}) => {
   // Check if this is the first open (intro animation plays once)
   const isIntroSession = !sessionStorage.getItem('textedit-intro-played');
   const [text, setText] = useState('');
@@ -47,20 +58,65 @@ Say hi: curl -sL zeekay.chat | sh`;
     }
   }, [text, isTyping, fullText]);
 
+  // Clickable link component
+  const ClickableLink: React.FC<{
+    children: React.ReactNode;
+    onClick?: () => void;
+    className?: string;
+  }> = ({ children, onClick, className = '' }) => (
+    <span
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClick?.();
+      }}
+      className={`text-blue-400 hover:underline cursor-pointer ${className}`}
+    >
+      {children}
+    </span>
+  );
+
   const renderTextWithLinks = () => {
     if (!text) return null;
 
-    // Find the curl command in the text
-    const parts = text.split(/(curl -sL zeekay\.chat \| sh)/);
+    // Split by all clickable elements
+    const pattern = /(Hanzo AI|LUX|ZOO|curl -sL zeekay\.chat \| sh)/g;
+    const parts = text.split(pattern);
 
     return (
       <>
         {parts.map((part, index) => {
+          if (part === 'Hanzo AI') {
+            return (
+              <ClickableLink key={index} onClick={onOpenHanzo}>
+                {part}
+              </ClickableLink>
+            );
+          }
+          if (part === 'LUX') {
+            return (
+              <ClickableLink key={index} onClick={onOpenLux}>
+                {part}
+              </ClickableLink>
+            );
+          }
+          if (part === 'ZOO') {
+            return (
+              <ClickableLink key={index} onClick={onOpenZoo}>
+                {part}
+              </ClickableLink>
+            );
+          }
           if (part === 'curl -sL zeekay.chat | sh') {
             return (
               <code
                 key={index}
-                className="bg-white/10 px-2 py-1 rounded text-green-400 font-mono"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onOpenTerminal?.(part);
+                }}
+                className="bg-white/10 px-2 py-1 rounded text-green-400 font-mono hover:underline cursor-pointer"
               >
                 {part}
               </code>

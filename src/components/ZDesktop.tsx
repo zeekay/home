@@ -26,6 +26,8 @@ import {
   LazyHanzoAIWindow,
   LazyLuxWalletWindow,
   LazyZooAssistantWindow,
+  LazyZCodeWindow,
+  LazyZAppStoreWindow,
 } from './LazyWindows';
 import ApplicationsPopover from './dock/ApplicationsPopover';
 import DownloadsPopover from './dock/DownloadsPopover';
@@ -35,6 +37,7 @@ import AppSwitcher from './AppSwitcher';
 import SpotlightSearch from './SpotlightSearch';
 import ForceQuitDialog from './ForceQuitDialog';
 import DesktopContextMenu from './DesktopContextMenu';
+import AboutAppDialog from './AboutAppDialog';
 import {
   useWindowManager,
   useDesktopSettings,
@@ -44,6 +47,7 @@ import {
   type AppType,
   type KeyboardShortcut,
 } from '@/hooks';
+import { useTerminal } from '@/contexts/TerminalContext';
 import {
   Dialog,
   DialogContent,
@@ -72,6 +76,8 @@ const APP_TO_DOCK_ID: Partial<Record<AppType, string>> = {
   'Hanzo AI': 'hanzo',
   'Lux Wallet': 'lux',
   'Zoo': 'zoo',
+  'Xcode': 'xcode',
+  'App Store': 'appstore',
 };
 
 const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
@@ -82,6 +88,7 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
   const windows = useWindowManager();
   const settings = useDesktopSettings();
   const overlays = useOverlays();
+  const { queueCommand } = useTerminal();
 
   // Info dialog state
   const [showInfoDialog, setShowInfoDialog] = useState(false);
@@ -89,6 +96,9 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
 
   // Context menu state
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+
+  // About app dialog state
+  const [aboutApp, setAboutApp] = useState<string | null>(null);
 
   // Intro animation state - triggers after boot completes
   const [introPhase, setIntroPhase] = useState<'waiting' | 'dock' | 'window' | 'complete'>('waiting');
@@ -166,10 +176,20 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
 
   // Close all menus when clicking elsewhere - uses refs to avoid frequent re-registration
   useEffect(() => {
-    const handleClick = () => {
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+
+      // Don't close if clicking within dock or popover elements
+      const isInDock = target.closest('[data-dock]');
+      const isInPopover = target.closest('[data-popover]');
+
       setContextMenu(null);
-      closeApplicationsRef.current();
-      closeDownloadsRef.current();
+
+      // Only close popovers if click is outside both dock and popover
+      if (!isInDock && !isInPopover) {
+        closeApplicationsRef.current();
+        closeDownloadsRef.current();
+      }
     };
 
     const handleWindowBlur = () => {
@@ -260,6 +280,7 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
         onQuitApp={handleQuitCurrentApp}
         onOpenSettings={handleOpenSettings}
         onAboutMac={overlays.openAbout}
+        onAboutApp={(app) => setAboutApp(app)}
         onSleep={sleep}
         onRestart={restart}
         onShutdown={shutdown}
@@ -336,7 +357,19 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
         <LazyZFaceTimeWindow onClose={() => windows.closeWindow('FaceTime')} onFocus={() => windows.focusWindow('FaceTime')} />
       )}
       {windows.isOpen('TextEdit') && (
-        <ZTextPadWindow onClose={() => windows.closeWindow('TextEdit')} onFocus={() => windows.focusWindow('TextEdit')} />
+        <ZTextPadWindow
+          onClose={() => windows.closeWindow('TextEdit')}
+          onFocus={() => windows.focusWindow('TextEdit')}
+          onOpenHanzo={() => windows.openWindow('Hanzo AI')}
+          onOpenLux={() => windows.openWindow('Lux Wallet')}
+          onOpenZoo={() => windows.openWindow('Zoo')}
+          onOpenTerminal={(command) => {
+            if (command) {
+              queueCommand(command);
+            }
+            windows.openWindow('Terminal');
+          }}
+        />
       )}
       {windows.isOpen('GitHub Stats') && (
         <LazyZGitHubStatsWindow onClose={() => windows.closeWindow('GitHub Stats')} onFocus={() => windows.focusWindow('GitHub Stats')} />
@@ -356,6 +389,9 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
       {windows.isOpen('Zoo') && (
         <LazyZooAssistantWindow onClose={() => windows.closeWindow('Zoo')} onFocus={() => windows.focusWindow('Zoo')} />
       )}
+      {windows.isOpen('Xcode') && (
+        <LazyZCodeWindow onClose={() => windows.closeWindow('Xcode')} onFocus={() => windows.focusWindow('Xcode')} />
+      )}
       {windows.isOpen('Calculator') && (
         <ZCalculatorWindow onClose={() => windows.closeWindow('Calculator')} />
       )}
@@ -370,6 +406,9 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
       )}
       {windows.isOpen('Notes') && (
         <LazyZNotesWindow onClose={() => windows.closeWindow('Notes')} onFocus={() => windows.focusWindow('Notes')} />
+      )}
+      {windows.isOpen('App Store') && (
+        <LazyZAppStoreWindow onClose={() => windows.closeWindow('App Store')} />
       )}
 
       {/* Dock Popovers */}
@@ -387,6 +426,8 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
         onOpenClock={() => windows.openWindow('Clock')}
         onOpenWeather={() => windows.openWindow('Weather')}
         onOpenStickies={() => windows.openWindow('Stickies')}
+        onOpenXcode={() => windows.openWindow('Xcode')}
+        onOpenAppStore={() => windows.openWindow('App Store')}
       />
 
       <DownloadsPopover
@@ -397,6 +438,13 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
 
       {/* About Window */}
       {overlays.about && <AboutZosWindow onClose={overlays.closeAbout} />}
+
+      {/* About App Dialog */}
+      <AboutAppDialog
+        appName={aboutApp ?? ''}
+        isOpen={aboutApp !== null}
+        onClose={() => setAboutApp(null)}
+      />
 
       {/* Overlays */}
       <AppSwitcher
@@ -461,6 +509,7 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
         onZooClick={() => handleAppLaunch('zoo', () => windows.openWindow('Zoo'))}
         onApplicationsClick={overlays.toggleApplications}
         onDownloadsClick={overlays.toggleDownloads}
+        onTrashClick={() => windows.openWindow('Finder')}
         activeApps={activeDockApps}
         launchingApp={launchingApp}
         introAnimation={introPhase === 'dock'}

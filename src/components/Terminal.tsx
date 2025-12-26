@@ -78,7 +78,8 @@ const Terminal: React.FC<TerminalProps> = ({
     setCommandHistory,
     editorState,
     closeEditor,
-    saveFile
+    saveFile,
+    consumePendingCommand
   } = useTerminal();
   
   const [inputValue, setInputValue] = useState('');
@@ -98,14 +99,25 @@ const Terminal: React.FC<TerminalProps> = ({
     const handleClick = () => {
       inputRef.current?.focus();
     };
-    
+
     const container = containerRef.current;
     container?.addEventListener('click', handleClick);
-    
+
     return () => {
       container?.removeEventListener('click', handleClick);
     };
   }, []);
+
+  // Check for and execute pending command on mount
+  useEffect(() => {
+    const pendingCmd = consumePendingCommand();
+    if (pendingCmd) {
+      // Small delay to ensure terminal is ready
+      setTimeout(() => {
+        executeCommand(pendingCmd);
+      }, 100);
+    }
+  }, [consumePendingCommand, executeCommand]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

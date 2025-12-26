@@ -43,9 +43,10 @@ const ZooLogo: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 type AppType = 'Finder' | 'Terminal' | 'Safari' | 'Music' | 'Mail' | 'Calendar' |
-               'System Preferences' | 'Photos' | 'FaceTime' | 'Notes' |
+               'System Preferences' | 'Photos' | 'FaceTime' | 'TextEdit' | 'Notes' |
                'GitHub Stats' | 'Messages' | 'Activity Monitor' | 'Hanzo AI' |
-               'Lux Wallet' | 'Zoo' | 'Calculator' | 'Clock' | 'Weather' | 'Stickies';
+               'Lux Wallet' | 'Zoo' | 'Calculator' | 'Clock' | 'Weather' | 'Stickies' |
+               'App Store' | 'Xcode';
 
 interface SearchResult {
   type: 'app' | 'action' | 'document' | 'calculation' | 'web';

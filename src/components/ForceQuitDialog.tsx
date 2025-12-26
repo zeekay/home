@@ -40,7 +40,8 @@ const ZooLogo: React.FC<{ className?: string }> = ({ className }) => (
 export type AppType = 'Finder' | 'Terminal' | 'Safari' | 'Music' | 'Mail' | 'Calendar' |
                'System Preferences' | 'Photos' | 'FaceTime' | 'TextEdit' | 'Notes' |
                'GitHub Stats' | 'Messages' | 'Activity Monitor' | 'Hanzo AI' |
-               'Lux Wallet' | 'Zoo' | 'Calculator' | 'Clock' | 'Weather' | 'Stickies';
+               'Lux Wallet' | 'Zoo' | 'Calculator' | 'Clock' | 'Weather' | 'Stickies' |
+               'App Store' | 'Xcode';
 
 interface ForceQuitDialogProps {
   isOpen: boolean;
@@ -48,6 +49,36 @@ interface ForceQuitDialogProps {
   openApps: AppType[];
   onForceQuit: (app: AppType) => void;
 }
+
+// App Store Icon
+const AppStoreIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg viewBox="0 0 64 64" className={cn("w-5 h-5", className)} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="appStoreGradFQ" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#19AFFF" />
+        <stop offset="100%" stopColor="#0066CC" />
+      </linearGradient>
+    </defs>
+    <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#appStoreGradFQ)" />
+    <path d="M32 12 L18 52 L24 52 L27 44 L37 44 L40 52 L46 52 L32 12Z" fill="white" />
+    <path d="M32 24 L28.5 40 L35.5 40 L32 24Z" fill="url(#appStoreGradFQ)" />
+  </svg>
+);
+
+// Xcode Icon
+const XcodeIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg viewBox="0 0 64 64" className={cn("w-5 h-5", className)} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="xcodeGradFQ" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#1E9CFF" />
+        <stop offset="100%" stopColor="#0066CC" />
+      </linearGradient>
+    </defs>
+    <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#xcodeGradFQ)" />
+    <rect x="14" y="14" width="24" height="12" rx="2" fill="white" transform="rotate(-45 26 20)" />
+    <rect x="28" y="28" width="6" height="24" rx="2" fill="white" transform="rotate(-45 31 40)" />
+  </svg>
+);
 
 const appIcons: Record<AppType, React.ReactNode> = {
   'Finder': <Folder className="w-5 h-5" />,
@@ -71,6 +102,8 @@ const appIcons: Record<AppType, React.ReactNode> = {
   'Clock': <Clock className="w-5 h-5" />,
   'Weather': <Cloud className="w-5 h-5" />,
   'Stickies': <StickyNote className="w-5 h-5" />,
+  'App Store': <AppStoreIcon />,
+  'Xcode': <XcodeIcon />,
 };
 
 const ForceQuitDialog: React.FC<ForceQuitDialogProps> = ({
