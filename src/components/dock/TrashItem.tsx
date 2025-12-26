@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Folder } from 'lucide-react';
+import React, { useRef, useEffect } from 'react';
 import {
   Tooltip,
   TooltipContent,
@@ -13,6 +12,7 @@ interface TrashItemProps {
   isFocused?: boolean;
   tabIndex?: number;
   onRegisterRef?: (ref: HTMLButtonElement | null) => void;
+  onOpenTrash?: () => void; // Opens Finder with Trash folder
   // Magnification props
   mouseX?: number | null;
   index?: number;
@@ -25,13 +25,13 @@ const TrashItem: React.FC<TrashItemProps> = ({
   isFocused = false,
   tabIndex,
   onRegisterRef,
+  onOpenTrash,
   mouseX = null,
   index = 0,
   magnificationEnabled = false,
   baseSize = 48,
   maxSize = 72
 }) => {
-  const [isTrashOpen, setIsTrashOpen] = useState(false);
   const isMobile = useIsMobile();
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -48,8 +48,7 @@ const TrashItem: React.FC<TrashItemProps> = ({
   }, [onRegisterRef]);
 
   const handleTrashClick = () => {
-    setIsTrashOpen(true);
-    setTimeout(() => setIsTrashOpen(false), 3000); // Auto-close after 3 seconds
+    onOpenTrash?.(); // Open Finder with Trash folder
   };
 
   // Calculate hover scale based on distance from mouse
@@ -92,6 +91,15 @@ const TrashItem: React.FC<TrashItemProps> = ({
 
   const horizontalPadding = getHorizontalPadding();
 
+  // Calculate tooltip offset based on magnification
+  const getTooltipOffset = (): number => {
+    if (!magnificationEnabled || isMobile) return 8;
+    const extraHeight = (hoverScale - 1) * baseSize;
+    return 8 + extraHeight;
+  };
+
+  const tooltipOffset = getTooltipOffset();
+
   // Match DockItem sizing
   const getIconSize = () => {
     return isMobile ? 'w-11 h-11' : 'w-12 h-12';
@@ -105,8 +113,13 @@ const TrashItem: React.FC<TrashItemProps> = ({
             ref={buttonRef}
             className={cn(
               "group relative flex items-end justify-center rounded-xl",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent",
-              isFocused && "ring-2 ring-white/70 ring-offset-2 ring-offset-transparent"
+              // Remove ALL focus/outline/ring styling completely
+              "outline-none ring-0 shadow-none",
+              "[&]:outline-none [&]:ring-0 [&]:shadow-none [&]:border-0",
+              "[&:focus]:outline-none [&:focus]:ring-0 [&:focus]:shadow-none [&:focus]:border-0",
+              "[&:focus-visible]:outline-none [&:focus-visible]:ring-0 [&:focus-visible]:shadow-none [&:focus-visible]:border-0",
+              "[&:active]:outline-none [&:active]:ring-0 [&:active]:shadow-none [&:active]:border-0"
+              // No visible focus indicator - rely on scale animation instead
             )}
             style={magnificationEnabled && !isMobile ? {
               paddingLeft: `${horizontalPadding}px`,
@@ -141,33 +154,14 @@ const TrashItem: React.FC<TrashItemProps> = ({
             <div className="absolute -bottom-1 w-1 h-1 rounded-full bg-white/80 opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         </TooltipTrigger>
-        <TooltipContent side={isMobile ? "bottom" : "top"} className="bg-black/90 text-white border-0 rounded-md px-3 py-1.5 text-sm">
+        <TooltipContent
+          side={isMobile ? "bottom" : "top"}
+          sideOffset={tooltipOffset}
+          className="bg-black/90 text-white border-0 rounded-md px-3 py-1.5 text-sm"
+        >
           Trash
         </TooltipContent>
       </Tooltip>
-
-      {/* Trash Finder Window */}
-      {isTrashOpen && (
-        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 w-80 h-64 bg-black/80 backdrop-blur-md rounded-lg border border-white/20 shadow-2xl overflow-hidden animate-fade-in">
-          <div className="bg-black h-6 flex items-center px-2 border-b border-white/10">
-            <div className="flex space-x-1.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
-              <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
-            </div>
-            <div className="text-white text-xs mx-auto">Trash</div>
-          </div>
-          <div className="p-4 text-white text-sm">
-            <div className="flex items-center mb-2">
-              <Folder className="w-4 h-4 text-blue-400 mr-2" />
-              <span>Trash</span>
-            </div>
-            <div className="text-center mt-10 text-gray-400 text-xs">
-              The trash is empty
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };

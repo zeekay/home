@@ -35,4 +35,8 @@ export interface TerminalContextType {
   openEditor: (fileName: string, content: string, isNewFile?: boolean) => void;
   closeEditor: () => void;
   saveFile: (fileName: string, content: string) => Promise<void>;
+  // Pending command queue - for commands queued before Terminal opens
+  pendingCommand: string | null;
+  queueCommand: (command: string) => void;
+  consumePendingCommand: () => string | null;
 }

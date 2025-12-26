@@ -59,15 +59,31 @@ export function useOverlays(): OverlayState & OverlayActions {
   const openAbout = useCallback(() => setAbout(true), []);
   const closeAbout = useCallback(() => setAbout(false), []);
 
-  // Applications popover actions
-  const openApplications = useCallback(() => setApplications(true), []);
+  // Applications popover actions - closes other temporary popovers
+  const openApplications = useCallback(() => {
+    setDownloads(false); // Close downloads when opening applications
+    setApplications(true);
+  }, []);
   const closeApplications = useCallback(() => setApplications(false), []);
-  const toggleApplications = useCallback(() => setApplications(prev => !prev), []);
+  const toggleApplications = useCallback(() => {
+    setApplications(prev => {
+      if (!prev) setDownloads(false); // Close downloads when opening applications
+      return !prev;
+    });
+  }, []);
 
-  // Downloads popover actions
-  const openDownloads = useCallback(() => setDownloads(true), []);
+  // Downloads popover actions - closes other temporary popovers
+  const openDownloads = useCallback(() => {
+    setApplications(false); // Close applications when opening downloads
+    setDownloads(true);
+  }, []);
   const closeDownloads = useCallback(() => setDownloads(false), []);
-  const toggleDownloads = useCallback(() => setDownloads(prev => !prev), []);
+  const toggleDownloads = useCallback(() => {
+    setDownloads(prev => {
+      if (!prev) setApplications(false); // Close applications when opening downloads
+      return !prev;
+    });
+  }, []);
 
   // Close all overlays
   const closeAllOverlays = useCallback(() => {

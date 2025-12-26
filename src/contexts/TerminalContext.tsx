@@ -34,6 +34,19 @@ Try 'cd Documents' for GitHub projects, 'ellipsis' for dotfiles`,
     isNewFile: false,
   });
 
+  // Pending command - queued to run when Terminal opens
+  const [pendingCommand, setPendingCommand] = useState<string | null>(null);
+
+  const queueCommand = useCallback((command: string) => {
+    setPendingCommand(command);
+  }, []);
+
+  const consumePendingCommand = useCallback(() => {
+    const cmd = pendingCommand;
+    setPendingCommand(null);
+    return cmd;
+  }, [pendingCommand]);
+
   const openEditor = useCallback((fileName: string, content: string, isNewFile: boolean = false) => {
     setEditorState({
       isOpen: true,
@@ -117,6 +130,9 @@ Try 'cd Documents' for GitHub projects, 'ellipsis' for dotfiles`,
     openEditor,
     closeEditor,
     saveFile,
+    pendingCommand,
+    queueCommand,
+    consumePendingCommand,
   };
 
   return (

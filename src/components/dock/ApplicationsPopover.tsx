@@ -25,6 +25,8 @@ import {
   StickiesIcon,
   VideosIcon,
   SoraIcon,
+  XcodeIcon,
+  AppStoreIcon,
 } from './icons';
 
 interface ApplicationsPopoverProps {
@@ -52,6 +54,8 @@ interface ApplicationsPopoverProps {
   onOpenTerminal?: () => void;
   onOpenVideos?: () => void;
   onOpenSora?: () => void;
+  onOpenXcode?: () => void;
+  onOpenAppStore?: () => void;
 }
 
 const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
@@ -79,6 +83,8 @@ const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
   onOpenTerminal,
   onOpenVideos,
   onOpenSora,
+  onOpenXcode,
+  onOpenAppStore,
 }) => {
   if (!isOpen) return null;
 
@@ -102,6 +108,8 @@ const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
     { id: 'github', label: 'GitHub', icon: <GitHubIcon className="w-full h-full" />, onClick: onOpenGitHub },
     { id: 'activity', label: 'Activity', icon: <StatsIcon className="w-full h-full" />, onClick: onOpenStats },
     { id: 'settings', label: 'Settings', icon: <SettingsIcon className="w-full h-full" />, onClick: onOpenSettings },
+    { id: 'xcode', label: 'Xcode', icon: <XcodeIcon className="w-full h-full" />, onClick: onOpenXcode },
+    { id: 'appstore', label: 'App Store', icon: <AppStoreIcon className="w-full h-full" />, onClick: onOpenAppStore },
   ];
 
   // Hanzo ecosystem apps
@@ -172,7 +180,7 @@ const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
               <button
                 key={app.id}
                 onClick={() => { app.onClick?.(); onClose(); }}
-                className="flex flex-col items-center p-2 hover:bg-white/10 rounded-xl transition-colors"
+                className="flex flex-col items-center p-2 hover:bg-white/10 rounded-xl transition-colors outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/50"
               >
                 <div className={cn(
                   "w-12 h-12 flex items-center justify-center rounded-2xl mb-1.5 p-2",
@@ -196,7 +204,7 @@ const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col items-center p-2 hover:bg-white/10 rounded-xl transition-colors"
+                className="flex flex-col items-center p-2 hover:bg-white/10 rounded-xl transition-colors outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/50"
               >
                 <div className="w-12 h-12 flex items-center justify-center bg-black/40 rounded-2xl mb-1.5 border border-white/15 relative p-2">
                   {link.icon}
@@ -216,7 +224,7 @@ const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
               <button
                 key={app.id}
                 onClick={() => { app.onClick?.(); onClose(); }}
-                className="flex flex-col items-center p-1.5 hover:bg-white/10 rounded-xl transition-colors"
+                className="flex flex-col items-center p-1.5 hover:bg-white/10 rounded-xl transition-colors outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/50"
               >
                 <div className="w-10 h-10 mb-1">
                   {app.icon}

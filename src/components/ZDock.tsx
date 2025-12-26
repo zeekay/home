@@ -30,6 +30,7 @@ interface ZDockProps extends DockCallbacks {
   className?: string;
   onApplicationsClick?: () => void;
   onDownloadsClick?: () => void;
+  onTrashClick?: () => void;
   activeApps?: string[];
   launchingApp?: string | null;
   introAnimation?: boolean;
@@ -86,6 +87,7 @@ const ZDock: React.FC<ZDockProps> = ({
   onZooClick,
   onApplicationsClick,
   onDownloadsClick,
+  onTrashClick,
   activeApps = [],
   launchingApp,
   introAnimation = false
@@ -426,6 +428,7 @@ const ZDock: React.FC<ZDockProps> = ({
                 isFocused={focusedIndex === navIndex}
                 tabIndex={focusedIndex === -1 ? -1 : (focusedIndex === navIndex ? 0 : -1)}
                 onRegisterRef={(ref) => registerItemRef(navIndex, ref)}
+                onOpenTrash={onTrashClick}
                 mouseX={mouseX}
                 index={dockItems.length + customApps.length + 2}
                 magnificationEnabled={dockMagnification && !isMobile}

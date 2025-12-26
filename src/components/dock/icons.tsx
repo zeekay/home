@@ -555,6 +555,27 @@ export const WeatherIcon: React.FC<{ className?: string }> = ({ className = "w-1
   </svg>
 );
 
+// Xcode Icon - Developer hammer tool
+export const XcodeIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
+  <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="xcodeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#1E9CFF" />
+        <stop offset="100%" stopColor="#0066CC" />
+      </linearGradient>
+    </defs>
+    <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#xcodeGrad)" />
+    {/* Hammer head */}
+    <rect x="14" y="14" width="24" height="12" rx="2" fill="white" transform="rotate(-45 26 20)" />
+    {/* Hammer handle */}
+    <rect x="28" y="28" width="6" height="24" rx="2" fill="white" transform="rotate(-45 31 40)" />
+    {/* Blueprint lines */}
+    <line x1="10" y1="52" x2="20" y2="52" stroke="rgba(255,255,255,0.5)" strokeWidth="1" />
+    <line x1="10" y1="48" x2="16" y2="48" stroke="rgba(255,255,255,0.5)" strokeWidth="1" />
+    <line x1="10" y1="44" x2="14" y2="44" stroke="rgba(255,255,255,0.5)" strokeWidth="1" />
+  </svg>
+);
+
 // Stickies Icon
 export const StickiesIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
@@ -570,5 +591,28 @@ export const StickiesIcon: React.FC<{ className?: string }> = ({ className = "w-
     <line x1="20" y1="26" x2="48" y2="26" stroke="#E6C34F" strokeWidth="1" />
     <line x1="20" y1="34" x2="48" y2="34" stroke="#E6C34F" strokeWidth="1" />
     <line x1="20" y1="42" x2="40" y2="42" stroke="#E6C34F" strokeWidth="1" />
+  </svg>
+);
+
+// App Store Icon - macOS style with blue gradient and stylized A
+export const AppStoreIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
+  <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="appStoreGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#19AFFF" />
+        <stop offset="100%" stopColor="#0066CC" />
+      </linearGradient>
+    </defs>
+    <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#appStoreGrad)" />
+    {/* Stylized A made of overlapping drawing tools */}
+    {/* Main A shape */}
+    <path d="M32 12 L18 52 L24 52 L27 44 L37 44 L40 52 L46 52 L32 12Z" fill="white" />
+    {/* Inner triangle cutout */}
+    <path d="M32 24 L28.5 40 L35.5 40 L32 24Z" fill="url(#appStoreGrad)" />
+    {/* Horizontal crossbar enhancement */}
+    <rect x="26" y="36" width="12" height="3" rx="1" fill="white" />
+    {/* Decorative pencils/rulers forming the A */}
+    <rect x="14" y="48" width="14" height="4" rx="1" fill="white" opacity="0.8" transform="rotate(-15 21 50)" />
+    <rect x="36" y="48" width="14" height="4" rx="1" fill="white" opacity="0.8" transform="rotate(15 43 50)" />
   </svg>
 );

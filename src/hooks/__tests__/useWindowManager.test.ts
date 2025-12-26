@@ -184,4 +184,225 @@ describe('useWindowManager', () => {
       expect(result.current.isOpen('Calendar')).toBe(false);
     });
   });
+
+  describe('tileWindowLeft', () => {
+    it('tiles window to left half of screen', () => {
+      const { result } = renderHook(() => useWindowManager());
+
+      act(() => {
+        result.current.openWindow('Terminal');
+      });
+      act(() => {
+        result.current.tileWindowLeft('Terminal');
+      });
+
+      const state = result.current.getWindowState('Terminal');
+      expect(state?.isTiled).toBe('left');
+      expect(state?.position.x).toBe(0);
+      expect(state?.isMaximized).toBe(false);
+    });
+
+    it('does nothing for closed windows', () => {
+      const { result } = renderHook(() => useWindowManager());
+
+      act(() => {
+        result.current.tileWindowLeft('Terminal');
+      });
+
+      expect(result.current.getWindowState('Terminal')).toBeNull();
+    });
+  });
+
+  describe('tileWindowRight', () => {
+    it('tiles window to right half of screen', () => {
+      const { result } = renderHook(() => useWindowManager());
+
+      act(() => {
+        result.current.openWindow('Safari');
+      });
+      act(() => {
+        result.current.tileWindowRight('Safari');
+      });
+
+      const state = result.current.getWindowState('Safari');
+      expect(state?.isTiled).toBe('right');
+      expect(state?.position.x).toBeGreaterThan(0);
+      expect(state?.isMaximized).toBe(false);
+    });
+  });
+
+  describe('maximizeWindow', () => {
+    it('maximizes the window', () => {
+      const { result } = renderHook(() => useWindowManager());
+
+      act(() => {
+        result.current.openWindow('Finder');
+      });
+      act(() => {
+        result.current.maximizeWindow('Finder');
+      });
+
+      expect(result.current.isMaximized('Finder')).toBe(true);
+      expect(result.current.isTiled('Finder')).toBeNull();
+    });
+
+    it('restores when already maximized', () => {
+      const { result } = renderHook(() => useWindowManager());
+
+      act(() => {
+        result.current.openWindow('Finder');
+      });
+      act(() => {
+        result.current.maximizeWindow('Finder');
+      });
+      act(() => {
+        result.current.maximizeWindow('Finder');
+      });
+
+      expect(result.current.isMaximized('Finder')).toBe(false);
+    });
+  });
+
+  describe('minimizeWindow', () => {
+    it('minimizes the window', () => {
+      const { result } = renderHook(() => useWindowManager());
+
+      act(() => {
+        result.current.openWindow('Mail');
+      });
+      act(() => {
+        result.current.minimizeWindow('Mail');
+      });
+
+      expect(result.current.isMinimized('Mail')).toBe(true);
+      expect(result.current.visibleApps).not.toContain('Mail');
+      expect(result.current.openApps).toContain('Mail');
+    });
+
+    it('focuses next window when active is minimized', () => {
+      const { result } = renderHook(() => useWindowManager());
+
+      act(() => {
+        result.current.openWindow('Finder');
+      });
+      act(() => {
+        result.current.openWindow('Terminal');
+      });
+      act(() => {
+        result.current.minimizeWindow('Terminal');
+      });
+
+      expect(result.current.activeApp).toBe('Finder');
+    });
+  });
+
+  describe('restoreWindow', () => {
+    it('restores from minimized state', () => {
+      const { result } = renderHook(() => useWindowManager());
+
+      act(() => {
+        result.current.openWindow('Notes');
+      });
+      act(() => {
+        result.current.minimizeWindow('Notes');
+      });
+      act(() => {
+        result.current.restoreWindow('Notes');
+      });
+
+      expect(result.current.isMinimized('Notes')).toBe(false);
+      expect(result.current.activeApp).toBe('Notes');
+    });
+
+    it('restores previous geometry after tiling', () => {
+      const { result } = renderHook(() => useWindowManager());
+
+      act(() => {
+        result.current.openWindow('Terminal');
+      });
+
+      const originalState = result.current.getWindowState('Terminal');
+
+      act(() => {
+        result.current.tileWindowLeft('Terminal');
+      });
+      act(() => {
+        result.current.restoreWindow('Terminal');
+      });
+
+      const restoredState = result.current.getWindowState('Terminal');
+      expect(restoredState?.isTiled).toBeNull();
+      expect(restoredState?.position).toEqual(originalState?.position);
+    });
+  });
+
+  describe('hideOtherWindows', () => {
+    it('minimizes all windows except active', () => {
+      const { result } = renderHook(() => useWindowManager());
+
+      act(() => {
+        result.current.openWindow('Finder');
+      });
+      act(() => {
+        result.current.openWindow('Terminal');
+      });
+      act(() => {
+        result.current.openWindow('Safari');
+      });
+      act(() => {
+        result.current.hideOtherWindows();
+      });
+
+      expect(result.current.isMinimized('Finder')).toBe(true);
+      expect(result.current.isMinimized('Terminal')).toBe(true);
+      expect(result.current.isMinimized('Safari')).toBe(false);
+      expect(result.current.activeApp).toBe('Safari');
+    });
+  });
+
+  describe('showAllWindows', () => {
+    it('restores all hidden windows', () => {
+      const { result } = renderHook(() => useWindowManager());
+
+      act(() => {
+        result.current.openWindow('Finder');
+      });
+      act(() => {
+        result.current.openWindow('Terminal');
+      });
+      act(() => {
+        result.current.openWindow('Safari');
+      });
+      act(() => {
+        result.current.hideOtherWindows();
+      });
+      act(() => {
+        result.current.showAllWindows();
+      });
+
+      expect(result.current.isMinimized('Finder')).toBe(false);
+      expect(result.current.isMinimized('Terminal')).toBe(false);
+      expect(result.current.isMinimized('Safari')).toBe(false);
+    });
+  });
+
+  describe('visibleApps', () => {
+    it('excludes minimized apps', () => {
+      const { result } = renderHook(() => useWindowManager());
+
+      act(() => {
+        result.current.openWindow('Finder');
+      });
+      act(() => {
+        result.current.openWindow('Terminal');
+      });
+      act(() => {
+        result.current.minimizeWindow('Finder');
+      });
+
+      expect(result.current.openApps).toContain('Finder');
+      expect(result.current.visibleApps).not.toContain('Finder');
+      expect(result.current.visibleApps).toContain('Terminal');
+    });
+  });
 });

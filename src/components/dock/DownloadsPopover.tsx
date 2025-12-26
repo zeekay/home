@@ -167,13 +167,14 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
         onClick={onClose}
       />
 
-      {/* Fan Container - centered above downloads icon (2nd from right in dock) */}
+      {/* Fan Container - centered above downloads icon (2nd from right in centered dock) */}
       <div
         data-popover
         className="fixed z-[9999]"
         style={{
           bottom: '85px',
-          right: '130px', // Center above downloads icon
+          left: '50%',
+          marginLeft: '320px', // Offset from center to align with downloads icon in centered dock
           transformOrigin: 'bottom center',
         }}
       >
@@ -191,7 +192,7 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
               href={doc.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="absolute group"
+              className="absolute group outline-none focus:outline-none"
               style={{
                 bottom: `${yOffset}px`,
                 right: '0px',
@@ -239,10 +240,10 @@ const DownloadsPopover: React.FC<DownloadsPopoverProps> = ({
         {onOpenFinder && (
           <button
             onClick={() => { onOpenFinder(); onClose(); }}
-            className="absolute flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-sm border border-white/20 text-[10px] text-white/70 hover:text-white hover:bg-black/80 transition-all"
+            className="absolute flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-sm border border-white/20 text-[10px] text-white/70 hover:text-white hover:bg-black/80 transition-all outline-none focus:outline-none focus-visible:ring-1 focus-visible:ring-white/50"
             style={{
               bottom: '-35px',
-              right: '50px',
+              right: '0px',
               animation: `fan-in 0.25s ease-out ${totalItems * 40 + 100}ms both`,
             }}
           >

@@ -2,7 +2,7 @@
 // When @hanzo/ui/desktop is published with these exports, switch to:
 // export { useWindowManager, useDesktopSettings, useOverlayManager, useKeyboardShortcuts } from '@hanzo/ui/desktop'
 export { useWindowManager } from './useWindowManager';
-export type { AppType, WindowState, WindowManager } from './useWindowManager';
+export type { AppType, WindowState, WindowManager, WindowGeometry } from './useWindowManager';
 export { ALL_APPS } from './useWindowManager';
 
 // Desktop settings - local implementation

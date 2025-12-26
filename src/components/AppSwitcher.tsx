@@ -39,7 +39,8 @@ const ZooLogo: React.FC<{ className?: string }> = ({ className }) => (
 export type AppType = 'Finder' | 'Terminal' | 'Safari' | 'Music' | 'Mail' | 'Calendar' |
                'System Preferences' | 'Photos' | 'FaceTime' | 'TextEdit' | 'Notes' |
                'GitHub Stats' | 'Messages' | 'Activity Monitor' | 'Hanzo AI' |
-               'Lux Wallet' | 'Zoo' | 'Calculator' | 'Clock' | 'Weather' | 'Stickies';
+               'Lux Wallet' | 'Zoo' | 'Calculator' | 'Clock' | 'Weather' | 'Stickies' |
+               'App Store' | 'Xcode';
 
 interface AppSwitcherProps {
   isOpen: boolean;
@@ -48,6 +49,22 @@ interface AppSwitcherProps {
   currentApp: AppType;
   onSelectApp: (app: AppType) => void;
 }
+
+// App Store Icon
+const AppStoreIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg viewBox="0 0 64 64" className={cn("w-10 h-10", className)} xmlns="http://www.w3.org/2000/svg">
+    <path d="M32 12 L18 52 L24 52 L27 44 L37 44 L40 52 L46 52 L32 12Z" fill="white" />
+    <path d="M32 24 L28.5 40 L35.5 40 L32 24Z" fill="currentColor" opacity="0.3" />
+  </svg>
+);
+
+// Xcode Icon
+const XcodeIcon: React.FC<{ className?: string }> = ({ className }) => (
+  <svg viewBox="0 0 64 64" className={cn("w-10 h-10", className)} xmlns="http://www.w3.org/2000/svg">
+    <rect x="14" y="14" width="24" height="12" rx="2" fill="white" transform="rotate(-45 26 20)" />
+    <rect x="28" y="28" width="6" height="24" rx="2" fill="white" transform="rotate(-45 31 40)" />
+  </svg>
+);
 
 const appIcons: Record<AppType, React.ReactNode> = {
   'Finder': <Folder className="w-10 h-10" />,
@@ -71,6 +88,8 @@ const appIcons: Record<AppType, React.ReactNode> = {
   'Clock': <Clock className="w-10 h-10" />,
   'Weather': <Cloud className="w-10 h-10" />,
   'Stickies': <StickyNote className="w-10 h-10" />,
+  'App Store': <AppStoreIcon />,
+  'Xcode': <XcodeIcon />,
 };
 
 const appColors: Record<AppType, string> = {
@@ -95,6 +114,8 @@ const appColors: Record<AppType, string> = {
   'Clock': 'from-gray-700 to-gray-900',
   'Weather': 'from-cyan-400 to-blue-500',
   'Stickies': 'from-yellow-300 to-yellow-500',
+  'App Store': 'from-blue-400 to-blue-600',
+  'Xcode': 'from-blue-400 to-blue-600',
 };
 
 const AppSwitcher: React.FC<AppSwitcherProps> = ({
