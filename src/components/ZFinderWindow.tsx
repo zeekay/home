@@ -1166,7 +1166,7 @@ ZIPs: https://zips.zoo.ngo
 
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar */}
-          <div className="w-48 bg-[#1a1a1a]/95 border-r border-white/5 overflow-y-auto flex-shrink-0 flex flex-col">
+          <div className="w-48 vibrancy-sidebar overflow-y-auto flex-shrink-0 flex flex-col" data-sidebar>
             {/* Favorites */}
             <div className="p-2 pt-1">
               <button
@@ -1474,7 +1474,8 @@ ZIPs: https://zips.zoo.ngo
                       </div>
                       {/* Column resize handle */}
                       <div
-                        className={`w-1 cursor-col-resize hover:bg-blue-500/50 ${
+                        data-column-resizer
+                        className={`w-1 hover:bg-blue-500/50 ${
                           resizingColumn === colIndex ? 'bg-blue-500/50' : ''
                         }`}
                         onMouseDown={(e) => handleColumnResize(colIndex, e)}
@@ -1522,7 +1523,7 @@ ZIPs: https://zips.zoo.ngo
               {/* Context Menu */}
               {contextMenu && (
                 <div
-                  className="absolute bg-[#2a2a2a]/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl py-1 min-w-[200px] z-50"
+                  className="absolute vibrancy-menu rounded-xl py-1 min-w-[200px] z-50"
                   style={{ left: contextMenu.x, top: contextMenu.y }}
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -1619,7 +1620,7 @@ ZIPs: https://zips.zoo.ngo
                         </button>
                         {showTagMenu && contextMenu.item && (
                           <div
-                            className="absolute left-full top-0 ml-1 bg-[#2a2a2a]/95 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl py-1 min-w-[160px]"
+                            className="absolute left-full top-0 ml-1 vibrancy-menu rounded-xl py-1 min-w-[160px]"
                             onClick={(e) => e.stopPropagation()}
                           >
                             {tags.map(tag => {

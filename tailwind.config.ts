@@ -148,30 +148,185 @@ export default {
 				},
 				'dock-bounce': {
 					'0%, 100%': { transform: 'translateY(0)' },
-					'20%': { transform: 'translateY(-12px)' },
+					'20%': { transform: 'translateY(-16px)' },
 					'40%': { transform: 'translateY(0)' },
-					'50%': { transform: 'translateY(-8px)' },
+					'50%': { transform: 'translateY(-10px)' },
 					'60%': { transform: 'translateY(0)' },
-					'70%': { transform: 'translateY(-4px)' },
+					'70%': { transform: 'translateY(-5px)' },
 					'80%': { transform: 'translateY(0)' }
 				},
+				// Dock attention bounce - more pronounced for getting attention
+				'dock-attention': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'15%': { transform: 'translateY(-22px)' },
+					'30%': { transform: 'translateY(0)' },
+					'45%': { transform: 'translateY(-18px)' },
+					'55%': { transform: 'translateY(0)' },
+					'65%': { transform: 'translateY(-12px)' },
+					'75%': { transform: 'translateY(0)' },
+					'85%': { transform: 'translateY(-6px)' },
+				},
+				// Dock item slide in from bottom
+				'dock-slide-in': {
+					'0%': { transform: 'translateY(60px)', opacity: '0' },
+					'60%': { transform: 'translateY(-4px)', opacity: '1' },
+					'100%': { transform: 'translateY(0)', opacity: '1' }
+				},
+				// Dock hide/show animation
+				'dock-hide': {
+					'0%': { transform: 'translateY(0)' },
+					'100%': { transform: 'translateY(calc(100% + 20px))' }
+				},
+				'dock-show': {
+					'0%': { transform: 'translateY(calc(100% + 20px))' },
+					'100%': { transform: 'translateY(0)' }
+				},
+				// macOS Window Open - Apple's cubic-bezier(0.16, 1, 0.3, 1)
 				'window-open': {
-					'0%': { transform: 'scale(0.8)', opacity: '0' },
-					'50%': { transform: 'scale(1.02)', opacity: '1' },
-					'100%': { transform: 'scale(1)', opacity: '1' }
+					'0%': {
+						transform: 'scale(0.8)',
+						opacity: '0',
+					},
+					'60%': {
+						transform: 'scale(1.02)',
+						opacity: '1',
+					},
+					'100%': {
+						transform: 'scale(1)',
+						opacity: '1',
+					}
 				},
+				// macOS Window Close - Scale to center effect
 				'window-close': {
-					'0%': { transform: 'scale(1)', opacity: '1' },
-					'100%': { transform: 'scale(0.8)', opacity: '0' }
+					'0%': {
+						transform: 'scale(1)',
+						opacity: '1',
+					},
+					'100%': {
+						transform: 'scale(0.85)',
+						opacity: '0',
+					}
 				},
+				// macOS Genie Minimize Effect
 				'window-minimize': {
-					'0%': { transform: 'scale(1) translateY(0)', opacity: '1' },
-					'100%': { transform: 'scale(0.5) translateY(100px)', opacity: '0' }
+					'0%': {
+						transform: 'perspective(1000px) translateY(0) scale(1) rotateX(0deg)',
+						opacity: '1',
+						transformOrigin: 'bottom center',
+					},
+					'30%': {
+						transform: 'perspective(800px) translateY(30%) scale(0.8) rotateX(3deg)',
+						opacity: '1',
+					},
+					'60%': {
+						transform: 'perspective(600px) translateY(60%) scale(0.5) rotateX(6deg)',
+						opacity: '0.8',
+					},
+					'100%': {
+						transform: 'perspective(400px) translateY(100%) scale(0.1) rotateX(10deg)',
+						opacity: '0',
+						transformOrigin: 'bottom center',
+					}
 				},
+				// macOS Genie Restore Effect
 				'window-restore': {
-					'0%': { transform: 'scale(0.5) translateY(100px)', opacity: '0' },
-					'100%': { transform: 'scale(1) translateY(0)', opacity: '1' }
-				}
+					'0%': {
+						transform: 'perspective(400px) translateY(100%) scale(0.1) rotateX(10deg)',
+						opacity: '0',
+						transformOrigin: 'bottom center',
+					},
+					'40%': {
+						transform: 'perspective(600px) translateY(60%) scale(0.5) rotateX(6deg)',
+						opacity: '0.8',
+					},
+					'70%': {
+						transform: 'perspective(800px) translateY(30%) scale(0.8) rotateX(3deg)',
+						opacity: '1',
+					},
+					'100%': {
+						transform: 'perspective(1000px) translateY(0) scale(1) rotateX(0deg)',
+						opacity: '1',
+						transformOrigin: 'bottom center',
+					}
+				},
+				// macOS Zoom Maximize Effect
+				'window-maximize': {
+					'0%': {
+						transform: 'scale(1)',
+					},
+					'50%': {
+						transform: 'scale(1.02)',
+					},
+					'100%': {
+						transform: 'scale(1)',
+					}
+				},
+				// macOS Shake Effect (invalid action)
+				'window-shake': {
+					'0%, 100%': { transform: 'translateX(0)' },
+					'10%': { transform: 'translateX(-10px)' },
+					'20%': { transform: 'translateX(10px)' },
+					'30%': { transform: 'translateX(-10px)' },
+					'40%': { transform: 'translateX(10px)' },
+					'50%': { transform: 'translateX(-6px)' },
+					'60%': { transform: 'translateX(6px)' },
+					'70%': { transform: 'translateX(-4px)' },
+					'80%': { transform: 'translateX(4px)' },
+					'90%': { transform: 'translateX(-2px)' },
+				},
+				// macOS Bounce Effect (attention)
+				'window-bounce': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'15%': { transform: 'translateY(-20px)' },
+					'30%': { transform: 'translateY(0)' },
+					'40%': { transform: 'translateY(-14px)' },
+					'50%': { transform: 'translateY(0)' },
+					'60%': { transform: 'translateY(-8px)' },
+					'70%': { transform: 'translateY(0)' },
+					'80%': { transform: 'translateY(-4px)' },
+				},
+				// Sheet slide from title bar
+				'sheet-open': {
+					'0%': {
+						transform: 'translateY(-20px) scaleY(0.95)',
+						opacity: '0',
+					},
+					'100%': {
+						transform: 'translateY(0) scaleY(1)',
+						opacity: '1',
+					}
+				},
+				'sheet-close': {
+					'0%': {
+						transform: 'translateY(0) scaleY(1)',
+						opacity: '1',
+					},
+					'100%': {
+						transform: 'translateY(-20px) scaleY(0.95)',
+						opacity: '0',
+					}
+				},
+				// Popover spring animation
+				'popover-open': {
+					'0%': {
+						transform: 'scale(0.95) translateY(-10px)',
+						opacity: '0',
+					},
+					'100%': {
+						transform: 'scale(1) translateY(0)',
+						opacity: '1',
+					}
+				},
+				'popover-close': {
+					'0%': {
+						transform: 'scale(1) translateY(0)',
+						opacity: '1',
+					},
+					'100%': {
+						transform: 'scale(0.95) translateY(-5px)',
+						opacity: '0',
+					}
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -187,11 +342,25 @@ export default {
 				'slide-right': 'slide-right 0.4s ease-out',
 				'terminal-cursor': 'terminal-cursor 1s infinite',
 				'float': 'float 6s ease-in-out infinite',
-				'dock-bounce': 'dock-bounce 0.8s ease-out',
-				'window-open': 'window-open 0.25s ease-out forwards',
-				'window-close': 'window-close 0.2s ease-in forwards',
-				'window-minimize': 'window-minimize 0.3s ease-in forwards',
-				'window-restore': 'window-restore 0.3s ease-out forwards'
+				'dock-bounce': 'dock-bounce 0.8s cubic-bezier(0.28, 0.84, 0.42, 1)',
+				'dock-attention': 'dock-attention 1s cubic-bezier(0.28, 0.84, 0.42, 1)',
+				'dock-slide-in': 'dock-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+				'dock-hide': 'dock-hide 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+				'dock-show': 'dock-show 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+				// macOS Window Animations with Apple timing curves
+				'window-open': 'window-open 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+				'window-close': 'window-close 0.2s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards',
+				'window-minimize': 'window-minimize 0.5s cubic-bezier(0.42, 0, 1, 1) forwards',
+				'window-restore': 'window-restore 0.4s cubic-bezier(0, 0, 0.58, 1) forwards',
+				'window-maximize': 'window-maximize 0.35s cubic-bezier(0.23, 1, 0.32, 1) forwards',
+				'window-shake': 'window-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97)',
+				'window-bounce': 'window-bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+				// Sheet animations
+				'sheet-open': 'sheet-open 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards',
+				'sheet-close': 'sheet-close 0.2s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards',
+				// Popover animations with spring physics
+				'popover-open': 'popover-open 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+				'popover-close': 'popover-close 0.15s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards',
 			}
 		}
 	},

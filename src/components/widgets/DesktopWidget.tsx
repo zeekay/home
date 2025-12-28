@@ -131,8 +131,7 @@ const DesktopWidget: React.FC<DesktopWidgetProps> = ({ widget, children, classNa
       ref={widgetRef}
       className={cn(
         'absolute rounded-3xl overflow-hidden',
-        'bg-white/10 backdrop-blur-xl border border-white/20',
-        'shadow-lg shadow-black/20',
+        'vibrancy-widget',
         'transition-transform duration-200',
         isDragging && 'scale-105 shadow-2xl z-50',
         editMode && !isDragging && 'animate-widget-jiggle cursor-grab',

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import { Volume2, VolumeX, Mic, Bell, Speaker } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { SoundSettings } from '@/hooks/useSystemPreferences';
+import { soundManager, playSound } from '@/lib/sounds';
 
 interface SoundPanelProps {
   settings: SoundSettings;
@@ -32,6 +33,27 @@ const inputDevices = [
 ];
 
 const SoundPanel: React.FC<SoundPanelProps> = ({ settings, onUpdate }) => {
+  const lastVolumeRef = useRef(settings.outputVolume);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Play volume change sound with debouncing
+  const handleVolumeChange = useCallback((value: number[]) => {
+    const newVolume = value[0];
+    onUpdate({ outputVolume: newVolume, outputMuted: false });
+
+    // Play feedback sound when volume changes (debounced)
+    if (settings.playFeedback && Math.abs(newVolume - lastVolumeRef.current) >= 5) {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+      debounceRef.current = setTimeout(() => {
+        soundManager.setVolume(newVolume);
+        playSound('volumeChange');
+        lastVolumeRef.current = newVolume;
+      }, 100);
+    }
+  }, [onUpdate, settings.playFeedback]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -91,7 +113,7 @@ const SoundPanel: React.FC<SoundPanelProps> = ({ settings, onUpdate }) => {
               <VolumeX className="w-4 h-4 text-gray-400" />
               <Slider
                 value={[settings.outputMuted ? 0 : settings.outputVolume]}
-                onValueChange={(value) => onUpdate({ outputVolume: value[0], outputMuted: false })}
+                onValueChange={handleVolumeChange}
                 max={100}
                 min={0}
                 step={1}
@@ -200,10 +222,9 @@ const SoundPanel: React.FC<SoundPanelProps> = ({ settings, onUpdate }) => {
               key={sound}
               onClick={() => {
                 onUpdate({ alertSound: sound });
-                // Play sound preview
-                const audio = new Audio(`/sounds/${sound.toLowerCase()}.mp3`);
-                audio.volume = settings.alertVolume / 100;
-                audio.play().catch(() => {/* Ignore if sound file doesn't exist */});
+                // Play synthesized sound preview
+                soundManager.setVolume(settings.alertVolume);
+                soundManager.playAlert(sound);
               }}
               className={`
                 py-2 px-3 rounded-lg text-left transition-all

@@ -19,9 +19,12 @@ import { NotificationProvider } from "./contexts/NotificationContext";
 import { FocusModeProvider } from "./contexts/FocusModeContext";
 import { DragDropProvider } from "./contexts/DragDropContext";
 import { ShortcutsProvider } from "./contexts/ShortcutsContext";
+import { GlobalShortcutsProvider } from "./contexts/GlobalShortcutsContext";
 import { AccessibilityProvider } from "./contexts/AccessibilityContext";
 import { UserProvider } from "./contexts/UserContext";
 import { FileTagsProvider } from "./contexts/FileTagsContext";
+import { SelectionProvider } from "./contexts/SelectionContext";
+import { SoundProvider } from "./contexts/SoundContext";
 import { ScreenRecorderProvider } from "./components/ScreenRecorder";
 import NotificationCenter from "./components/NotificationCenter";
 import BootSequence from "./components/BootSequence";
@@ -128,8 +131,11 @@ const App = () => {
                         <NotificationProvider>
                           <FocusModeProvider>
                             <ShortcutsProvider>
+                              <GlobalShortcutsProvider>
                               <DragDropProvider>
+                                <SelectionProvider>
                                 <FileTagsProvider>
+                                <SoundProvider>
                                 <ScreenRecorderProvider>
                                   {/* Boot sequence */}
                                   {systemState === 'booting' && (
@@ -172,8 +178,11 @@ const App = () => {
                                     </Routes>
                                   </BrowserRouter>
                                 </ScreenRecorderProvider>
+                                </SoundProvider>
                                 </FileTagsProvider>
+                                </SelectionProvider>
                               </DragDropProvider>
+                              </GlobalShortcutsProvider>
                             </ShortcutsProvider>
                           </FocusModeProvider>
                         </NotificationProvider>

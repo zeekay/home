@@ -13,6 +13,7 @@ interface WindowTitleBarProps {
   onMinimize: () => void;
   onMaximize?: () => void;
   isMaximized?: boolean;
+  isActive?: boolean;
   customControls?: React.ReactNode;
 }
 
@@ -25,22 +26,23 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
   onMinimize,
   onMaximize,
   isMaximized,
+  isActive = true,
   customControls
 }) => {
   const isMobile = useIsMobile();
-  
+
   const getTitleBarStyle = () => {
     switch (windowType) {
       case 'terminal':
         return 'bg-black text-gray-500'; // Pure black like iTerm2
       case 'safari':
-        return 'glass-titlebar text-gray-300';
+        return 'vibrancy-titlebar text-gray-300';
       case 'itunes':
-        return 'glass-titlebar text-white';
+        return 'vibrancy-titlebar text-white';
       case 'textpad':
-        return 'glass-titlebar text-gray-300';
+        return 'vibrancy-titlebar text-gray-300';
       default:
-        return 'glass-titlebar text-gray-300';
+        return 'vibrancy-titlebar text-gray-300';
     }
   };
 
@@ -57,15 +59,25 @@ const WindowTitleBar: React.FC<WindowTitleBarProps> = ({
 
   return (
     <div
+      data-window-titlebar
       className={cn(
-        'h-8 flex items-center px-3',
+        'h-8 flex items-center',
         getBorderStyle(),
-        getTitleBarStyle(),
-        isMobile ? 'cursor-default' : 'cursor-move'
+        getTitleBarStyle()
       )}
+      style={{
+        paddingLeft: '12px', // Exact 12px from window edge for traffic lights
+        paddingRight: '12px',
+      }}
       onMouseDown={onMouseDown}
     >
-      <WindowControls onClose={onClose} onMinimize={onMinimize} onMaximize={onMaximize} isMaximized={isMaximized} />
+      <WindowControls
+        onClose={onClose}
+        onMinimize={onMinimize}
+        onMaximize={onMaximize}
+        isMaximized={isMaximized}
+        isActive={isActive}
+      />
       {showTitle && (
         <div id={titleId} className="text-center flex-1 text-xs font-medium select-none">
           {title}
