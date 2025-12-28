@@ -31,6 +31,7 @@ import {
 interface ZFinderWindowProps {
   onClose: () => void;
   onFocus?: () => void;
+  initialPath?: string[]; // e.g., ['Trash'] or ['Home', 'Documents']
 }
 
 interface FileItem {
@@ -50,8 +51,8 @@ interface ContextMenuState {
   isBackground: boolean;
 }
 
-const ZFinderWindow: React.FC<ZFinderWindowProps> = ({ onClose, onFocus }) => {
-  const [currentPath, setCurrentPath] = useState<string[]>(['Home']);
+const ZFinderWindow: React.FC<ZFinderWindowProps> = ({ onClose, onFocus, initialPath }) => {
+  const [currentPath, setCurrentPath] = useState<string[]>(initialPath || ['Home']);
   const [viewMode, setViewMode] = useState<'icons' | 'list' | 'columns' | 'gallery'>('icons');
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
@@ -89,7 +90,56 @@ const ZFinderWindow: React.FC<ZFinderWindowProps> = ({ onClose, onFocus }) => {
 
     if (path === 'Trash') {
       return [
-        { name: 'Trash is Empty', type: 'file', icon: <Trash2 className="w-12 h-12 text-gray-500" /> },
+        { 
+          name: 'quantum-finality-proposal.md', 
+          type: 'file', 
+          icon: <FileText className="w-12 h-12 text-gray-400" />,
+          modified: 'Yesterday',
+          size: '12 KB',
+          content: `# Proof of Quantum Finality (PoQF)
+
+## Abstract
+
+A novel consensus mechanism leveraging quantum entanglement for instant, provably-final transaction confirmation.
+
+## Introduction
+
+Traditional blockchain finality relies on probabilistic guarantees or economic security. PoQF introduces true finality through quantum measurement collapse.
+
+## Key Innovations
+
+1. **Quantum Validator Bonds** - Validators stake entangled qubits
+2. **Measurement-Based Consensus** - Transaction finality upon qubit measurement
+3. **No-Cloning Theorem Security** - Prevents double-spend attacks fundamentally
+4. **Instant Finality** - Sub-millisecond confirmation times
+
+## Technical Approach
+
+By maintaining quantum coherence across validator nodes and triggering coordinated measurement events, we achieve:
+
+- Deterministic finality (not probabilistic)
+- Byzantine fault tolerance via quantum correlations
+- Sybil resistance through qubit scarcity
+
+## Conclusion
+
+PoQF represents a paradigm shift from classical to quantum consensus...
+
+*Draft - moved to trash for revision*`
+        },
+        { 
+          name: 'old-notes.txt', 
+          type: 'file', 
+          icon: <FileText className="w-12 h-12 text-gray-400" />,
+          modified: 'Last week',
+          size: '2 KB'
+        },
+        { 
+          name: 'unused-assets', 
+          type: 'folder', 
+          icon: <Folder className="w-12 h-12 text-blue-400" />,
+          modified: '2 days ago'
+        },
       ];
     }
 
