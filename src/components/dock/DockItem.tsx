@@ -10,8 +10,12 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
+  ContextMenuSub,
+  ContextMenuSubTrigger,
+  ContextMenuSubContent,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { getAppMenuConfig } from '@/config/appMenus';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useDock } from '@/contexts/DockContext';
 import { cn } from '@/lib/utils';
@@ -335,31 +339,104 @@ const DockItem: React.FC<DockItemProps> = ({
           </TooltipContent>
         </Tooltip>
       </ContextMenuTrigger>
-      <ContextMenuContent className="w-48 bg-black/90 backdrop-blur-xl border-white/20 text-white">
-        <ContextMenuItem onClick={onClick} className="hover:bg-white/10 focus:bg-white/10">
-          Open {label}
-        </ContextMenuItem>
-        <ContextMenuSeparator className="bg-white/20" />
-        {isPinned ? (
-          <ContextMenuItem
-            onClick={handleUnpin}
-            className="hover:bg-white/10 focus:bg-white/10"
-            disabled={id === 'finder'}
-          >
-            Unpin from Dock
-          </ContextMenuItem>
-        ) : (
-          <ContextMenuItem onClick={handlePin} className="hover:bg-white/10 focus:bg-white/10">
-            Keep in Dock
-          </ContextMenuItem>
+      <ContextMenuContent className="w-56 bg-black/95 backdrop-blur-xl border-white/20 text-white rounded-lg shadow-xl">
+        {/* App-specific menu items */}
+        {(() => {
+          const menuConfig = id ? getAppMenuConfig(id) : null;
+          if (!menuConfig) return null;
+          
+          return menuConfig.items.map((item, idx) => {
+            if (item.separator) {
+              return <ContextMenuSeparator key={idx} className="bg-white/10 my-1" />;
+            }
+            return (
+              <ContextMenuItem 
+                key={idx}
+                onClick={() => {
+                  if (item.action === 'new' || item.action === 'showAll') {
+                    onClick?.();
+                  }
+                }}
+                className="hover:bg-white/10 focus:bg-white/10 flex items-center justify-between"
+              >
+                <span>{item.label}</span>
+                {item.shortcut && (
+                  <span className="text-white/40 text-xs ml-4">{item.shortcut}</span>
+                )}
+              </ContextMenuItem>
+            );
+          });
+        })()}
+        
+        {/* Open Recent submenu */}
+        {id && getAppMenuConfig(id)?.hasRecents && (
+          <>
+            <ContextMenuSeparator className="bg-white/10 my-1" />
+            <ContextMenuSub>
+              <ContextMenuSubTrigger className="hover:bg-white/10 focus:bg-white/10">
+                Open Recent
+              </ContextMenuSubTrigger>
+              <ContextMenuSubContent className="w-48 bg-black/95 backdrop-blur-xl border-white/20 text-white rounded-lg">
+                <ContextMenuItem className="hover:bg-white/10 focus:bg-white/10 text-white/50">
+                  No Recent Items
+                </ContextMenuItem>
+                <ContextMenuSeparator className="bg-white/10 my-1" />
+                <ContextMenuItem className="hover:bg-white/10 focus:bg-white/10">
+                  Clear Menu
+                </ContextMenuItem>
+              </ContextMenuSubContent>
+            </ContextMenuSub>
+          </>
         )}
-        {canRemove && (
-          <ContextMenuItem
-            onClick={handleRemove}
-            className="hover:bg-white/10 focus:bg-white/10 text-red-400 focus:text-red-400"
-          >
-            Remove from Dock
-          </ContextMenuItem>
+        
+        <ContextMenuSeparator className="bg-white/10 my-1" />
+        
+        {/* Options section */}
+        <ContextMenuSub>
+          <ContextMenuSubTrigger className="hover:bg-white/10 focus:bg-white/10">
+            Options
+          </ContextMenuSubTrigger>
+          <ContextMenuSubContent className="w-48 bg-black/95 backdrop-blur-xl border-white/20 text-white rounded-lg">
+            {isPinned ? (
+              <ContextMenuItem
+                onClick={handleUnpin}
+                className="hover:bg-white/10 focus:bg-white/10"
+                disabled={id === 'finder'}
+              >
+                Remove from Dock
+              </ContextMenuItem>
+            ) : (
+              <ContextMenuItem onClick={handlePin} className="hover:bg-white/10 focus:bg-white/10">
+                Keep in Dock
+              </ContextMenuItem>
+            )}
+            <ContextMenuItem className="hover:bg-white/10 focus:bg-white/10">
+              Open at Login
+            </ContextMenuItem>
+            <ContextMenuItem className="hover:bg-white/10 focus:bg-white/10">
+              Show in Finder
+            </ContextMenuItem>
+          </ContextMenuSubContent>
+        </ContextMenuSub>
+        
+        <ContextMenuSeparator className="bg-white/10 my-1" />
+        
+        {/* Show All Windows / Hide */}
+        <ContextMenuItem onClick={onClick} className="hover:bg-white/10 focus:bg-white/10">
+          Show All Windows
+        </ContextMenuItem>
+        <ContextMenuItem className="hover:bg-white/10 focus:bg-white/10">
+          Hide
+        </ContextMenuItem>
+        
+        {/* Quit */}
+        {id !== 'finder' && (
+          <>
+            <ContextMenuSeparator className="bg-white/10 my-1" />
+            <ContextMenuItem className="hover:bg-white/10 focus:bg-white/10">
+              Quit
+            </ContextMenuItem>
+          </>
         )}
       </ContextMenuContent>
     </ContextMenu>
