@@ -1,0 +1,10 @@
+export { default as GeneralPanel } from './GeneralPanel';
+export { default as DesktopDockPanel } from './DesktopDockPanel';
+export { default as DisplaysPanel } from './DisplaysPanel';
+export { default as SoundPanel } from './SoundPanel';
+export { default as NotificationsPanel } from './NotificationsPanel';
+export { default as FocusPanel } from './FocusPanel';
+export { default as PrivacySecurityPanel } from './PrivacySecurityPanel';
+export { default as UsersGroupsPanel } from './UsersGroupsPanel';
+export { default as KeyboardPanel } from './KeyboardPanel';
+export { default as AccessibilityPanel } from './AccessibilityPanel';
