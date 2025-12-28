@@ -101,6 +101,9 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
   // About app dialog state
   const [aboutApp, setAboutApp] = useState<string | null>(null);
 
+  // Finder initial path (for deep linking to Trash, etc.)
+  const [finderInitialPath, setFinderInitialPath] = useState<string[] | undefined>(undefined);
+
   // Intro animation state - triggers after boot completes
   const [introPhase, setIntroPhase] = useState<'waiting' | 'dock' | 'window' | 'complete'>('waiting');
   const [launchingApp, setLaunchingApp] = useState<string | null>(null);
@@ -308,7 +311,14 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
 
       {/* Application Windows */}
       {windows.isOpen('Finder') && (
-        <ZFinderWindow onClose={() => windows.closeWindow('Finder')} onFocus={() => windows.focusWindow('Finder')} />
+        <ZFinderWindow 
+          onClose={() => {
+            windows.closeWindow('Finder');
+            setFinderInitialPath(undefined);
+          }} 
+          onFocus={() => windows.focusWindow('Finder')} 
+          initialPath={finderInitialPath}
+        />
       )}
       {windows.isOpen('Terminal') && (
         <LazyZTerminalWindow onClose={() => windows.closeWindow('Terminal')} onFocus={() => windows.focusWindow('Terminal')} />
@@ -510,7 +520,10 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
         onZooClick={() => handleAppLaunch('zoo', () => windows.openWindow('Zoo'))}
         onApplicationsClick={overlays.toggleApplications}
         onDownloadsClick={overlays.toggleDownloads}
-        onTrashClick={() => windows.openWindow('Finder')}
+        onTrashClick={() => {
+          setFinderInitialPath(['Trash']);
+          windows.openWindow('Finder');
+        }}
         activeApps={activeDockApps}
         launchingApp={launchingApp}
         introAnimation={introPhase === 'dock'}
