@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ZWindow from './ZWindow';
 import { cn } from '@/lib/utils';
-import { Music, Radio, Heart, ExternalLink, ListMusic, RefreshCw, Loader2 } from 'lucide-react';
+import { Music, Radio, Heart, ListMusic, RefreshCw, Loader2 } from 'lucide-react';
 import { socialProfiles } from '@/data/socials';
 import type { SpotifyStaticData, SpotifyPlaylistMinimal } from '@/types/spotify';
 
@@ -13,31 +13,9 @@ interface ZMusicWindowProps {
 type TabType = 'spotify' | 'soundcloud';
 const SPOTIFY_EMBED_THEME = 'theme=0'; // 0 = dark theme
 
-// Featured playlists to embed - you can add more playlist/album IDs here
-const spotifyEmbeds = [
-  { 
-    type: 'playlist',
-    id: '37i9dQZF1DXcBWIGoYBM5M', // Today's Top Hits
-    name: "Today's Top Hits",
-    description: 'The biggest songs right now'
-  },
-  { 
-    type: 'playlist',
-    id: '37i9dQZF1DWZeKCadgRdKQ', // Deep Focus
-    name: 'Deep Focus',
-    description: 'Keep calm and focus'
-  },
-  { 
-    type: 'playlist',
-    id: '37i9dQZF1DX4sWSpwq3LiO', // Peaceful Piano
-    name: 'Peaceful Piano',
-    description: 'Relax and indulge with beautiful piano pieces'
-  },
-];
-
 const ZMusicWindow: React.FC<ZMusicWindowProps> = ({ onClose, onFocus }) => {
   const [activeTab, setActiveTab] = useState<TabType>('spotify');
-  const [selectedSpotifyEmbed, setSelectedSpotifyEmbed] = useState(spotifyEmbeds[0]);
+  const [selectedPlaylist, setSelectedPlaylist] = useState<{ type: string; id: string; name: string; description: string } | null>(null);
   const [soundcloudLoaded, setSoundcloudLoaded] = useState(false);
   const [spotifyLoaded, setSpotifyLoaded] = useState(false);
   const [customPlaylistUrl, setCustomPlaylistUrl] = useState('');
@@ -52,8 +30,16 @@ const ZMusicWindow: React.FC<ZMusicWindowProps> = ({ onClose, onFocus }) => {
     fetch('/data/spotify-minimal.json')
       .then(res => res.ok ? res.json() : null)
       .then((data: SpotifyStaticData | null) => {
-        if (data?.playlists) {
+        if (data?.playlists && data.playlists.length > 0) {
           setUserPlaylists(data.playlists);
+          // Auto-select first playlist
+          const first = data.playlists[0];
+          setSelectedPlaylist({
+            type: 'playlist',
+            id: first.id,
+            name: first.name,
+            description: first.description || `${first.trackCount} tracks`
+          });
         }
       })
       .catch(err => console.error('Failed to load Spotify data:', err))
@@ -84,7 +70,7 @@ const ZMusicWindow: React.FC<ZMusicWindowProps> = ({ onClose, onFocus }) => {
   const handleCustomPlaylist = () => {
     const parsed = parseSpotifyUrl(customPlaylistUrl);
     if (parsed) {
-      setSelectedSpotifyEmbed({
+      setSelectedPlaylist({
         type: parsed.type,
         id: parsed.id,
         name: 'Custom Playlist',
@@ -93,6 +79,10 @@ const ZMusicWindow: React.FC<ZMusicWindowProps> = ({ onClose, onFocus }) => {
       setSpotifyLoaded(false);
     }
   };
+
+  // Get pinned playlists (first 4) and remaining playlists
+  const pinnedPlaylists = userPlaylists.slice(0, 4);
+  const otherPlaylists = userPlaylists.slice(4);
 
   const tabs: { id: TabType; label: string; icon: React.ReactNode }[] = [
     { id: 'spotify', label: 'Spotify', icon: <Music className="w-4 h-4" /> },
@@ -113,13 +103,29 @@ const ZMusicWindow: React.FC<ZMusicWindowProps> = ({ onClose, onFocus }) => {
       <div className="flex flex-col h-full bg-transparent">
         {/* Header with tabs */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/30">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 via-pink-500 to-purple-600 flex items-center justify-center shadow-lg">
-              <Music className="w-5 h-5 text-white" />
+          <div className="flex items-center gap-3">
+            <div className={cn(
+              "w-10 h-10 rounded-xl flex items-center justify-center shadow-lg",
+              activeTab === 'spotify' ? "bg-[#1DB954]" : "bg-[#FF5500]"
+            )}>
+              {activeTab === 'spotify' ? (
+                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="white">
+                  <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                </svg>
+              ) : (
+                <Radio className="w-5 h-5 text-white" />
+              )}
             </div>
             <div>
               <h2 className="text-white font-semibold text-lg">Music</h2>
-              <p className="text-white/50 text-xs">Stream your favorites</p>
+              <a 
+                href={activeTab === 'spotify' ? spotifyProfile.url : soundcloudProfile.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/50 text-xs hover:text-white/70 transition-colors"
+              >
+                @{activeTab === 'spotify' ? spotifyProfile.handle : soundcloudProfile.handle}
+              </a>
             </div>
           </div>
 
@@ -146,104 +152,103 @@ const ZMusicWindow: React.FC<ZMusicWindowProps> = ({ onClose, onFocus }) => {
         {/* Content */}
         <div className="flex-1 overflow-auto">
           {activeTab === 'spotify' && (
-            <div className="flex flex-col h-full">
-              {/* Spotify header */}
-              <div className="flex items-center justify-between p-4 border-b border-white/10">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-[#1DB954] flex items-center justify-center shadow-lg">
-                    <svg className="w-7 h-7" viewBox="0 0 24 24" fill="white">
-                      <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-white font-semibold text-lg">Spotify</h3>
-                    <p className="text-white/50 text-sm">@{spotifyProfile.handle}</p>
-                  </div>
-                </div>
-                <a
-                  href={spotifyProfile.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-5 py-2.5 bg-[#1DB954] hover:bg-[#1ed760] text-white text-sm font-semibold rounded-full transition-colors flex items-center gap-2"
-                >
-                  Open Spotify <ExternalLink className="w-4 h-4" />
-                </a>
-              </div>
-
-              <div className="flex flex-1 overflow-hidden">
-                {/* Sidebar with playlists */}
-                <div className="w-64 border-r border-white/10 p-4 overflow-y-auto">
-                  <h4 className="text-white/70 text-xs font-semibold uppercase tracking-wider mb-3">Featured Playlists</h4>
-                  <div className="space-y-2">
-                    {spotifyEmbeds.map((embed, i) => (
-                      <button
-                        key={i}
-                        onClick={() => {
-                          setSelectedSpotifyEmbed(embed);
-                          setSpotifyLoaded(false);
-                        }}
-                        className={cn(
-                          "w-full text-left p-3 rounded-xl transition-all",
-                          selectedSpotifyEmbed.id === embed.id
-                            ? "bg-[#1DB954]/20 border border-[#1DB954]/30"
-                            : "bg-white/5 hover:bg-white/10"
-                        )}
-                      >
-                        <p className="text-white text-sm font-medium truncate">{embed.name}</p>
-                        <p className="text-white/50 text-xs truncate">{embed.description}</p>
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* User's Playlists from Spotify API */}
-                  {userPlaylists.length > 0 && (
-                    <div className="mt-6">
-                      <h4 className="text-white/70 text-xs font-semibold uppercase tracking-wider mb-3">My Playlists</h4>
-                      <div className="space-y-2">
-                        {userPlaylists.slice(0, 20).map((playlist) => (
-                          <button
-                            key={playlist.id}
-                            onClick={() => {
-                              setSelectedSpotifyEmbed({
-                                type: 'playlist',
-                                id: playlist.id,
-                                name: playlist.name,
-                                description: playlist.description || `${playlist.trackCount} tracks`
-                              });
-                              setSpotifyLoaded(false);
-                            }}
-                            className={cn(
-                              "w-full text-left p-2 rounded-xl transition-all flex items-center gap-3",
-                              selectedSpotifyEmbed.id === playlist.id
-                                ? "bg-[#1DB954]/20 border border-[#1DB954]/30"
-                                : "bg-white/5 hover:bg-white/10"
-                            )}
-                          >
-                            {playlist.image ? (
-                              <img 
-                                src={playlist.image} 
-                                alt={playlist.name}
-                                className="w-10 h-10 rounded-md object-cover flex-shrink-0"
-                              />
-                            ) : (
-                              <div className="w-10 h-10 rounded-md bg-white/10 flex items-center justify-center flex-shrink-0">
-                                <ListMusic className="w-5 h-5 text-white/50" />
-                              </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-white text-sm font-medium truncate">{playlist.name}</p>
-                              <p className="text-white/50 text-xs truncate">{playlist.trackCount} tracks</p>
+            <div className="flex flex-1 overflow-hidden">
+              {/* Sidebar with playlists */}
+              <div className="w-64 border-r border-white/10 p-4 overflow-y-auto">
+                {/* Pinned Playlists (first 4) */}
+                {pinnedPlaylists.length > 0 && (
+                  <>
+                    <h4 className="text-white/70 text-xs font-semibold uppercase tracking-wider mb-3">Pinned</h4>
+                    <div className="space-y-2">
+                      {pinnedPlaylists.map((playlist) => (
+                        <button
+                          key={playlist.id}
+                          onClick={() => {
+                            setSelectedPlaylist({
+                              type: 'playlist',
+                              id: playlist.id,
+                              name: playlist.name,
+                              description: playlist.description || `${playlist.trackCount} tracks`
+                            });
+                            setSpotifyLoaded(false);
+                          }}
+                          className={cn(
+                            "w-full text-left p-2 rounded-xl transition-all flex items-center gap-3",
+                            selectedPlaylist?.id === playlist.id
+                              ? "bg-[#1DB954]/20 border border-[#1DB954]/30"
+                              : "bg-white/5 hover:bg-white/10"
+                          )}
+                        >
+                          {playlist.image ? (
+                            <img 
+                              src={playlist.image} 
+                              alt={playlist.name}
+                              className="w-10 h-10 rounded-md object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-md bg-white/10 flex items-center justify-center flex-shrink-0">
+                              <ListMusic className="w-5 h-5 text-white/50" />
                             </div>
-                          </button>
-                        ))}
-                      </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white text-sm font-medium truncate">{playlist.name}</p>
+                            <p className="text-white/50 text-xs truncate">{playlist.trackCount} tracks</p>
+                          </div>
+                        </button>
+                      ))}
                     </div>
-                  )}
-                  {loadingPlaylists && (
-                    <div className="mt-6 flex items-center justify-center py-4">
-                      <Loader2 className="w-5 h-5 text-[#1DB954] animate-spin" />
+                  </>
+                )}
+
+                {/* Other Playlists */}
+                {otherPlaylists.length > 0 && (
+                  <div className="mt-6">
+                    <h4 className="text-white/70 text-xs font-semibold uppercase tracking-wider mb-3">Playlists</h4>
+                    <div className="space-y-2">
+                      {otherPlaylists.slice(0, 20).map((playlist) => (
+                        <button
+                          key={playlist.id}
+                          onClick={() => {
+                            setSelectedPlaylist({
+                              type: 'playlist',
+                              id: playlist.id,
+                              name: playlist.name,
+                              description: playlist.description || `${playlist.trackCount} tracks`
+                            });
+                            setSpotifyLoaded(false);
+                          }}
+                          className={cn(
+                            "w-full text-left p-2 rounded-xl transition-all flex items-center gap-3",
+                            selectedPlaylist?.id === playlist.id
+                              ? "bg-[#1DB954]/20 border border-[#1DB954]/30"
+                              : "bg-white/5 hover:bg-white/10"
+                          )}
+                        >
+                          {playlist.image ? (
+                            <img 
+                              src={playlist.image} 
+                              alt={playlist.name}
+                              className="w-10 h-10 rounded-md object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-md bg-white/10 flex items-center justify-center flex-shrink-0">
+                              <ListMusic className="w-5 h-5 text-white/50" />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white text-sm font-medium truncate">{playlist.name}</p>
+                            <p className="text-white/50 text-xs truncate">{playlist.trackCount} tracks</p>
+                          </div>
+                        </button>
+                      ))}
                     </div>
-                  )}
+                  </div>
+                )}
+                {loadingPlaylists && (
+                  <div className="flex items-center justify-center py-4">
+                    <Loader2 className="w-5 h-5 text-[#1DB954] animate-spin" />
+                  </div>
+                )}
 
                   {/* Custom URL input */}
                   <div className="mt-6">
@@ -267,72 +272,56 @@ const ZMusicWindow: React.FC<ZMusicWindowProps> = ({ onClose, onFocus }) => {
 
                 {/* Main embed area */}
                 <div className="flex-1 p-4 flex flex-col">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-white font-semibold">{selectedSpotifyEmbed.name}</h3>
-                      <p className="text-white/50 text-sm">{selectedSpotifyEmbed.description}</p>
-                    </div>
-                    <button
-                      onClick={() => setSpotifyLoaded(false)}
-                      className="p-2 rounded-lg hover:bg-white/10 transition-colors text-white/50 hover:text-white"
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                    </button>
-                  </div>
-                  
-                  <div className="flex-1 relative rounded-xl overflow-hidden bg-black/30">
-                    {!spotifyLoaded && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
-                        <Loader2 className="w-8 h-8 text-[#1DB954] animate-spin" />
+                  {selectedPlaylist ? (
+                    <>
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="text-white font-semibold">{selectedPlaylist.name}</h3>
+                          <p className="text-white/50 text-sm">{selectedPlaylist.description}</p>
+                        </div>
+                        <button
+                          onClick={() => setSpotifyLoaded(false)}
+                          className="p-2 rounded-lg hover:bg-white/10 transition-colors text-white/50 hover:text-white"
+                        >
+                          <RefreshCw className="w-4 h-4" />
+                        </button>
                       </div>
-                    )}
-                    <iframe
-                      src={`https://open.spotify.com/embed/${selectedSpotifyEmbed.type}/${selectedSpotifyEmbed.id}?utm_source=generator&${SPOTIFY_EMBED_THEME}`}
-                      width="100%"
-                      height="100%"
-                      frameBorder="0"
-                      allowFullScreen
-                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                      loading="lazy"
-                      onLoad={() => setSpotifyLoaded(true)}
-                      className="absolute inset-0"
-                      style={{ borderRadius: '12px', minHeight: '380px' }}
-                    />
-                  </div>
+                      
+                      <div className="flex-1 relative rounded-xl overflow-hidden bg-black/30">
+                        {!spotifyLoaded && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
+                            <Loader2 className="w-8 h-8 text-[#1DB954] animate-spin" />
+                          </div>
+                        )}
+                        <iframe
+                          src={`https://open.spotify.com/embed/${selectedPlaylist.type}/${selectedPlaylist.id}?utm_source=generator&${SPOTIFY_EMBED_THEME}`}
+                          width="100%"
+                          height="100%"
+                          frameBorder="0"
+                          allowFullScreen
+                          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                          loading="lazy"
+                          onLoad={() => setSpotifyLoaded(true)}
+                          className="absolute inset-0"
+                          style={{ borderRadius: '12px', minHeight: '380px' }}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex-1 flex items-center justify-center text-white/50">
+                      {loadingPlaylists ? (
+                        <Loader2 className="w-8 h-8 text-[#1DB954] animate-spin" />
+                      ) : (
+                        <p>Select a playlist to play</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
           )}
 
           {activeTab === 'soundcloud' && (
-            <div className="flex flex-col h-full">
-              {/* SoundCloud header */}
-              <div className="flex items-center justify-between p-4 border-b border-white/10">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg">
-                    <svg className="w-7 h-7" viewBox="0 0 24 24" fill="white">
-                      <path d="M1.175 12.225c-.051 0-.094.046-.101.1l-.233 2.154.233 2.105c.007.058.05.098.101.098.05 0 .09-.04.099-.098l.255-2.105-.27-2.154c-.009-.06-.052-.1-.084-.1zm-.899 1.02c-.051 0-.094.047-.101.1l-.183 1.138.183 1.095c.007.057.05.098.101.098.05 0 .09-.04.099-.098l.208-1.095-.208-1.138c-.009-.06-.052-.1-.099-.1zm1.802-.7c-.058 0-.109.051-.115.109l-.218 1.859.218 1.787c.007.06.057.108.115.108.057 0 .108-.048.115-.108l.25-1.787-.25-1.859c-.007-.058-.058-.109-.115-.109zm.9-.236c-.058 0-.11.051-.116.109l-.211 2.095.211 2.024c.007.061.058.109.116.109.057 0 .108-.048.115-.109l.239-2.024-.239-2.095c-.007-.058-.058-.109-.115-.109z"/>
-                      <path d="M11.34 5.6c-.091 0-.165.081-.17.179l-.144 6.2.144 3.4c.005.099.079.179.17.179.091 0 .165-.08.171-.179l.163-3.4-.163-6.2c-.006-.098-.08-.179-.171-.179zm1.028.013c-.098 0-.176.086-.182.193l-.126 6.187.126 3.374c.006.105.084.191.182.191.098 0 .176-.086.182-.191l.143-3.374-.143-6.187c-.006-.107-.084-.193-.182-.193z"/>
-                      <path d="M22.5 10.5c-.38 0-.75.07-1.09.19-.23-2.76-2.55-4.93-5.41-4.93-.68 0-1.33.13-1.93.36-.23.09-.3.18-.3.36v9.44c.01.19.16.34.35.36h8.38c1.38 0 2.5-1.12 2.5-2.5s-1.12-2.5-2.5-2.5z"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-white font-semibold text-lg">SoundCloud</h3>
-                    <p className="text-white/50 text-sm">@{soundcloudProfile.handle}</p>
-                  </div>
-                </div>
-                <a
-                  href={soundcloudProfile.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-full transition-colors flex items-center gap-2"
-                >
-                  Open SoundCloud <ExternalLink className="w-4 h-4" />
-                </a>
-              </div>
-
-              {/* SoundCloud embed - user's profile */}
-              <div className="flex-1 p-4 flex flex-col">
+            <div className="flex-1 p-4 flex flex-col">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-white font-semibold">Z's SoundCloud</h3>
@@ -399,7 +388,6 @@ const ZMusicWindow: React.FC<ZMusicWindowProps> = ({ onClose, onFocus }) => {
                     <p className="text-white/50 text-xs">Liked tracks</p>
                   </a>
                 </div>
-              </div>
             </div>
           )}
         </div>
