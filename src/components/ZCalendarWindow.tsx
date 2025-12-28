@@ -1,166 +1,70 @@
-
 import React, { useState } from 'react';
-import { format, addDays } from 'date-fns';
-import { Calendar } from './ui/calendar';
-import { Label } from './ui/label';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { Button } from './ui/button';
-import { toast } from 'sonner';
-import { CalendarClock, Users } from 'lucide-react';
+import { ExternalLink, Calendar as CalendarIcon } from 'lucide-react';
 import ZWindow from './ZWindow';
-
-const timeSlots = [
-  '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM',
-  '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM',
-  '1:00 PM', '1:30 PM', '2:00 PM', '2:30 PM',
-  '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM',
-  '5:00 PM', '5:30 PM'
-];
+import { cn } from '@/lib/utils';
 
 interface ZCalendarWindowProps {
   onClose: () => void;
   onFocus?: () => void;
 }
 
-const ZCalendarWindow: React.FC<ZCalendarWindowProps> = ({ onClose }) => {
-  const [date, setDate] = useState<Date>(addDays(new Date(), 1));
-  const [timeSlot, setTimeSlot] = useState('10:00 AM');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [description, setDescription] = useState('');
-  const [submitting, setSubmitting] = useState(false);
+const CAL_LINK = 'zeekay/15min';
 
-  const handleScheduleMeeting = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!date || !timeSlot || !name || !email) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-    
-    setSubmitting(true);
-    
-    // This would typically connect to a calendar API or send a meeting request
-    // For demo purposes, we'll simulate the scheduling
-    setTimeout(() => {
-      setSubmitting(false);
-      toast.success('Meeting scheduled successfully!');
-      // Meeting data: date, time, name, email, description - ready for backend integration
-    }, 1500);
-  };
+const ZCalendarWindow: React.FC<ZCalendarWindowProps> = ({ onClose, onFocus }) => {
+  const [loaded, setLoaded] = useState(false);
 
   return (
     <ZWindow
       title="Calendar"
       onClose={onClose}
-      initialPosition={{ x: 150, y: 100 }}
-      initialSize={{ width: 700, height: 600 }}
-      windowType="default"
-      className="bg-white/95"
+      onFocus={onFocus}
+      defaultWidth={800}
+      defaultHeight={700}
+      minWidth={600}
+      minHeight={500}
+      defaultPosition={{ x: 150, y: 80 }}
     >
-      <div className="h-full flex flex-col">
-        <div className="bg-gray-100 border-b border-gray-200 p-2 flex justify-between items-center">
-          <h2 className="font-medium">Schedule a Meeting</h2>
-          <Button
-            size="sm"
-            className="bg-blue-500 hover:bg-blue-600 text-white"
-            onClick={handleScheduleMeeting}
-            disabled={submitting}
-          >
-            <CalendarClock className="h-4 w-4 mr-1" />
-            Schedule
-          </Button>
+      <div className="flex flex-col h-full bg-[#1a1a1a]">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/30">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg">
+              <CalendarIcon className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-white font-semibold text-lg">Schedule a Meeting</h2>
+              <a 
+                href={`https://cal.com/${CAL_LINK}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/50 text-xs hover:text-white/70 transition-colors flex items-center gap-1"
+              >
+                cal.com/{CAL_LINK}
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          </div>
         </div>
 
-        <div className="flex-1 overflow-auto p-4">
-          <form onSubmit={handleScheduleMeeting} className="space-y-4">
-            <div className="flex gap-4">
-              <div className="w-1/2">
-                <Label>Select Date</Label>
-                <div className="mt-2 border rounded-md overflow-hidden">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={(date) => date && setDate(date)}
-                    disabled={(date) => date < new Date()}
-                    className="rounded-md border"
-                  />
-                </div>
-              </div>
-              
-              <div className="w-1/2 space-y-4">
-                <div>
-                  <Label>Select Time</Label>
-                  <div className="grid grid-cols-3 gap-2 mt-2">
-                    {timeSlots.map((time) => (
-                      <Button
-                        key={time}
-                        type="button"
-                        variant={timeSlot === time ? "default" : "outline"}
-                        className="text-xs h-8"
-                        onClick={() => setTimeSlot(time)}
-                      >
-                        {time}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="name">Your Name</Label>
-                  <Input
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="mt-1"
-                    placeholder="Enter your name"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="email">Your Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="mt-1"
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
+        {/* Cal.com Embed */}
+        <div className="flex-1 relative">
+          {!loaded && (
+            <div className="absolute inset-0 flex items-center justify-center bg-[#1a1a1a]">
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-10 h-10 border-2 border-white/20 border-t-white/80 rounded-full animate-spin" />
+                <p className="text-white/60 text-sm">Loading calendar...</p>
               </div>
             </div>
-            
-            <div>
-              <Label htmlFor="description">Meeting Description</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="mt-1"
-                placeholder="What would you like to discuss?"
-                rows={3}
-              />
-            </div>
-            
-            <div className="bg-blue-50 p-3 rounded-md">
-              <h3 className="text-sm font-medium flex items-center">
-                <Users className="h-4 w-4 mr-1 text-blue-500" />
-                Meeting Details
-              </h3>
-              <p className="text-sm mt-2">
-                Your meeting with <strong>ZeeKay AI</strong> is scheduled for{' '}
-                <strong>{date ? format(date, 'EEEE, MMMM d, yyyy') : 'TBD'}</strong> at{' '}
-                <strong>{timeSlot}</strong>.
-              </p>
-              <p className="text-sm mt-1 text-gray-600">
-                You'll receive a confirmation email with meeting details once scheduled.
-              </p>
-            </div>
-          </form>
+          )}
+          <iframe
+            src={`https://cal.com/${CAL_LINK}?embed=true&theme=dark&hideEventTypeDetails=false`}
+            className={cn(
+              "w-full h-full border-0",
+              loaded ? "opacity-100" : "opacity-0"
+            )}
+            onLoad={() => setLoaded(true)}
+            allow="camera; microphone; fullscreen; display-capture"
+          />
         </div>
       </div>
     </ZWindow>
