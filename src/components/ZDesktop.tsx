@@ -339,10 +339,11 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
     }
   }, []);
 
-  // Desktop drop target
+  // Desktop drop target accepts array - memoized to prevent infinite loops
+  const desktopAccepts = useMemo(() => ['file', 'folder', 'image', 'url'] as const, []);
   const desktopDropTarget = useDropTarget(
     'desktop',
-    ['file', 'folder', 'image', 'url'],
+    desktopAccepts as unknown as ('file' | 'folder' | 'image' | 'url')[],
     handleDesktopDrop
   );
 
@@ -502,7 +503,8 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
       escapeUnregister();
       cmdKUnregister();
     };
-  }, [systemShortcuts, register, overlays]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Compute active dock apps from window state
   const activeDockApps = useMemo(() => {
