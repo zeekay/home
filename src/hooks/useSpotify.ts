@@ -82,8 +82,6 @@ export function useSpotify(): UseSpotifyReturn {
   useEffect(() => {
     if (!isAuthenticated) return;
     
-    let interval: number;
-    
     async function pollCurrentlyPlaying() {
       try {
         const data = await spotify.getCurrentlyPlaying();
@@ -94,7 +92,7 @@ export function useSpotify(): UseSpotifyReturn {
     }
     
     pollCurrentlyPlaying();
-    interval = window.setInterval(pollCurrentlyPlaying, 30000); // Every 30 seconds
+    const interval = window.setInterval(pollCurrentlyPlaying, 30000); // Every 30 seconds
     
     return () => clearInterval(interval);
   }, [isAuthenticated]);
