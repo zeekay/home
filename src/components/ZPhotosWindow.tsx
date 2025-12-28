@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ZWindow from './ZWindow';
-import { Search, ExternalLink, Instagram, Github, Upload, RefreshCw } from 'lucide-react';
+import { Search, ExternalLink, Instagram, Github, Upload, Play, Image, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { socialProfiles, pinnedProjects } from '@/data/socials';
 import { cn } from '@/lib/utils';
@@ -10,53 +10,58 @@ interface ZPhotosWindowProps {
   onFocus?: () => void;
 }
 
+interface InstagramMedia {
+  id: string;
+  type: string;
+  url: string;
+  thumbnail?: string;
+  caption?: string;
+  permalink: string;
+  timestamp: string;
+}
+
+interface InstagramData {
+  user: {
+    id: string;
+    username: string;
+    mediaCount: number;
+  };
+  media: InstagramMedia[];
+  fetchedAt: string;
+}
+
 const INSTAGRAM_USERNAME = 'zeekayai';
 
 const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose, onFocus }) => {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<InstagramMedia | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'photos' | 'projects' | 'brands'>('photos');
-  const [embedLoaded, setEmbedLoaded] = useState(false);
+  const [instagramData, setInstagramData] = useState<InstagramData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Load Instagram embed script
+  // Load Instagram data from static JSON
   useEffect(() => {
-    if (activeTab === 'photos' && !embedLoaded) {
-      const script = document.createElement('script');
-      script.src = 'https://www.instagram.com/embed.js';
-      script.async = true;
-      script.onload = () => {
-        setEmbedLoaded(true);
-        // Process any existing embeds
-        if ((window as unknown as { instgrm?: { Embeds?: { process?: () => void } } }).instgrm?.Embeds?.process) {
-          (window as unknown as { instgrm: { Embeds: { process: () => void } } }).instgrm.Embeds.process();
+    const loadInstagramData = async () => {
+      try {
+        const response = await fetch('/data/instagram.json');
+        if (response.ok) {
+          const data = await response.json();
+          setInstagramData(data);
         }
-      };
-      document.body.appendChild(script);
-      
-      return () => {
-        // Cleanup if needed
-      };
-    }
-  }, [activeTab, embedLoaded]);
-
-  // Re-process embeds when tab changes
-  useEffect(() => {
-    if (activeTab === 'photos' && embedLoaded) {
-      setTimeout(() => {
-        if ((window as unknown as { instgrm?: { Embeds?: { process?: () => void } } }).instgrm?.Embeds?.process) {
-          (window as unknown as { instgrm: { Embeds: { process: () => void } } }).instgrm.Embeds.process();
-        }
-      }, 100);
-    }
-  }, [activeTab, embedLoaded]);
+      } catch (error) {
+        console.log('Instagram data not available');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadInstagramData();
+  }, []);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        setSelectedImage(result);
+      reader.onload = () => {
         toast.success('Photo added to library');
       };
       reader.readAsDataURL(file);
@@ -78,6 +83,18 @@ const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose, onFocus }) => {
     { id: 'projects' as const, label: 'Projects' },
     { id: 'brands' as const, label: 'Brands' },
   ];
+
+  const formatDate = (timestamp: string) => {
+    return new Date(timestamp).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
+  const filteredMedia = instagramData?.media.filter(item => 
+    item.caption?.toLowerCase().includes(searchQuery.toLowerCase()) || searchQuery === ''
+  ) || [];
 
   return (
     <ZWindow
@@ -141,12 +158,35 @@ const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose, onFocus }) => {
         <div className="flex-1 overflow-auto p-4">
           {selectedImage ? (
             <div className="flex flex-col items-center">
-              <div className="bg-black/30 p-2 rounded-xl shadow-lg mb-4 border border-white/10">
-                <img
-                  src={selectedImage}
-                  alt="Uploaded"
-                  className="max-w-full max-h-[400px] object-contain rounded-lg"
-                />
+              <div className="bg-black/30 p-2 rounded-xl shadow-lg mb-4 border border-white/10 max-w-2xl w-full">
+                {selectedImage.type === 'video' ? (
+                  <video
+                    src={selectedImage.url}
+                    poster={selectedImage.thumbnail}
+                    controls
+                    className="w-full max-h-[400px] object-contain rounded-lg"
+                  />
+                ) : (
+                  <img
+                    src={selectedImage.url}
+                    alt={selectedImage.caption || 'Instagram photo'}
+                    className="w-full max-h-[400px] object-contain rounded-lg"
+                  />
+                )}
+                {selectedImage.caption && (
+                  <p className="mt-3 text-sm text-white/70 px-2 line-clamp-3">{selectedImage.caption}</p>
+                )}
+                <div className="flex items-center justify-between mt-3 px-2">
+                  <span className="text-xs text-white/40">{formatDate(selectedImage.timestamp)}</span>
+                  <a
+                    href={selectedImage.permalink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs text-pink-400 hover:text-pink-300"
+                  >
+                    View on Instagram <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
               </div>
               <button
                 className="px-4 py-2 text-sm bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
@@ -168,8 +208,12 @@ const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose, onFocus }) => {
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-white">@{INSTAGRAM_USERNAME}</h3>
-                      <p className="text-sm text-white/60">Instagram Photos & Stories</p>
+                      <h3 className="text-lg font-semibold text-white">@{instagramData?.user.username || INSTAGRAM_USERNAME}</h3>
+                      <p className="text-sm text-white/60">
+                        {instagramData?.user.mediaCount 
+                          ? `${instagramData.user.mediaCount} posts` 
+                          : 'Instagram Photos & Stories'}
+                      </p>
                     </div>
                     <a
                       href={socialProfiles.instagram.url}
@@ -181,31 +225,65 @@ const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose, onFocus }) => {
                     </a>
                   </div>
 
-                  {/* Instagram Embed */}
-                  <div className="flex justify-center">
-                    <div className="w-full max-w-lg">
-                      <blockquote 
-                        className="instagram-media" 
-                        data-instgrm-permalink={`https://www.instagram.com/${INSTAGRAM_USERNAME}/`}
-                        data-instgrm-version="14"
-                        style={{
-                          background: '#1a1a1a',
-                          border: '1px solid rgba(255,255,255,0.1)',
-                          borderRadius: '12px',
-                          margin: '0 auto',
-                          maxWidth: '540px',
-                          minWidth: '326px',
-                          padding: 0,
-                          width: '100%'
-                        }}
-                      >
-                        <div className="p-8 text-center">
-                          <RefreshCw className="w-8 h-8 text-white/40 mx-auto mb-3 animate-spin" />
-                          <p className="text-white/60 text-sm">Loading Instagram...</p>
-                        </div>
-                      </blockquote>
+                  {/* Photo Grid */}
+                  {loading ? (
+                    <div className="flex flex-col items-center justify-center py-12">
+                      <RefreshCw className="w-8 h-8 text-white/40 animate-spin mb-3" />
+                      <p className="text-white/60 text-sm">Loading photos...</p>
                     </div>
-                  </div>
+                  ) : filteredMedia.length > 0 ? (
+                    <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                      {filteredMedia.map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => setSelectedImage(item)}
+                          className="relative aspect-square group overflow-hidden rounded-lg bg-white/5"
+                        >
+                          <img
+                            src={item.type === 'video' ? (item.thumbnail || item.url) : item.url}
+                            alt={item.caption || 'Instagram photo'}
+                            className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                            loading="lazy"
+                          />
+                          {/* Overlay */}
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            {item.type === 'video' ? (
+                              <Play className="w-8 h-8 text-white" />
+                            ) : (
+                              <Image className="w-8 h-8 text-white" />
+                            )}
+                          </div>
+                          {/* Video indicator */}
+                          {item.type === 'video' && (
+                            <div className="absolute top-2 right-2">
+                              <Play className="w-4 h-4 text-white drop-shadow-lg" />
+                            </div>
+                          )}
+                          {/* Carousel indicator */}
+                          {item.type === 'carousel_album' && (
+                            <div className="absolute top-2 right-2 flex gap-0.5">
+                              <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                              <div className="w-1.5 h-1.5 bg-white/50 rounded-full" />
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Instagram className="w-12 h-12 text-white/20 mx-auto mb-4" />
+                      <p className="text-white/60 mb-2">No photos yet</p>
+                      <p className="text-white/40 text-sm mb-4">Instagram photos will appear here once configured</p>
+                      <a
+                        href={socialProfiles.instagram.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white text-sm rounded-lg hover:opacity-90 transition-opacity"
+                      >
+                        Visit Instagram <ExternalLink className="w-4 h-4" />
+                      </a>
+                    </div>
+                  )}
 
                   {/* Quick Links */}
                   <div>
