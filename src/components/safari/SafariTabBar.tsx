@@ -13,6 +13,8 @@ import {
   Copy,
   ChevronLeft,
   ChevronRight,
+  XCircle,
+  Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SafariTab, TabGroup, TAB_GROUP_COLORS, extractDomain, getFaviconUrl } from './safariTypes';
@@ -28,7 +30,9 @@ interface SafariTabBarProps {
   onMuteTab: (tabId: string) => void;
   onDuplicateTab: (tabId: string) => void;
   onMoveTabToGroup: (tabId: string, groupId: string | null) => void;
+  onCloseOtherTabs?: (tabId: string) => void;
   scaleFactor?: number;
+  privateMode?: boolean;
 }
 
 interface TabPreviewProps {
@@ -69,10 +73,12 @@ interface TabContextMenuProps {
   position: { x: number; y: number };
   onClose: () => void;
   onCloseTab: () => void;
+  onCloseOtherTabs?: () => void;
   onPinTab: () => void;
   onMuteTab: () => void;
   onDuplicateTab: () => void;
   onMoveToGroup: (groupId: string | null) => void;
+  tabCount: number;
 }
 
 const TabContextMenu: React.FC<TabContextMenuProps> = ({
@@ -81,10 +87,12 @@ const TabContextMenu: React.FC<TabContextMenuProps> = ({
   position,
   onClose,
   onCloseTab,
+  onCloseOtherTabs,
   onPinTab,
   onMuteTab,
   onDuplicateTab,
   onMoveToGroup,
+  tabCount,
 }) => {
   useEffect(() => {
     const handleClick = () => onClose();
@@ -172,6 +180,17 @@ const TabContextMenu: React.FC<TabContextMenuProps> = ({
 
       <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
 
+      {/* Close Other Tabs */}
+      {onCloseOtherTabs && tabCount > 1 && (
+        <button
+          onClick={() => { onCloseOtherTabs(); onClose(); }}
+          className="flex items-center gap-2 w-full px-3 py-1.5 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-700"
+        >
+          <XCircle className="w-4 h-4" />
+          Close Other Tabs
+        </button>
+      )}
+
       <button
         onClick={() => { onCloseTab(); onClose(); }}
         className="flex items-center gap-2 w-full px-3 py-1.5 text-sm text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
@@ -194,6 +213,7 @@ interface TabItemProps {
   onMouseEnter: (e: React.MouseEvent) => void;
   onMouseLeave: () => void;
   scaleFactor: number;
+  privateMode?: boolean;
 }
 
 const TabItem: React.FC<TabItemProps> = ({
@@ -206,6 +226,7 @@ const TabItem: React.FC<TabItemProps> = ({
   onMouseEnter,
   onMouseLeave,
   scaleFactor,
+  privateMode = false,
 }) => {
   const height = Math.max(24, 32 * scaleFactor);
   const iconSize = Math.max(10, 14 * scaleFactor);
@@ -218,10 +239,17 @@ const TabItem: React.FC<TabItemProps> = ({
     <div
       className={cn(
         'flex items-center gap-1.5 rounded-t-lg cursor-pointer group transition-colors relative',
-        'border-l border-r border-t border-gray-200/50 dark:border-gray-700/50',
+        'border-l border-r border-t',
+        privateMode
+          ? 'border-purple-300/50 dark:border-purple-700/50'
+          : 'border-gray-200/50 dark:border-gray-700/50',
         isActive
-          ? 'bg-white dark:bg-gray-800 z-10'
-          : 'bg-gray-100/50 dark:bg-gray-800/50 hover:bg-gray-200/50 dark:hover:bg-gray-700/50',
+          ? privateMode
+            ? 'bg-purple-100 dark:bg-purple-900/50 z-10'
+            : 'bg-white dark:bg-gray-800 z-10'
+          : privateMode
+            ? 'bg-purple-50/50 dark:bg-purple-950/50 hover:bg-purple-100/50 dark:hover:bg-purple-900/30'
+            : 'bg-gray-100/50 dark:bg-gray-800/50 hover:bg-gray-200/50 dark:hover:bg-gray-700/50',
         tab.isPinned ? 'w-10' : 'min-w-[120px] max-w-[200px]',
         groupColors && `${groupColors.bg}`
       )}
@@ -242,21 +270,31 @@ const TabItem: React.FC<TabItemProps> = ({
         />
       )}
 
-      {/* Favicon */}
-      <img
-        src={tab.favicon || getFaviconUrl(tab.url)}
-        alt=""
-        style={{ width: iconSize, height: iconSize }}
-        className="flex-shrink-0"
-        onError={(e) => {
-          (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><rect fill="%23ccc" width="16" height="16" rx="3"/></svg>';
-        }}
-      />
+      {/* Loading indicator or Favicon */}
+      {tab.isLoading ? (
+        <Loader2
+          style={{ width: iconSize, height: iconSize }}
+          className="flex-shrink-0 animate-spin text-blue-500"
+        />
+      ) : (
+        <img
+          src={tab.favicon || getFaviconUrl(tab.url)}
+          alt=""
+          style={{ width: iconSize, height: iconSize }}
+          className="flex-shrink-0"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><rect fill="%23ccc" width="16" height="16" rx="3"/></svg>';
+          }}
+        />
+      )}
 
       {/* Title (hidden for pinned tabs) */}
       {!tab.isPinned && (
         <span
-          className="flex-1 truncate text-gray-700 dark:text-gray-300"
+          className={cn(
+            'flex-1 truncate',
+            privateMode ? 'text-purple-800 dark:text-purple-200' : 'text-gray-700 dark:text-gray-300'
+          )}
           style={{ fontSize: `${fontSize}px` }}
         >
           {tab.title || extractDomain(tab.url)}
@@ -283,7 +321,10 @@ const TabItem: React.FC<TabItemProps> = ({
         <button
           onClick={(e) => { e.stopPropagation(); onClose(); }}
           className={cn(
-            'p-0.5 rounded hover:bg-gray-300/50 dark:hover:bg-gray-600/50',
+            'p-0.5 rounded',
+            privateMode
+              ? 'hover:bg-purple-300/50 dark:hover:bg-purple-700/50'
+              : 'hover:bg-gray-300/50 dark:hover:bg-gray-600/50',
             'opacity-0 group-hover:opacity-100 transition-opacity'
           )}
         >
@@ -305,7 +346,9 @@ const SafariTabBar: React.FC<SafariTabBarProps> = ({
   onMuteTab,
   onDuplicateTab,
   onMoveTabToGroup,
+  onCloseOtherTabs,
   scaleFactor = 1,
+  privateMode = false,
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showScrollButtons, setShowScrollButtons] = useState(false);
@@ -384,14 +427,24 @@ const SafariTabBar: React.FC<SafariTabBarProps> = ({
 
   return (
     <div
-      className="bg-gray-100/80 dark:bg-gray-900/80 border-b border-gray-200/50 dark:border-gray-700/50 flex items-end relative"
+      className={cn(
+        'border-b flex items-end relative',
+        privateMode
+          ? 'bg-purple-100/80 dark:bg-purple-950/80 border-purple-200/50 dark:border-purple-800/50'
+          : 'bg-gray-100/80 dark:bg-gray-900/80 border-gray-200/50 dark:border-gray-700/50'
+      )}
       style={{ height: `${height}px` }}
     >
       {/* Scroll left button */}
       {showScrollButtons && canScrollLeft && (
         <button
           onClick={scrollLeft}
-          className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-gray-100 dark:from-gray-900 to-transparent z-20 flex items-center justify-start pl-1"
+          className={cn(
+            'absolute left-0 top-0 bottom-0 w-6 z-20 flex items-center justify-start pl-1',
+            privateMode
+              ? 'bg-gradient-to-r from-purple-100 dark:from-purple-950 to-transparent'
+              : 'bg-gradient-to-r from-gray-100 dark:from-gray-900 to-transparent'
+          )}
         >
           <ChevronLeft style={{ width: iconSize, height: iconSize }} />
         </button>
@@ -412,9 +465,13 @@ const SafariTabBar: React.FC<SafariTabBarProps> = ({
               onMouseEnter={(e) => handleTabHover(tab, e)}
               onMouseLeave={handleTabLeave}
               scaleFactor={scaleFactor}
+              privateMode={privateMode}
             />
           ))}
-          <div className="w-px h-4 bg-gray-300 dark:bg-gray-600 mx-1" />
+          <div className={cn(
+            'w-px h-4 mx-1',
+            privateMode ? 'bg-purple-300 dark:bg-purple-600' : 'bg-gray-300 dark:bg-gray-600'
+          )} />
         </div>
       )}
 
@@ -436,6 +493,7 @@ const SafariTabBar: React.FC<SafariTabBarProps> = ({
             onMouseEnter={(e) => handleTabHover(tab, e)}
             onMouseLeave={handleTabLeave}
             scaleFactor={scaleFactor}
+            privateMode={privateMode}
           />
         ))}
       </div>
@@ -444,7 +502,12 @@ const SafariTabBar: React.FC<SafariTabBarProps> = ({
       {showScrollButtons && canScrollRight && (
         <button
           onClick={scrollRight}
-          className="absolute right-8 top-0 bottom-0 w-6 bg-gradient-to-l from-gray-100 dark:from-gray-900 to-transparent z-20 flex items-center justify-end pr-1"
+          className={cn(
+            'absolute right-8 top-0 bottom-0 w-6 z-20 flex items-center justify-end pr-1',
+            privateMode
+              ? 'bg-gradient-to-l from-purple-100 dark:from-purple-950 to-transparent'
+              : 'bg-gradient-to-l from-gray-100 dark:from-gray-900 to-transparent'
+          )}
         >
           <ChevronRight style={{ width: iconSize, height: iconSize }} />
         </button>
@@ -453,8 +516,13 @@ const SafariTabBar: React.FC<SafariTabBarProps> = ({
       {/* New tab button */}
       <button
         onClick={onNewTab}
-        className="flex-shrink-0 p-1.5 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 rounded mx-1"
-        title="New Tab"
+        className={cn(
+          'flex-shrink-0 p-1.5 rounded mx-1',
+          privateMode
+            ? 'hover:bg-purple-200/50 dark:hover:bg-purple-800/50'
+            : 'hover:bg-gray-200/50 dark:hover:bg-gray-700/50'
+        )}
+        title="New Tab (Cmd+T)"
       >
         <Plus style={{ width: iconSize, height: iconSize }} />
       </button>
@@ -470,10 +538,12 @@ const SafariTabBar: React.FC<SafariTabBarProps> = ({
           position={contextMenu.position}
           onClose={() => setContextMenu(null)}
           onCloseTab={() => onCloseTab(contextMenu.tab.id)}
+          onCloseOtherTabs={onCloseOtherTabs ? () => onCloseOtherTabs(contextMenu.tab.id) : undefined}
           onPinTab={() => onPinTab(contextMenu.tab.id)}
           onMuteTab={() => onMuteTab(contextMenu.tab.id)}
           onDuplicateTab={() => onDuplicateTab(contextMenu.tab.id)}
           onMoveToGroup={(groupId) => onMoveTabToGroup(contextMenu.tab.id, groupId)}
+          tabCount={tabs.length}
         />
       )}
     </div>
