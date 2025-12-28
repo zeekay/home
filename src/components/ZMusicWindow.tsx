@@ -321,27 +321,54 @@ const ZMusicWindow: React.FC<ZMusicWindowProps> = ({ onClose, onFocus }) => {
           )}
 
           {activeTab === 'soundcloud' && (
-            <div className="flex-1 p-4 flex flex-col">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-white font-semibold">Z's SoundCloud</h3>
-                    <p className="text-white/50 text-sm">Tracks, playlists, and likes</p>
-                  </div>
-                  <button
-                    onClick={() => setSoundcloudLoaded(false)}
-                    className="p-2 rounded-lg hover:bg-white/10 transition-colors text-white/50 hover:text-white"
+            <div className="flex-1 p-4 flex flex-col overflow-hidden">
+                {/* SoundCloud quick links */}
+                <div className="flex items-center gap-3 mb-4">
+                  <a
+                    href={`${soundcloudProfile.url}/reposts`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-center"
                   >
-                    <RefreshCw className="w-4 h-4" />
-                  </button>
+                    <RefreshCw className="w-5 h-5 text-orange-500 mx-auto mb-1" />
+                    <p className="text-white text-sm font-medium">Reposts</p>
+                  </a>
+                  <a
+                    href={`${soundcloudProfile.url}/sets`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-center"
+                  >
+                    <ListMusic className="w-5 h-5 text-orange-500 mx-auto mb-1" />
+                    <p className="text-white text-sm font-medium">Playlists</p>
+                  </a>
+                  <a
+                    href={`${soundcloudProfile.url}/likes`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-center"
+                  >
+                    <Heart className="w-5 h-5 text-orange-500 mx-auto mb-1" />
+                    <p className="text-white text-sm font-medium">Likes</p>
+                  </a>
+                  <a
+                    href={`${soundcloudProfile.url}/tracks`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-center"
+                  >
+                    <Music className="w-5 h-5 text-orange-500 mx-auto mb-1" />
+                    <p className="text-white text-sm font-medium">Tracks</p>
+                  </a>
                 </div>
                 
-                <div className="flex-1 relative rounded-xl overflow-hidden bg-black/30">
+                {/* SoundCloud embed */}
+                <div className="flex-1 relative rounded-xl overflow-hidden bg-black/30 min-h-0">
                   {!soundcloudLoaded && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
                       <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
                     </div>
                   )}
-                  {/* SoundCloud User Profile Embed */}
                   <iframe
                     width="100%"
                     height="100%"
@@ -351,42 +378,7 @@ const ZMusicWindow: React.FC<ZMusicWindowProps> = ({ onClose, onFocus }) => {
                     src={`https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/${soundcloudProfile.handle}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=true&show_teaser=true&visual=true`}
                     onLoad={() => setSoundcloudLoaded(true)}
                     className="absolute inset-0"
-                    style={{ minHeight: '400px' }}
                   />
-                </div>
-
-                {/* Additional SoundCloud links */}
-                <div className="mt-4 grid grid-cols-3 gap-3">
-                  <a
-                    href={`${soundcloudProfile.url}/tracks`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-center"
-                  >
-                    <Music className="w-6 h-6 text-orange-500 mx-auto mb-2" />
-                    <p className="text-white text-sm font-medium">Tracks</p>
-                    <p className="text-white/50 text-xs">View all tracks</p>
-                  </a>
-                  <a
-                    href={`${soundcloudProfile.url}/sets`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-center"
-                  >
-                    <ListMusic className="w-6 h-6 text-orange-500 mx-auto mb-2" />
-                    <p className="text-white text-sm font-medium">Playlists</p>
-                    <p className="text-white/50 text-xs">View playlists</p>
-                  </a>
-                  <a
-                    href={`${soundcloudProfile.url}/likes`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-center"
-                  >
-                    <Heart className="w-6 h-6 text-orange-500 mx-auto mb-2" />
-                    <p className="text-white text-sm font-medium">Likes</p>
-                    <p className="text-white/50 text-xs">Liked tracks</p>
-                  </a>
                 </div>
             </div>
           )}
