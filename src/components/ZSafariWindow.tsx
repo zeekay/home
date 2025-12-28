@@ -1,10 +1,12 @@
 /**
  * Safari Browser Window
- * Full-featured Safari browser with Tab Groups, Reading List, History, Bookmarks, and Start Page
+ * Full-featured Safari browser with Tab Groups, Reading List, History, Bookmarks,
+ * Private Browsing Mode, Closed Tabs Restoration, and Start Page
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import ReactDOM from 'react-dom/client';
+import { Shield } from 'lucide-react';
 import ZWindow from './ZWindow';
 import SafariNavBar from './safari/SafariNavBar';
 import SafariContent from './safari/SafariContent';
@@ -16,6 +18,7 @@ import { calculateSizeReduction } from './safari/safariUtils';
 import {
   SafariTab,
   TabGroup,
+  ClosedTab,
   ReadingListItem,
   HistoryEntry,
   Bookmark,
@@ -30,6 +33,10 @@ import {
   saveTabs,
   loadTabGroups,
   saveTabGroups,
+  loadClosedTabs,
+  addClosedTab,
+  popClosedTab,
+  clearClosedTabs,
   loadReadingList,
   saveReadingList,
   addToReadingList,
@@ -52,7 +59,12 @@ import {
   getFrequentlyVisited,
   loadSettings,
   saveSettings,
+  loadPrivacySettings,
+  savePrivacySettings,
+  clearBrowsingData,
 } from './safari/safariStorage';
+import { useDropTarget, DragItem, DragOperation } from '@/lib/dragAndDrop';
+import { toast } from 'sonner';
 
 export interface ZSafariWindowProps {
   onClose: () => void;
@@ -75,6 +87,7 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
   const [tabs, setTabs] = useState<SafariTab[]>([]);
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
   const [tabGroups, setTabGroups] = useState<TabGroup[]>([]);
+  const [closedTabs, setClosedTabs] = useState<ClosedTab[]>([]);
   const [iframeKey, setIframeKey] = useState(Date.now());
 
   // Per-tab navigation history (stored per tab)
@@ -95,6 +108,9 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
   const [showBookmarksBar, setShowBookmarksBar] = useState(true);
   const [showStartPage, setShowStartPage] = useState(true);
 
+  // Privacy mode
+  const [privateMode, setPrivateMode] = useState(false);
+
   // Input URL for address bar
   const [inputUrl, setInputUrl] = useState(initialUrl);
 
@@ -102,6 +118,7 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
   useEffect(() => {
     const storedTabs = loadTabs();
     const settings = loadSettings();
+    const privacySettings = loadPrivacySettings();
 
     if (storedTabs.length === 0) {
       // Create initial tab
@@ -111,8 +128,11 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
         title: initialUrl === START_PAGE_URL ? 'Start Page' : 'New Tab',
         isPinned: false,
         isMuted: false,
+        isLoading: false,
         lastAccessed: Date.now(),
         groupId: null,
+        history: [initialUrl],
+        historyIndex: 0,
       };
       setTabs([newTab]);
       setActiveTabId(newTab.id);
@@ -123,31 +143,35 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
       // Initialize histories for existing tabs
       const histories: Record<string, { urls: string[]; index: number }> = {};
       storedTabs.forEach(tab => {
-        histories[tab.id] = { urls: [tab.url], index: 0 };
+        histories[tab.id] = { urls: tab.history || [tab.url], index: tab.historyIndex || 0 };
       });
       setTabHistories(histories);
     }
 
     setTabGroups(loadTabGroups());
+    setClosedTabs(loadClosedTabs());
     setReadingList(loadReadingList());
     setBrowsingHistory(loadHistory());
     setBookmarks(loadBookmarks());
     setFavorites(loadFavorites());
     setShowBookmarksBar(settings.showBookmarksBar);
     setSidebarSection(settings.sidebarSection);
+    setPrivateMode(privacySettings.privateMode);
   }, [initialUrl]);
 
-  // Save tabs whenever they change
+  // Save tabs whenever they change (not in private mode)
   useEffect(() => {
-    if (tabs.length > 0) {
+    if (tabs.length > 0 && !privateMode) {
       saveTabs(tabs);
     }
-  }, [tabs]);
+  }, [tabs, privateMode]);
 
   // Save tab groups
   useEffect(() => {
-    saveTabGroups(tabGroups);
-  }, [tabGroups]);
+    if (!privateMode) {
+      saveTabGroups(tabGroups);
+    }
+  }, [tabGroups, privateMode]);
 
   // Get active tab
   const activeTab = useMemo(() => tabs.find(t => t.id === activeTabId), [tabs, activeTabId]);
@@ -177,6 +201,19 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
     return checkBookmarks(bookmarks);
   }, [activeTab, bookmarks]);
 
+  // Toggle private mode
+  const handleTogglePrivateMode = useCallback(() => {
+    const newMode = !privateMode;
+    setPrivateMode(newMode);
+    savePrivacySettings({ privateMode: newMode });
+
+    if (newMode) {
+      toast.info('Private Browsing enabled - history will not be saved');
+    } else {
+      toast.info('Private Browsing disabled');
+    }
+  }, [privateMode]);
+
   // Navigation handlers
   const navigateToUrl = useCallback((url: string, tabId?: string) => {
     const targetTabId = tabId || activeTabId;
@@ -184,7 +221,13 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
 
     let normalizedUrl = url.trim();
     if (normalizedUrl && !normalizedUrl.match(/^(https?:\/\/|about:)/i)) {
-      normalizedUrl = 'https://' + normalizedUrl;
+      // Check if it looks like a URL or a search query
+      if (normalizedUrl.includes('.') && !normalizedUrl.includes(' ')) {
+        normalizedUrl = 'https://' + normalizedUrl;
+      } else {
+        // Treat as search query
+        normalizedUrl = `https://duckduckgo.com/?q=${encodeURIComponent(normalizedUrl)}`;
+      }
     }
 
     // Update tab
@@ -195,6 +238,7 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
             url: normalizedUrl,
             title: normalizedUrl === START_PAGE_URL ? 'Start Page' : extractDomain(normalizedUrl),
             favicon: normalizedUrl === START_PAGE_URL ? undefined : getFaviconUrl(normalizedUrl),
+            isLoading: normalizedUrl !== START_PAGE_URL,
             lastAccessed: Date.now(),
           }
         : tab
@@ -210,8 +254,8 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
       };
     });
 
-    // Add to browsing history (not for start page)
-    if (normalizedUrl !== START_PAGE_URL) {
+    // Add to browsing history (not for start page, not in private mode)
+    if (normalizedUrl !== START_PAGE_URL && !privateMode) {
       const entry = addToHistory(normalizedUrl, extractDomain(normalizedUrl));
       setBrowsingHistory(prev => [entry, ...prev]);
 
@@ -221,7 +265,7 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
     }
 
     setInputUrl(normalizedUrl === START_PAGE_URL ? '' : normalizedUrl);
-  }, [activeTabId]);
+  }, [activeTabId, privateMode]);
 
   const handleNavigate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -268,6 +312,12 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
 
   const handleRefresh = () => {
     setIframeKey(Date.now());
+    // Set loading state
+    if (activeTabId) {
+      setTabs(prev => prev.map(tab =>
+        tab.id === activeTabId ? { ...tab, isLoading: true } : tab
+      ));
+    }
   };
 
   const handleHome = () => {
@@ -282,8 +332,11 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
       title: 'Start Page',
       isPinned: false,
       isMuted: false,
+      isLoading: false,
       lastAccessed: Date.now(),
       groupId: null,
+      history: [START_PAGE_URL],
+      historyIndex: 0,
     };
     setTabs(prev => [...prev, newTab]);
     setActiveTabId(newTab.id);
@@ -295,6 +348,9 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
   }, []);
 
   const handleCloseTab = useCallback((tabId: string) => {
+    const tabToClose = tabs.find(t => t.id === tabId);
+    const tabIndex = tabs.findIndex(t => t.id === tabId);
+
     setTabs(prev => {
       const newTabs = prev.filter(t => t.id !== tabId);
       if (newTabs.length === 0) {
@@ -305,24 +361,66 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
           title: 'Start Page',
           isPinned: false,
           isMuted: false,
+          isLoading: false,
           lastAccessed: Date.now(),
           groupId: null,
+          history: [START_PAGE_URL],
+          historyIndex: 0,
         };
         setActiveTabId(newTab.id);
         setTabHistories({ [newTab.id]: { urls: [START_PAGE_URL], index: 0 } });
         return [newTab];
       }
       if (tabId === activeTabId) {
-        setActiveTabId(newTabs[newTabs.length - 1].id);
+        setActiveTabId(newTabs[Math.min(tabIndex, newTabs.length - 1)].id);
       }
       return newTabs;
     });
+
+    // Save to closed tabs for restoration (not in private mode)
+    if (tabToClose && !privateMode && tabToClose.url !== START_PAGE_URL) {
+      addClosedTab(tabToClose, tabIndex);
+      setClosedTabs(loadClosedTabs());
+    }
 
     setTabHistories(prev => {
       const { [tabId]: _, ...rest } = prev;
       return rest;
     });
-  }, [activeTabId]);
+  }, [activeTabId, tabs, privateMode]);
+
+  // Reopen closed tab (Cmd+Shift+T)
+  const handleReopenClosedTab = useCallback(() => {
+    const closedTab = popClosedTab();
+    if (!closedTab) {
+      toast.info('No recently closed tabs');
+      return;
+    }
+
+    const restoredTab: SafariTab = {
+      ...closedTab.tab,
+      id: generateId(), // New ID to avoid conflicts
+      lastAccessed: Date.now(),
+    };
+
+    setTabs(prev => {
+      const newTabs = [...prev];
+      // Insert at original position if possible
+      const insertIndex = Math.min(closedTab.index, newTabs.length);
+      newTabs.splice(insertIndex, 0, restoredTab);
+      return newTabs;
+    });
+
+    setActiveTabId(restoredTab.id);
+    setTabHistories(prev => ({
+      ...prev,
+      [restoredTab.id]: { urls: restoredTab.history || [restoredTab.url], index: restoredTab.historyIndex || 0 },
+    }));
+    setClosedTabs(loadClosedTabs());
+    setInputUrl(restoredTab.url === START_PAGE_URL ? '' : restoredTab.url);
+
+    toast.success(`Reopened: ${restoredTab.title}`);
+  }, []);
 
   const handleSelectTab = useCallback((tabId: string) => {
     setActiveTabId(tabId);
@@ -361,6 +459,24 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
       [newTab.id]: { urls: [tab.url], index: 0 },
     }));
   }, [tabs]);
+
+  const handleCloseOtherTabs = useCallback((tabId: string) => {
+    const tabToKeep = tabs.find(t => t.id === tabId);
+    if (!tabToKeep) return;
+
+    // Save other tabs to closed tabs
+    if (!privateMode) {
+      tabs.forEach((tab, index) => {
+        if (tab.id !== tabId && tab.url !== START_PAGE_URL) {
+          addClosedTab(tab, index);
+        }
+      });
+      setClosedTabs(loadClosedTabs());
+    }
+
+    setTabs([tabToKeep]);
+    setActiveTabId(tabId);
+  }, [tabs, privateMode]);
 
   // Tab Groups
   const handleCreateGroup = useCallback((name: string, color: TabGroupColor) => {
@@ -406,6 +522,7 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
     if (!activeTab || activeTab.url === START_PAGE_URL) return;
     const item = addToReadingList(activeTab.url, activeTab.title || extractDomain(activeTab.url));
     setReadingList(loadReadingList());
+    toast.success('Added to Reading List');
   }, [activeTab]);
 
   const handleToggleReadingListRead = useCallback((id: string) => {
@@ -419,9 +536,10 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
   }, []);
 
   // History
-  const handleClearHistory = useCallback((range: 'hour' | 'day' | 'week' | 'all') => {
+  const handleClearHistory = useCallback((range: 'hour' | 'day' | 'week' | 'month' | 'all') => {
     clearHistory(range);
     setBrowsingHistory(loadHistory());
+    toast.success(`History cleared (${range})`);
   }, []);
 
   const filteredHistory = useMemo(() => {
@@ -434,6 +552,7 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
     if (!activeTab || activeTab.url === START_PAGE_URL) return;
     addBookmark(activeTab.url, activeTab.title || extractDomain(activeTab.url));
     setBookmarks(loadBookmarks());
+    toast.success('Bookmark added');
   }, [activeTab]);
 
   const handleRemoveBookmark = useCallback((id: string) => {
@@ -458,6 +577,23 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
     setFavorites(loadFavorites());
   }, [activeTab]);
 
+  // Clear browsing data
+  const handleClearBrowsingData = useCallback((options: {
+    history?: boolean;
+    cookies?: boolean;
+    cache?: boolean;
+    closedTabs?: boolean;
+  }) => {
+    clearBrowsingData(options);
+    if (options.history) {
+      setBrowsingHistory([]);
+    }
+    if (options.closedTabs) {
+      setClosedTabs([]);
+    }
+    toast.success('Browsing data cleared');
+  }, []);
+
   // Handle URL drops - navigate to dropped URL
   const handleUrlDrop = useCallback((item: DragItem, _operation: DragOperation) => {
     if (item.itemType === 'url') {
@@ -472,7 +608,7 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
         toast.success(`Navigating to ${text.substring(0, 40)}...`);
       } else {
         // Search for the text
-        navigateToUrl(`https://www.google.com/search?q=${encodeURIComponent(text)}`);
+        navigateToUrl(`https://duckduckgo.com/?q=${encodeURIComponent(text)}`);
         toast.success('Searching for dropped text');
       }
     }
@@ -507,39 +643,90 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       const isMeta = e.metaKey || e.ctrlKey;
 
-      if (isMeta && e.shiftKey && e.key === 'n') {
+      // Cmd+Shift+T - Reopen closed tab
+      if (isMeta && e.shiftKey && e.key.toLowerCase() === 't') {
         e.preventDefault();
-        // New Tab Group
-        handleCreateGroup('New Group', 'blue');
-      } else if (isMeta && e.shiftKey && e.key === 'd') {
+        handleReopenClosedTab();
+      }
+      // Cmd+Shift+N - Toggle Private Mode
+      else if (isMeta && e.shiftKey && e.key.toLowerCase() === 'n') {
         e.preventDefault();
-        // Add to Reading List
+        handleTogglePrivateMode();
+      }
+      // Cmd+Shift+D - Add to Reading List
+      else if (isMeta && e.shiftKey && e.key.toLowerCase() === 'd') {
+        e.preventDefault();
         handleAddToReadingList();
-      } else if (isMeta && e.shiftKey && e.key === 'p') {
+      }
+      // Cmd+Shift+P - Pin Tab
+      else if (isMeta && e.shiftKey && e.key.toLowerCase() === 'p') {
         e.preventDefault();
-        // Pin Tab
         if (activeTabId) handlePinTab(activeTabId);
-      } else if (isMeta && e.key === 'd') {
+      }
+      // Cmd+D - Add Bookmark
+      else if (isMeta && e.key.toLowerCase() === 'd') {
         e.preventDefault();
-        // Add Bookmark
         handleAddBookmark();
-      } else if (isMeta && e.key === 't') {
+      }
+      // Cmd+T - New Tab
+      else if (isMeta && e.key.toLowerCase() === 't') {
         e.preventDefault();
-        // New Tab
         handleNewTab();
-      } else if (isMeta && e.key === 'w') {
+      }
+      // Cmd+W - Close Tab
+      else if (isMeta && e.key.toLowerCase() === 'w') {
         e.preventDefault();
-        // Close Tab
         if (activeTabId) handleCloseTab(activeTabId);
+      }
+      // Cmd+L - Focus URL bar
+      else if (isMeta && e.key.toLowerCase() === 'l') {
+        e.preventDefault();
+        const urlInput = document.querySelector('input[type="text"]') as HTMLInputElement;
+        if (urlInput) {
+          urlInput.focus();
+          urlInput.select();
+        }
+      }
+      // Cmd+R - Refresh
+      else if (isMeta && e.key.toLowerCase() === 'r') {
+        e.preventDefault();
+        handleRefresh();
+      }
+      // Cmd+[ - Back
+      else if (isMeta && e.key === '[') {
+        e.preventDefault();
+        handleBack();
+      }
+      // Cmd+] - Forward
+      else if (isMeta && e.key === ']') {
+        e.preventDefault();
+        handleForward();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeTabId, handleCreateGroup, handleAddToReadingList, handlePinTab, handleAddBookmark, handleNewTab, handleCloseTab]);
+  }, [
+    activeTabId,
+    handleReopenClosedTab,
+    handleTogglePrivateMode,
+    handleAddToReadingList,
+    handlePinTab,
+    handleAddBookmark,
+    handleNewTab,
+    handleCloseTab,
+    handleRefresh,
+    handleBack,
+    handleForward,
+  ]);
 
   // Determine what content to show
   const showingStartPage = activeTab?.url === START_PAGE_URL;
+
+  // Window styling for private mode
+  const windowClassName = privateMode
+    ? 'z-40 ring-2 ring-purple-500/50'
+    : 'z-40';
 
   return (
     <ZWindow
@@ -551,130 +738,146 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
         height: calculateSizeReduction(650, depth),
       }}
       windowType="safari"
-      className="z-40"
+      className={windowClassName}
     >
-      <div className="w-full h-full flex">
-        {/* Sidebar */}
-        <SafariSidebar
-          isOpen={sidebarOpen}
-          section={sidebarSection}
-          onSectionChange={(section) => {
-            setSidebarSection(section);
-            saveSettings({ sidebarSection: section });
-          }}
-          tabGroups={tabGroups}
-          tabs={tabs}
-          activeTabId={activeTabId}
-          onCreateGroup={handleCreateGroup}
-          onDeleteGroup={handleDeleteGroup}
-          onRenameGroup={handleRenameGroup}
-          onToggleGroupCollapse={handleToggleGroupCollapse}
-          onMoveTabToGroup={handleMoveTabToGroup}
-          onSelectTab={handleSelectTab}
-          readingList={readingList}
-          onToggleReadingListRead={handleToggleReadingListRead}
-          onRemoveFromReadingList={handleRemoveFromReadingList}
-          onOpenReadingListItem={(url) => navigateToUrl(url)}
-          history={filteredHistory}
-          onClearHistory={handleClearHistory}
-          onOpenHistoryItem={(url) => navigateToUrl(url)}
-          historySearchQuery={historySearchQuery}
-          onHistorySearch={setHistorySearchQuery}
-          bookmarks={bookmarks}
-          onAddBookmark={(url, title, parentId) => {
-            addBookmark(url, title, parentId);
-            setBookmarks(loadBookmarks());
-          }}
-          onRemoveBookmark={handleRemoveBookmark}
-          onOpenBookmark={(url) => navigateToUrl(url)}
-          onCreateFolder={handleCreateFolder}
-        />
+      <div className="w-full h-full flex flex-col">
+        {/* Private Mode Banner */}
+        {privateMode && (
+          <div className="flex items-center justify-center gap-2 py-1.5 bg-purple-700 text-white text-xs font-medium">
+            <Shield className="w-3.5 h-3.5" />
+            Private Browsing - History and cookies will not be saved
+          </div>
+        )}
 
-        {/* Main content area */}
-        <div className="flex-1 flex flex-col min-w-0">
-          {/* Tab Bar */}
-          <SafariTabBar
+        <div className="flex-1 flex min-h-0">
+          {/* Sidebar */}
+          <SafariSidebar
+            isOpen={sidebarOpen}
+            section={sidebarSection}
+            onSectionChange={(section) => {
+              setSidebarSection(section);
+              saveSettings({ sidebarSection: section });
+            }}
+            tabGroups={tabGroups}
             tabs={tabs}
             activeTabId={activeTabId}
-            tabGroups={tabGroups}
-            onSelectTab={handleSelectTab}
-            onCloseTab={handleCloseTab}
-            onNewTab={handleNewTab}
-            onPinTab={handlePinTab}
-            onMuteTab={handleMuteTab}
-            onDuplicateTab={handleDuplicateTab}
+            onCreateGroup={handleCreateGroup}
+            onDeleteGroup={handleDeleteGroup}
+            onRenameGroup={handleRenameGroup}
+            onToggleGroupCollapse={handleToggleGroupCollapse}
             onMoveTabToGroup={handleMoveTabToGroup}
-            scaleFactor={scaleFactor}
+            onSelectTab={handleSelectTab}
+            readingList={readingList}
+            onToggleReadingListRead={handleToggleReadingListRead}
+            onRemoveFromReadingList={handleRemoveFromReadingList}
+            onOpenReadingListItem={(url) => navigateToUrl(url)}
+            history={filteredHistory}
+            onClearHistory={handleClearHistory}
+            onOpenHistoryItem={(url) => navigateToUrl(url)}
+            historySearchQuery={historySearchQuery}
+            onHistorySearch={setHistorySearchQuery}
+            bookmarks={bookmarks}
+            onAddBookmark={(url, title, parentId) => {
+              addBookmark(url, title, parentId);
+              setBookmarks(loadBookmarks());
+            }}
+            onRemoveBookmark={handleRemoveBookmark}
+            onOpenBookmark={(url) => navigateToUrl(url)}
+            onCreateFolder={handleCreateFolder}
           />
 
-          {/* Navigation Bar */}
-          <SafariNavBar
-            historyIndex={historyIndex}
-            history={historyUrls}
-            inputUrl={inputUrl}
-            setInputUrl={setInputUrl}
-            handleBack={handleBack}
-            handleForward={handleForward}
-            handleRefresh={handleRefresh}
-            handleHome={handleHome}
-            handleNavigate={handleNavigate}
-            openRecursiveSafari={openRecursiveSafari}
-            scaleFactor={scaleFactor}
-            sidebarOpen={sidebarOpen}
-            onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-            onAddToReadingList={handleAddToReadingList}
-            onAddBookmark={handleAddBookmark}
-            isBookmarked={isCurrentUrlBookmarked}
-            currentUrl={activeTab?.url}
-          />
-
-          {/* Bookmarks Bar */}
-          {showBookmarksBar && (
-            <SafariBookmarksBar
-              bookmarks={bookmarks}
-              onOpen={(url) => navigateToUrl(url)}
+          {/* Main content area */}
+          <div className="flex-1 flex flex-col min-w-0">
+            {/* Tab Bar */}
+            <SafariTabBar
+              tabs={tabs}
+              activeTabId={activeTabId}
+              tabGroups={tabGroups}
+              onSelectTab={handleSelectTab}
+              onCloseTab={handleCloseTab}
+              onNewTab={handleNewTab}
+              onPinTab={handlePinTab}
+              onMuteTab={handleMuteTab}
+              onDuplicateTab={handleDuplicateTab}
+              onMoveTabToGroup={handleMoveTabToGroup}
+              onCloseOtherTabs={handleCloseOtherTabs}
               scaleFactor={scaleFactor}
+              privateMode={privateMode}
             />
-          )}
 
-          {/* Content Area - supports URL/text drops */}
-          <div
-            ref={contentDropTarget.ref}
-            className={`flex-1 relative ${
-              contentDropTarget.isOver && contentDropTarget.canDrop
-                ? 'ring-2 ring-blue-500/50 ring-inset'
-                : ''
-            }`}
-            onDragOver={contentDropTarget.onDragOver}
-            onDragEnter={contentDropTarget.onDragEnter}
-            onDragLeave={contentDropTarget.onDragLeave}
-            onDrop={contentDropTarget.onDrop}
-          >
-            {/* Drop overlay indicator */}
-            {contentDropTarget.isOver && contentDropTarget.canDrop && (
-              <div className="absolute inset-0 bg-blue-500/10 z-50 flex items-center justify-center pointer-events-none">
-                <div className="bg-black/80 text-white px-4 py-2 rounded-lg text-sm font-medium">
-                  Drop URL to navigate
+            {/* Navigation Bar */}
+            <SafariNavBar
+              historyIndex={historyIndex}
+              history={historyUrls}
+              inputUrl={inputUrl}
+              setInputUrl={setInputUrl}
+              handleBack={handleBack}
+              handleForward={handleForward}
+              handleRefresh={handleRefresh}
+              handleHome={handleHome}
+              handleNavigate={handleNavigate}
+              openRecursiveSafari={openRecursiveSafari}
+              scaleFactor={scaleFactor}
+              sidebarOpen={sidebarOpen}
+              onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+              onAddToReadingList={handleAddToReadingList}
+              onAddBookmark={handleAddBookmark}
+              isBookmarked={isCurrentUrlBookmarked}
+              currentUrl={activeTab?.url}
+              privateMode={privateMode}
+              onTogglePrivateMode={handleTogglePrivateMode}
+              closedTabsCount={closedTabs.length}
+              onReopenClosedTab={handleReopenClosedTab}
+            />
+
+            {/* Bookmarks Bar */}
+            {showBookmarksBar && (
+              <SafariBookmarksBar
+                bookmarks={bookmarks}
+                onOpen={(url) => navigateToUrl(url)}
+                scaleFactor={scaleFactor}
+              />
+            )}
+
+            {/* Content Area - supports URL/text drops */}
+            <div
+              ref={contentDropTarget.ref}
+              className={`flex-1 relative ${
+                contentDropTarget.isOver && contentDropTarget.canDrop
+                  ? 'ring-2 ring-blue-500/50 ring-inset'
+                  : ''
+              } ${privateMode ? 'bg-gray-900' : ''}`}
+              onDragOver={contentDropTarget.onDragOver}
+              onDragEnter={contentDropTarget.onDragEnter}
+              onDragLeave={contentDropTarget.onDragLeave}
+              onDrop={contentDropTarget.onDrop}
+            >
+              {/* Drop overlay indicator */}
+              {contentDropTarget.isOver && contentDropTarget.canDrop && (
+                <div className="absolute inset-0 bg-blue-500/10 z-50 flex items-center justify-center pointer-events-none">
+                  <div className="bg-black/80 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                    Drop URL to navigate
+                  </div>
                 </div>
-              </div>
-            )}
-            {showingStartPage ? (
-              <SafariStartPage
-                favorites={favorites}
-                frequentlyVisited={getFrequentlyVisited(12)}
-                readingList={readingList}
-                onOpenUrl={(url) => navigateToUrl(url)}
-                onRemoveFavorite={handleRemoveFavorite}
-                onAddFavorite={handleAddFavorite}
-              />
-            ) : (
-              <SafariContent
-                url={activeTab?.url || ''}
-                depth={depth}
-                iframeKey={iframeKey}
-                onNavigate={(newUrl) => navigateToUrl(newUrl)}
-              />
-            )}
+              )}
+              {showingStartPage ? (
+                <SafariStartPage
+                  favorites={favorites}
+                  frequentlyVisited={getFrequentlyVisited(12)}
+                  readingList={readingList}
+                  onOpenUrl={(url) => navigateToUrl(url)}
+                  onRemoveFavorite={handleRemoveFavorite}
+                  onAddFavorite={handleAddFavorite}
+                />
+              ) : (
+                <SafariContent
+                  url={activeTab?.url || ''}
+                  depth={depth}
+                  iframeKey={iframeKey}
+                  onNavigate={(newUrl) => navigateToUrl(newUrl)}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
