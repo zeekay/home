@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ZWindow from './ZWindow';
 import { cn } from '@/lib/utils';
 import { Music, Radio, Heart, ExternalLink, ListMusic, RefreshCw, Loader2 } from 'lucide-react';
 import { socialProfiles } from '@/data/socials';
+import type { SpotifyStaticData, SpotifyPlaylistMinimal } from '@/types/spotify';
 
 interface ZMusicWindowProps {
   onClose: () => void;
@@ -40,9 +41,24 @@ const ZMusicWindow: React.FC<ZMusicWindowProps> = ({ onClose, onFocus }) => {
   const [soundcloudLoaded, setSoundcloudLoaded] = useState(false);
   const [spotifyLoaded, setSpotifyLoaded] = useState(false);
   const [customPlaylistUrl, setCustomPlaylistUrl] = useState('');
+  const [userPlaylists, setUserPlaylists] = useState<SpotifyPlaylistMinimal[]>([]);
+  const [loadingPlaylists, setLoadingPlaylists] = useState(true);
 
   const spotifyProfile = socialProfiles.spotify;
   const soundcloudProfile = socialProfiles.soundcloud;
+
+  // Load user's playlists from static JSON
+  useEffect(() => {
+    fetch('/data/spotify-minimal.json')
+      .then(res => res.ok ? res.json() : null)
+      .then((data: SpotifyStaticData | null) => {
+        if (data?.playlists) {
+          setUserPlaylists(data.playlists);
+        }
+      })
+      .catch(err => console.error('Failed to load Spotify data:', err))
+      .finally(() => setLoadingPlaylists(false));
+  }, []);
 
   // Parse Spotify URL to get embed ID
   const parseSpotifyUrl = (url: string): { type: string; id: string } | null => {
@@ -179,6 +195,56 @@ const ZMusicWindow: React.FC<ZMusicWindowProps> = ({ onClose, onFocus }) => {
                     ))}
                   </div>
 
+                  {/* User's Playlists from Spotify API */}
+                  {userPlaylists.length > 0 && (
+                    <div className="mt-6">
+                      <h4 className="text-white/70 text-xs font-semibold uppercase tracking-wider mb-3">My Playlists</h4>
+                      <div className="space-y-2">
+                        {userPlaylists.slice(0, 20).map((playlist) => (
+                          <button
+                            key={playlist.id}
+                            onClick={() => {
+                              setSelectedSpotifyEmbed({
+                                type: 'playlist',
+                                id: playlist.id,
+                                name: playlist.name,
+                                description: playlist.description || `${playlist.trackCount} tracks`
+                              });
+                              setSpotifyLoaded(false);
+                            }}
+                            className={cn(
+                              "w-full text-left p-2 rounded-xl transition-all flex items-center gap-3",
+                              selectedSpotifyEmbed.id === playlist.id
+                                ? "bg-[#1DB954]/20 border border-[#1DB954]/30"
+                                : "bg-white/5 hover:bg-white/10"
+                            )}
+                          >
+                            {playlist.image ? (
+                              <img 
+                                src={playlist.image} 
+                                alt={playlist.name}
+                                className="w-10 h-10 rounded-md object-cover flex-shrink-0"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded-md bg-white/10 flex items-center justify-center flex-shrink-0">
+                                <ListMusic className="w-5 h-5 text-white/50" />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-white text-sm font-medium truncate">{playlist.name}</p>
+                              <p className="text-white/50 text-xs truncate">{playlist.trackCount} tracks</p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {loadingPlaylists && (
+                    <div className="mt-6 flex items-center justify-center py-4">
+                      <Loader2 className="w-5 h-5 text-[#1DB954] animate-spin" />
+                    </div>
+                  )}
+
                   {/* Custom URL input */}
                   <div className="mt-6">
                     <h4 className="text-white/70 text-xs font-semibold uppercase tracking-wider mb-3">Custom Playlist</h4>
@@ -293,7 +359,7 @@ const ZMusicWindow: React.FC<ZMusicWindowProps> = ({ onClose, onFocus }) => {
                     scrolling="no"
                     frameBorder="no"
                     allow="autoplay"
-                    src={`https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/${soundcloudProfile.handle}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true`}
+                    src={`https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/${soundcloudProfile.handle}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=true&show_teaser=true&visual=true`}
                     onLoad={() => setSoundcloudLoaded(true)}
                     className="absolute inset-0"
                     style={{ minHeight: '400px' }}
