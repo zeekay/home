@@ -148,9 +148,14 @@ export const DragDropProvider: React.FC<{ children: ReactNode }> = ({ children }
     }));
   }, [state.springLoadTimer]);
   
-  // Register a drop zone
+  // Register a drop zone (skip if already registered with same values)
   const registerDropZone = useCallback((id: string, accepts: DragItemType[], element: HTMLElement) => {
     setState(prev => {
+      const existing = prev.dropZones.get(id);
+      // Skip update if zone is already registered with same element
+      if (existing && existing.element === element) {
+        return prev; // Return same state reference to prevent re-render
+      }
       const newZones = new Map(prev.dropZones);
       newZones.set(id, { id, accepts, element });
       return { ...prev, dropZones: newZones };
@@ -319,6 +324,9 @@ export const useDropTarget = (
   
   const elementRef = useRef<HTMLElement | null>(null);
   
+  // Memoize accepts to prevent infinite loops when callers pass inline arrays
+  const acceptsKey = JSON.stringify(accepts);
+
   // Register drop zone on mount
   React.useEffect(() => {
     if (elementRef.current) {
@@ -327,7 +335,8 @@ export const useDropTarget = (
     return () => {
       unregisterDropZone(id);
     };
-  }, [id, accepts, registerDropZone, unregisterDropZone]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, acceptsKey, registerDropZone, unregisterDropZone]);
   
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -369,22 +378,26 @@ export const useDropTarget = (
     }
   }, [id, activeDropZone, setActiveDropZone]);
   
+  // Use ref to avoid stale closure issues while keeping stable callback
+  const acceptsRef = React.useRef(accepts);
+  acceptsRef.current = accepts;
+
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     setActiveDropZone(null);
-    
+
     // Try to get zOS file data first
     const zosFileData = e.dataTransfer.getData('application/x-zos-file');
     if (zosFileData && dragItem) {
       onDrop(dragItem, operation);
       return;
     }
-    
+
     // Handle external drops (from OS file system or other sources)
     const files = e.dataTransfer.files;
-    if (files.length > 0 && accepts.includes('file')) {
+    if (files.length > 0 && acceptsRef.current.includes('file')) {
       // Handle file drop from OS
       Array.from(files).forEach(file => {
         const externalItem: DragItem = {
@@ -401,10 +414,10 @@ export const useDropTarget = (
       });
       return;
     }
-    
+
     // Handle URL drops
     const urlData = e.dataTransfer.getData('text/uri-list');
-    if (urlData && accepts.includes('url')) {
+    if (urlData && acceptsRef.current.includes('url')) {
       const urlItem: DragItem = {
         itemType: 'url',
         data: urlData,
@@ -413,10 +426,10 @@ export const useDropTarget = (
       onDrop(urlItem, 'copy');
       return;
     }
-    
+
     // Handle text drops
     const textData = e.dataTransfer.getData('text/plain');
-    if (textData && accepts.includes('text')) {
+    if (textData && acceptsRef.current.includes('text')) {
       const textItem: DragItem = {
         itemType: 'text',
         data: textData,
@@ -424,14 +437,15 @@ export const useDropTarget = (
       };
       onDrop(textItem, 'copy');
     }
-  }, [accepts, dragItem, operation, onDrop, setActiveDropZone]);
+  }, [dragItem, operation, onDrop, setActiveDropZone]);
   
   const setRef = useCallback((el: HTMLElement | null) => {
     elementRef.current = el;
     if (el) {
-      registerDropZone(id, accepts, el);
+      registerDropZone(id, acceptsRef.current, el);
     }
-  }, [id, accepts, registerDropZone]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, registerDropZone]);
   
   return {
     ref: setRef,
