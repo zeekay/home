@@ -7,7 +7,7 @@ import ZMenuBar from './ZMenuBar';
 import ZFinderWindow from './ZFinderWindow';
 import ZEmailWindow from './ZEmailWindow';
 import ZTextPadWindow from './ZTextPadWindow';
-import ZSocialsWindow from './ZSocialsWindow';
+// ZSocialsWindow kept for contacts - Messages uses X/Twitter DMs
 import ZCalculatorWindow from './ZCalculatorWindow';
 import ZClockWindow from './ZClockWindow';
 import ZStickiesWindow from './ZStickiesWindow';
@@ -28,6 +28,7 @@ import {
   LazyZooAssistantWindow,
   LazyZCodeWindow,
   LazyZAppStoreWindow,
+  LazyZMessagesWindow,
 } from './LazyWindows';
 import ApplicationsPopover from './dock/ApplicationsPopover';
 import DownloadsPopover from './dock/DownloadsPopover';
@@ -375,7 +376,7 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
         <LazyZGitHubStatsWindow onClose={() => windows.closeWindow('GitHub Stats')} onFocus={() => windows.focusWindow('GitHub Stats')} />
       )}
       {windows.isOpen('Messages') && (
-        <ZSocialsWindow onClose={() => windows.closeWindow('Messages')} onFocus={() => windows.focusWindow('Messages')} />
+        <LazyZMessagesWindow onClose={() => windows.closeWindow('Messages')} onFocus={() => windows.focusWindow('Messages')} />
       )}
       {windows.isOpen('Activity Monitor') && (
         <LazyZGitHubStatsWindow onClose={() => windows.closeWindow('Activity Monitor')} onFocus={() => windows.focusWindow('Activity Monitor')} />

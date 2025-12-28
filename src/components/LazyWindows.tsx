@@ -168,3 +168,9 @@ export const LazyZAppStoreWindow = createLazyWindow(
   () => import('./ZAppStoreWindow'),
   'App Store'
 );
+
+// Messages - X/Twitter DMs
+export const LazyZMessagesWindow = createLazyWindow(
+  () => import('./ZMessagesWindow'),
+  'Messages'
+);
