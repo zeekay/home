@@ -26,7 +26,12 @@ import {
   Accessibility,
   MonitorSmartphone,
   Layers,
+  Bell,
 } from 'lucide-react';
+import { useNotifications } from '@/contexts/NotificationContext';
+import { useFocusMode } from '@/contexts/FocusModeContext';
+import { FocusModeQuickToggle, FocusModeIndicator, FocusModeSelector } from '@/components/FocusModeSelector';
+import { RecordingIndicator, useScreenRecorder } from '@/components/ScreenRecorder';
 import { Slider } from "@/components/ui/slider";
 
 // Z Logo for menu bar
@@ -382,6 +387,31 @@ const getAppMenus = (appName: string): MenuType[] => {
   ];
 };
 
+// Notification Button component with badge
+const NotificationButton: React.FC = () => {
+  const { unreadCount, toggleNotificationCenter, isOpen } = useNotifications();
+  
+  const systemTrayButtonClass = "h-[22px] px-[7px] flex items-center rounded-[5px] mx-[1px] hover:bg-white/20 outline-none focus:outline-none focus:ring-0 transition-colors duration-75";
+
+  return (
+    <button
+      className={cn(systemTrayButtonClass, isOpen && "bg-white/20")}
+      onClick={toggleNotificationCenter}
+      aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ''}`}
+      data-notification-trigger
+    >
+      <div className="relative">
+        <Bell className="w-[14px] h-[14px] opacity-90" />
+        {unreadCount > 0 && (
+          <span className="absolute -top-1.5 -right-1.5 min-w-[14px] h-[14px] bg-red-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center px-0.5">
+            {unreadCount > 99 ? '99+' : unreadCount}
+          </span>
+        )}
+      </div>
+    </button>
+  );
+};
+
 const ZMenuBar: React.FC<ZMenuBarProps> = ({
   className,
   appName = "Finder",
@@ -405,7 +435,6 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
   const [bluetoothEnabled, setBluetoothEnabled] = useState(true);
   const [volume, setVolume] = useState([75]);
   const [brightness, setBrightness] = useState([80]);
-  const [focusEnabled, setFocusEnabled] = useState(false);
   const [airDropEnabled, setAirDropEnabled] = useState(true);
   const [stageManagerEnabled, setStageManagerEnabled] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -1410,19 +1439,7 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
 
               {/* Second Row - Focus and Now Playing */}
               <div className="flex gap-2 mb-2">
-                <button
-                  onClick={() => setFocusEnabled(!focusEnabled)}
-                  className={cn(
-                    "flex-1 p-3 rounded-2xl text-left transition-colors",
-                    focusEnabled ? "bg-purple-500" : "bg-white/10 hover:bg-white/15"
-                  )}
-                  aria-label={`Focus mode ${focusEnabled ? 'on' : 'off'}`}
-                  aria-pressed={focusEnabled}
-                >
-                  <Moon className="w-5 h-5 mb-1" />
-                  <p className="text-sm font-semibold">Focus</p>
-                  <p className="text-xs opacity-70">{focusEnabled ? "On" : "Off"}</p>
-                </button>
+                <FocusModeQuickToggle />
 
                 <div className="flex-1 bg-white/10 rounded-2xl p-3">
                   <div className="flex items-center gap-2 mb-2">
@@ -1547,6 +1564,15 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
             </div>
           )}
         </div>
+
+        {/* Screen Recording Indicator */}
+        <RecordingIndicator />
+
+        {/* Focus Mode Indicator */}
+        <FocusModeIndicator />
+
+        {/* Notification Center */}
+        <NotificationButton />
 
         {/* Spotlight Search */}
         <button

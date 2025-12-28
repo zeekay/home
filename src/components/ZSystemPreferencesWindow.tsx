@@ -6,6 +6,8 @@ import CategoryTab from './system-preferences/CategoryTab';
 import DisplaySettingsTab from './system-preferences/DisplaySettingsTab';
 import AppearanceTab from './system-preferences/AppearanceTab';
 import DockSettingsTab from './system-preferences/DockSettingsTab';
+import AccessibilityTab from './system-preferences/AccessibilityTab';
+import UsersTab from './system-preferences/UsersTab';
 import {
   interests,
   technologyItems,
@@ -130,6 +132,18 @@ const ZSystemPreferencesWindow: React.FC<ZSystemPreferencesWindowProps> = ({
                 onDockMagnificationSizeChange={onDockMagnificationSizeChange}
                 onDockAutoHideChange={onDockAutoHideChange}
               />
+            </div>
+          )}
+
+          {activeTab === 'accessibility' && (
+            <div className={contentClass}>
+              <AccessibilityTab />
+            </div>
+          )}
+
+          {activeTab === 'users' && (
+            <div className={contentClass}>
+              <UsersTab />
             </div>
           )}
 

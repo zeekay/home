@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import ZWindow from './ZWindow';
 import { logger } from '@/lib/logger';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { useDropTarget, type DragItem, type DragFileItem, type DragOperation } from '@/contexts/DragDropContext';
 import {
   Search,
   Plus,
@@ -252,6 +254,56 @@ Happy note-taking! 📝`,
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [createNote]);
 
+  // Handle file/text drops - add content to current note or create new note
+  const handleNoteDrop = useCallback((item: DragItem, _operation: DragOperation) => {
+    if (item.itemType === 'text' || item.itemType === 'url') {
+      const text = item.data as string;
+      if (selectedNote) {
+        // Append to current note
+        updateNote(selectedNote.id, {
+          content: selectedNote.content + '\n\n' + text,
+        });
+        toast.success('Content added to note');
+      } else {
+        // Create new note with the content
+        const newNote: Note = {
+          id: generateId(),
+          title: text.substring(0, 50),
+          content: text,
+          folderId: selectedFolderId === 'all' ? null : selectedFolderId,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          pinned: false,
+          locked: false,
+        };
+        setNotes((prev) => [newNote, ...prev]);
+        setSelectedNoteId(newNote.id);
+        toast.success('New note created');
+      }
+    } else {
+      const fileData = item.data as DragFileItem;
+      // Add file reference to note
+      if (selectedNote) {
+        const ref = fileData.url
+          ? `[${fileData.name}](${fileData.url})`
+          : `📎 ${fileData.name}`;
+        updateNote(selectedNote.id, {
+          content: selectedNote.content + '\n\n' + ref,
+        });
+        toast.success(`Added reference to ${fileData.name}`);
+      } else {
+        toast.info('Select or create a note first');
+      }
+    }
+  }, [selectedNote, selectedFolderId, updateNote]);
+
+  // Drop target for the editor area
+  const editorDropTarget = useDropTarget(
+    'notes-editor',
+    ['file', 'folder', 'image', 'url', 'text'],
+    handleNoteDrop
+  );
+
   return (
     <ZWindow
       title="Notes"
@@ -460,13 +512,23 @@ Happy note-taking! 📝`,
                 </div>
               </div>
 
-              {/* Editor content */}
-              <div className="flex-1 p-6 overflow-y-auto">
+              {/* Editor content - supports drag & drop */}
+              <div
+                ref={editorDropTarget.ref}
+                className={cn(
+                  "flex-1 p-6 overflow-y-auto transition-colors",
+                  editorDropTarget.isOver && editorDropTarget.canDrop && "bg-yellow-500/10 ring-2 ring-yellow-500/30 ring-inset"
+                )}
+                onDragOver={editorDropTarget.onDragOver}
+                onDragEnter={editorDropTarget.onDragEnter}
+                onDragLeave={editorDropTarget.onDragLeave}
+                onDrop={editorDropTarget.onDrop}
+              >
                 <textarea
                   value={selectedNote.content}
                   onChange={(e) => handleContentChange(e.target.value)}
                   className="w-full h-full bg-transparent text-white text-base resize-none outline-none font-mono leading-relaxed"
-                  placeholder="Start typing..."
+                  placeholder="Start typing... (or drop files, URLs, or text here)"
                 />
               </div>
 

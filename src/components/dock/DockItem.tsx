@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, Info } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -19,6 +19,7 @@ import { getAppMenuConfig } from '@/config/appMenus';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useDock } from '@/contexts/DockContext';
 import { cn } from '@/lib/utils';
+import AboutAppDialog from '@/components/AboutAppDialog';
 
 interface DockItemProps {
   id?: string;
@@ -72,6 +73,7 @@ const DockItem: React.FC<DockItemProps> = ({
   const [isDropTarget, setIsDropTarget] = useState(false);
   const [isBouncing, setIsBouncing] = useState(false);
   const [hasIntroAnimated, setHasIntroAnimated] = useState(!introAnimation);
+  const [showAboutDialog, setShowAboutDialog] = useState(false);
   const dragRef = useRef<HTMLButtonElement>(null);
 
   // Handle bounce animation when launching
@@ -324,6 +326,7 @@ const DockItem: React.FC<DockItemProps> = ({
 
   // Desktop with context menu
   return (
+  <>
     <ContextMenu>
       <ContextMenuTrigger asChild>
         <Tooltip>
@@ -429,6 +432,16 @@ const DockItem: React.FC<DockItemProps> = ({
           Hide
         </ContextMenuItem>
         
+        {/* About */}
+        <ContextMenuSeparator className="bg-white/10 my-1" />
+        <ContextMenuItem 
+          onClick={() => setShowAboutDialog(true)}
+          className="hover:bg-white/10 focus:bg-white/10 flex items-center gap-2"
+        >
+          <Info className="w-3.5 h-3.5 text-white/60" />
+          About {label}
+        </ContextMenuItem>
+        
         {/* Quit */}
         {id !== 'finder' && (
           <>
@@ -440,6 +453,15 @@ const DockItem: React.FC<DockItemProps> = ({
         )}
       </ContextMenuContent>
     </ContextMenu>
+    
+    {/* About Dialog */}
+    <AboutAppDialog
+      appId={id || label.toLowerCase().replace(/\s+/g, '')}
+      appName={label}
+      isOpen={showAboutDialog}
+      onClose={() => setShowAboutDialog(false)}
+    />
+  </>
   );
 };
 

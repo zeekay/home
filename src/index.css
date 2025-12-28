@@ -455,3 +455,78 @@
   50% { transform: translateY(-10px); }
   100% { transform: translateY(0px); }
 }
+
+/* Widget jiggle animation (iOS-style edit mode) */
+@keyframes widget-jiggle {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+}
+
+.animate-widget-jiggle {
+  animation: widget-jiggle 0.15s ease-in-out infinite;
+}
+
+/* Accessibility Styles */
+
+/* High Contrast Mode */
+.high-contrast {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --border: 0 0% 100%;
+}
+
+.high-contrast * {
+  border-color: white !important;
+}
+
+.high-contrast button,
+.high-contrast a {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+/* Reduce Motion */
+.reduce-motion,
+.reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Reduce Transparency */
+.reduce-transparency .glass,
+.reduce-transparency .glass-sm,
+.reduce-transparency .glass-lg,
+.reduce-transparency .glass-xl,
+.reduce-transparency .glass-window {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(30, 30, 30, 0.98) !important;
+}
+
+/* VoiceOver Mode - Enhanced focus indicators */
+.voiceover-enabled *:focus {
+  outline: 3px solid #007AFF !important;
+  outline-offset: 2px !important;
+}
+
+.voiceover-enabled *:focus-visible {
+  outline: 3px solid #007AFF !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 6px rgba(0, 122, 255, 0.3) !important;
+}
+
+/* Skip links for screen readers */
+.sr-skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000;
+  color: #fff;
+  padding: 8px;
+  z-index: 100000;
+}
+
+.sr-skip-link:focus {
+  top: 0;
+}

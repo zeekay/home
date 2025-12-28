@@ -6,7 +6,7 @@ export type AppType =
   | 'System Preferences' | 'Photos' | 'FaceTime' | 'TextEdit' | 'Notes'
   | 'GitHub Stats' | 'Messages' | 'Activity Monitor' | 'Hanzo AI'
   | 'Lux Wallet' | 'Zoo' | 'Calculator' | 'Clock' | 'Weather' | 'Stickies'
-  | 'App Store' | 'Xcode';
+  | 'App Store' | 'Xcode' | 'Shortcuts';
 
 // All app types as array for iteration
 export const ALL_APPS: AppType[] = [
@@ -14,7 +14,7 @@ export const ALL_APPS: AppType[] = [
   'System Preferences', 'Photos', 'FaceTime', 'TextEdit', 'Notes',
   'GitHub Stats', 'Messages', 'Activity Monitor', 'Hanzo AI',
   'Lux Wallet', 'Zoo', 'Calculator', 'Clock', 'Weather', 'Stickies',
-  'App Store', 'Xcode'
+  'App Store', 'Xcode', 'Shortcuts'
 ];
 
 // Window state - which windows are open

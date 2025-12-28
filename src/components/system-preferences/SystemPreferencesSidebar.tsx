@@ -10,7 +10,9 @@ import {
   SearchIcon,
   Monitor,
   Palette,
-  LayoutPanelLeft
+  LayoutPanelLeft,
+  Accessibility,
+  Users,
 } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
@@ -33,6 +35,8 @@ const SystemPreferencesSidebar: React.FC<SystemPreferencesSidebarProps> = ({ act
     { id: 'display', name: 'Display', icon: Monitor, section: 'System' },
     { id: 'appearance', name: 'Appearance', icon: Palette },
     { id: 'dock', name: 'Dock', icon: LayoutPanelLeft },
+    { id: 'accessibility', name: 'Accessibility', icon: Accessibility },
+    { id: 'users', name: 'Users & Groups', icon: Users },
   ];
 
   // Profile/personal categories
