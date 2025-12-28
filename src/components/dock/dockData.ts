@@ -121,4 +121,5 @@ export const applicationItems = [
   { id: 'stats', label: 'Activity Monitor', useCustomIcon: true },
   { id: 'videos', label: 'Videos', useCustomIcon: true },
   { id: 'settings', label: 'System Preferences', useCustomIcon: true },
+  { id: 'shortcuts', label: 'Shortcuts', useCustomIcon: true },
 ];

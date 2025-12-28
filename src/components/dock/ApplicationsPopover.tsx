@@ -27,6 +27,7 @@ import {
   SoraIcon,
   XcodeIcon,
   AppStoreIcon,
+  ShortcutsIcon,
 } from './icons';
 
 interface ApplicationsPopoverProps {
@@ -56,6 +57,7 @@ interface ApplicationsPopoverProps {
   onOpenSora?: () => void;
   onOpenXcode?: () => void;
   onOpenAppStore?: () => void;
+  onOpenShortcuts?: () => void;
 }
 
 const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
@@ -85,6 +87,7 @@ const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
   onOpenSora,
   onOpenXcode,
   onOpenAppStore,
+  onOpenShortcuts,
 }) => {
   if (!isOpen) return null;
 
@@ -110,6 +113,7 @@ const ApplicationsPopover: React.FC<ApplicationsPopoverProps> = ({
     { id: 'settings', label: 'Settings', icon: <SettingsIcon className="w-full h-full" />, onClick: onOpenSettings },
     { id: 'xcode', label: 'Xcode', icon: <XcodeIcon className="w-full h-full" />, onClick: onOpenXcode },
     { id: 'appstore', label: 'App Store', icon: <AppStoreIcon className="w-full h-full" />, onClick: onOpenAppStore },
+    { id: 'shortcuts', label: 'Shortcuts', icon: <ShortcutsIcon className="w-full h-full" />, onClick: onOpenShortcuts },
   ];
 
   // Hanzo ecosystem apps

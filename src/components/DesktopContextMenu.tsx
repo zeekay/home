@@ -10,7 +10,10 @@ import {
   Eye,
   Grid3X3,
   ChevronRight,
+  Plus,
+  Move,
 } from 'lucide-react';
+import { useWidgets } from '@/contexts/WidgetContext';
 
 // Menu dimensions for edge detection
 const MENU_WIDTH = 220;
@@ -38,6 +41,7 @@ const DesktopContextMenu: React.FC<DesktopContextMenuProps> = ({
 }) => {
   const [showSortSubmenu, setShowSortSubmenu] = useState(false);
   const [showViewSubmenu, setShowViewSubmenu] = useState(false);
+  const { editMode, toggleEditMode, openGallery, widgets } = useWidgets();
 
   if (!position) return null;
 
@@ -150,6 +154,20 @@ const DesktopContextMenu: React.FC<DesktopContextMenuProps> = ({
         label="Show View Options"
         shortcut="⌘J"
         onClick={() => handleAction(onOpenSettings)}
+      />
+      <Separator />
+
+      {/* Widget Options */}
+      <MenuItem
+        icon={<Plus className="w-4 h-4" />}
+        label="Add Widget..."
+        onClick={() => handleAction(openGallery)}
+      />
+      <MenuItem
+        icon={<Move className="w-4 h-4" />}
+        label={editMode ? 'Done Editing Widgets' : 'Edit Widgets'}
+        onClick={() => handleAction(toggleEditMode)}
+        disabled={widgets.length === 0 && !editMode}
       />
       <Separator />
       

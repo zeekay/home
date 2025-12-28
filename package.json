@@ -11,7 +11,16 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
-    "fetch:spotify": "tsx scripts/fetch-spotify.ts"
+    "fetch:spotify": "tsx scripts/fetch-spotify.ts",
+    "version:patch": "tsx scripts/version.ts patch",
+    "version:minor": "tsx scripts/version.ts minor",
+    "version:major": "tsx scripts/version.ts major",
+    "version:app": "tsx scripts/version.ts",
+    "changelog": "tsx scripts/changelog.ts",
+    "release": "tsx scripts/release.ts",
+    "release:patch": "tsx scripts/release.ts patch",
+    "release:minor": "tsx scripts/release.ts minor",
+    "release:major": "tsx scripts/release.ts major"
   },
   "dependencies": {
     "@codemirror/lang-css": "^6.3.1",

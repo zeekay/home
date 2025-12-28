@@ -174,3 +174,9 @@ export const LazyZMessagesWindow = createLazyWindow(
   () => import('./ZMessagesWindow'),
   'Messages'
 );
+
+// Shortcuts - Automation app
+export const LazyZShortcutsWindow = createLazyWindow(
+  () => import('./ZShortcutsWindow'),
+  'Shortcuts'
+);

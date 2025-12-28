@@ -12,6 +12,17 @@ import ZDesktop from "./components/ZDesktop";
 import TerminalContent from "./components/TerminalContent";
 import { TerminalProvider } from "./contexts/TerminalContext";
 import { DockProvider } from "./contexts/DockContext";
+import { WidgetProvider } from "./contexts/WidgetContext";
+import { SpacesProvider } from "./contexts/SpacesContext";
+import { ClipboardProvider } from "./contexts/ClipboardContext";
+import { NotificationProvider } from "./contexts/NotificationContext";
+import { FocusModeProvider } from "./contexts/FocusModeContext";
+import { DragDropProvider } from "./contexts/DragDropContext";
+import { ShortcutsProvider } from "./contexts/ShortcutsContext";
+import { AccessibilityProvider } from "./contexts/AccessibilityContext";
+import { UserProvider } from "./contexts/UserContext";
+import { ScreenRecorderProvider } from "./components/ScreenRecorder";
+import NotificationCenter from "./components/NotificationCenter";
 import BootSequence from "./components/BootSequence";
 import LockScreen from "./components/LockScreen";
 import RestartScreen from "./components/RestartScreen";
@@ -105,49 +116,72 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <SystemContext.Provider value={systemContextValue}>
-          <TerminalProvider>
-            <DockProvider>
-              {/* Boot sequence */}
-              {systemState === 'booting' && (
-                <BootSequence onComplete={handleBootComplete} />
-              )}
+        <AccessibilityProvider>
+          <UserProvider>
+            <SystemContext.Provider value={systemContextValue}>
+              <TerminalProvider>
+                <DockProvider>
+                  <WidgetProvider>
+                    <SpacesProvider>
+                      <ClipboardProvider>
+                        <NotificationProvider>
+                          <FocusModeProvider>
+                            <ShortcutsProvider>
+                              <DragDropProvider>
+                                <ScreenRecorderProvider>
+                                  {/* Boot sequence */}
+                                  {systemState === 'booting' && (
+                                    <BootSequence onComplete={handleBootComplete} />
+                                  )}
 
-              {/* Lock screen */}
-              {systemState === 'locked' && (
-                <LockScreen onUnlock={handleUnlock} />
-              )}
+                                  {/* Lock screen */}
+                                  {systemState === 'locked' && (
+                                    <LockScreen onUnlock={handleUnlock} />
+                                  )}
 
-              {/* Restart animation */}
-              {systemState === 'restarting' && (
-                <RestartScreen mode="restart" onComplete={handleRestartComplete} />
-              )}
+                                  {/* Restart animation */}
+                                  {systemState === 'restarting' && (
+                                    <RestartScreen mode="restart" onComplete={handleRestartComplete} />
+                                  )}
 
-              {/* Shutdown screen */}
-              {systemState === 'shutdown' && (
-                <RestartScreen mode="shutdown" onComplete={handleShutdownWake} />
-              )}
+                                  {/* Shutdown screen */}
+                                  {systemState === 'shutdown' && (
+                                    <RestartScreen mode="shutdown" onComplete={handleShutdownWake} />
+                                  )}
 
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-              <Routes>
-                <Route path="/" element={
-                  <ZDesktop>
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                    </Routes>
-                  </ZDesktop>
-                } />
-                <Route path="/terminal-content" element={<TerminalContent />} />
-                <Route path="/spotify/callback" element={<SpotifyCallback />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              </BrowserRouter>
-            </DockProvider>
-          </TerminalProvider>
-        </SystemContext.Provider>
+                                  <Toaster />
+                                  <Sonner />
+                                  <BrowserRouter>
+                                    <Routes>
+                                      <Route path="/" element={
+                                        <>
+                                          <ZDesktop>
+                                            <Routes>
+                                              <Route path="/" element={<Index />} />
+                                            </Routes>
+                                          </ZDesktop>
+                                          <NotificationCenter />
+                                        </>
+                                      } />
+                                      <Route path="/terminal-content" element={<TerminalContent />} />
+                                      <Route path="/spotify/callback" element={<SpotifyCallback />} />
+                                      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                                      <Route path="*" element={<NotFound />} />
+                                    </Routes>
+                                  </BrowserRouter>
+                                </ScreenRecorderProvider>
+                              </DragDropProvider>
+                            </ShortcutsProvider>
+                          </FocusModeProvider>
+                        </NotificationProvider>
+                      </ClipboardProvider>
+                    </SpacesProvider>
+                  </WidgetProvider>
+                </DockProvider>
+              </TerminalProvider>
+            </SystemContext.Provider>
+          </UserProvider>
+        </AccessibilityProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

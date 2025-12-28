@@ -29,15 +29,18 @@ import {
   LazyZCodeWindow,
   LazyZAppStoreWindow,
   LazyZMessagesWindow,
+  LazyZShortcutsWindow,
 } from './LazyWindows';
 import ApplicationsPopover from './dock/ApplicationsPopover';
 import DownloadsPopover from './dock/DownloadsPopover';
 import AboutZosWindow from './AboutZosWindow';
 import AnimatedBackground from './AnimatedBackground';
 import AppSwitcher from './AppSwitcher';
+import MissionControl from './MissionControl';
 import SpotlightSearch from './SpotlightSearch';
 import ForceQuitDialog from './ForceQuitDialog';
 import DesktopContextMenu from './DesktopContextMenu';
+import ClipboardManager from './ClipboardManager';
 import AboutAppDialog from './AboutAppDialog';
 import {
   useWindowManager,
@@ -49,6 +52,11 @@ import {
   type KeyboardShortcut,
 } from '@/hooks';
 import { useTerminal } from '@/contexts/TerminalContext';
+import { useNotifications } from '@/contexts/NotificationContext';
+import { useFocusMode } from '@/contexts/FocusModeContext';
+import { useDropTarget, type DragItem, type DragFileItem, type DragOperation } from '@/contexts/DragDropContext';
+import { useWidgets } from '@/contexts/WidgetContext';
+import { WidgetsLayer } from './widgets';
 import {
   Dialog,
   DialogContent,
@@ -79,6 +87,7 @@ const APP_TO_DOCK_ID: Partial<Record<AppType, string>> = {
   'Zoo': 'zoo',
   'Xcode': 'xcode',
   'App Store': 'appstore',
+  'Shortcuts': 'shortcuts',
 };
 
 const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
@@ -90,6 +99,8 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
   const settings = useDesktopSettings();
   const overlays = useOverlays();
   const { queueCommand } = useTerminal();
+  const { addNotification } = useNotifications();
+  const { activeMode, modes, activateMode } = useFocusMode();
 
   // Info dialog state
   const [showInfoDialog, setShowInfoDialog] = useState(false);
@@ -153,6 +164,42 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
     };
   }, [introPhase]);
 
+  // Send sample notifications on first load (demo purposes)
+  useEffect(() => {
+    if (introPhase === 'complete') {
+      const hasSentNotifications = sessionStorage.getItem('zos-demo-notifications');
+      if (!hasSentNotifications) {
+        sessionStorage.setItem('zos-demo-notifications', 'true');
+        // Delay notifications to not interrupt intro
+        const timer = setTimeout(() => {
+          addNotification({
+            type: 'app',
+            title: 'Welcome to zOS',
+            body: 'Click the bell icon in the menu bar to view notifications and today widgets.',
+            appName: 'System',
+          });
+          setTimeout(() => {
+            addNotification({
+              type: 'calendar',
+              title: 'Team Standup',
+              body: 'Starting in 30 minutes',
+              appName: 'Calendar',
+            });
+          }, 2000);
+          setTimeout(() => {
+            addNotification({
+              type: 'github',
+              title: 'New PR Review',
+              body: 'zeekay requested your review on "Add notification center"',
+              appName: 'GitHub',
+            });
+          }, 4000);
+        }, 1500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [introPhase, addNotification]);
+
   // Handle app launch with bounce animation
   const handleAppLaunch = useCallback((appId: string, openFn?: () => void) => {
     setLaunchingApp(appId);
@@ -177,6 +224,18 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
   closeApplicationsRef.current = overlays.closeApplications;
   closeDownloadsRef.current = overlays.closeDownloads;
   closeAllOverlaysRef.current = overlays.closeAllOverlays;
+
+  // Listen for Mission Control trigger from hot corner and swipe gestures
+  useEffect(() => {
+    const handleMissionControlTrigger = () => {
+      overlays.openMissionControl();
+    };
+
+    window.addEventListener('zos:mission-control-trigger', handleMissionControlTrigger);
+    return () => {
+      window.removeEventListener('zos:mission-control-trigger', handleMissionControlTrigger);
+    };
+  }, [overlays]);
 
   // Close all menus when clicking elsewhere - uses refs to avoid frequent re-registration
   useEffect(() => {
@@ -238,10 +297,47 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
     toast({ title: 'Screenshot Selection', description: 'Click and drag to select an area for screenshot.' });
   }, []);
 
+  const handleToggleFocusMode = useCallback(() => {
+    if (activeMode) {
+      activateMode(null);
+      toast({ title: 'Focus', description: 'Focus mode turned off.' });
+    } else {
+      // Activate DND by default
+      const dnd = modes.find(m => m.id === 'dnd');
+      activateMode(dnd?.id ?? modes[0]?.id ?? null);
+      toast({ title: 'Focus', description: `${dnd?.name ?? 'Focus mode'} enabled.` });
+    }
+  }, [activeMode, modes, activateMode]);
+
   const handleForceQuitApp = useCallback((appName: AppType) => {
     windows.closeWindow(appName);
     toast({ title: 'Force Quit', description: `${appName} has been force quit.` });
   }, [windows]);
+
+  // Handle desktop drop (files dropped on desktop create shortcuts/copies)
+  const handleDesktopDrop = useCallback((item: DragItem, operation: DragOperation) => {
+    if (item.itemType === 'url') {
+      const url = item.data as string;
+      toast({
+        title: 'URL Dropped',
+        description: `Created shortcut to ${url.substring(0, 40)}...`,
+      });
+    } else {
+      const fileData = item.data as DragFileItem;
+      const action = operation === 'copy' ? 'Copied' : operation === 'link' ? 'Created alias for' : 'Moved';
+      toast({
+        title: `${action} ${fileData.name}`,
+        description: `${action} to Desktop`,
+      });
+    }
+  }, []);
+
+  // Desktop drop target
+  const desktopDropTarget = useDropTarget(
+    'desktop',
+    ['file', 'folder', 'image', 'url'],
+    handleDesktopDrop
+  );
 
   // Keyboard shortcuts
   const shortcuts: KeyboardShortcut[] = useMemo(() => [
@@ -253,14 +349,19 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
     { key: 'h', meta: true, action: handleHideApp, description: 'Hide App' },
     { key: 'Tab', meta: true, action: () => { if (windows.openApps.length > 0) { overlays.openAppSwitcher(); } }, description: 'App Switcher' },
     { key: ' ', meta: true, action: overlays.openSpotlight, description: 'Spotlight Search' },
+    { key: 'k', meta: true, action: overlays.openSpotlight, description: 'Command Palette' },
     { key: '3', meta: true, shift: true, action: handleScreenshot, description: 'Screenshot' },
     { key: '4', meta: true, shift: true, action: handleScreenshotSelection, description: 'Screenshot Selection' },
     { key: 'Escape', meta: true, alt: true, action: overlays.openForceQuit, description: 'Force Quit' },
     { key: 'q', meta: true, ctrl: true, action: lockScreen, description: 'Lock Screen' },
     { key: 'f', meta: true, action: overlays.openSpotlight, description: 'Find' },
     { key: 'o', meta: true, action: () => windows.openWindow('Finder'), description: 'Open Finder' },
+    { key: 'v', meta: true, shift: true, action: overlays.toggleClipboard, description: 'Clipboard Manager' },
+    { key: 'ArrowUp', ctrl: true, action: overlays.toggleMissionControl, description: 'Mission Control' },
+    { key: 'F3', action: overlays.toggleMissionControl, description: 'Mission Control' },
     { key: 'Escape', action: overlays.closeAllOverlays, description: 'Close Overlay', preventDefault: false },
-  ], [windows, overlays, handleOpenSettings, handleQuitCurrentApp, handleMinimizeWindow, handleHideApp, handleScreenshot, handleScreenshotSelection, lockScreen]);
+    { key: 'd', meta: true, shift: true, action: handleToggleFocusMode, description: 'Toggle Focus Mode' },
+  ], [windows, overlays, handleOpenSettings, handleQuitCurrentApp, handleMinimizeWindow, handleHideApp, handleScreenshot, handleScreenshotSelection, lockScreen, handleToggleFocusMode]);
 
   useKeyboardShortcuts({ shortcuts });
 
@@ -296,15 +397,27 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
       {/* Background */}
       <AnimatedBackground theme={settings.theme} customImageUrl={settings.customBgUrl} />
 
-      {/* Content Area - Click to focus Finder */}
-      <div 
-        className="relative z-10 w-full h-full pt-[25px] pb-24 overflow-hidden"
+      {/* Widgets Layer - Behind windows, above background */}
+      <div className="absolute inset-0 z-[5] pointer-events-auto">
+        <WidgetsLayer />
+      </div>
+
+      {/* Content Area - Click to focus Finder, supports drag & drop */}
+      <div
+        ref={desktopDropTarget.ref}
+        className={`relative z-10 w-full h-full pt-[25px] pb-24 overflow-hidden transition-colors ${
+          desktopDropTarget.isOver && desktopDropTarget.canDrop ? 'bg-blue-500/5' : ''
+        }`}
         onClick={(e) => {
           // Only focus Finder if clicking directly on the desktop background (not on windows)
           if (e.target === e.currentTarget) {
             windows.focusWindow('Finder');
           }
         }}
+        onDragOver={desktopDropTarget.onDragOver}
+        onDragEnter={desktopDropTarget.onDragEnter}
+        onDragLeave={desktopDropTarget.onDragLeave}
+        onDrop={desktopDropTarget.onDrop}
       >
         {children}
       </div>
@@ -421,6 +534,9 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
       {windows.isOpen('App Store') && (
         <LazyZAppStoreWindow onClose={() => windows.closeWindow('App Store')} />
       )}
+      {windows.isOpen('Shortcuts') && (
+        <LazyZShortcutsWindow onClose={() => windows.closeWindow('Shortcuts')} onFocus={() => windows.focusWindow('Shortcuts')} />
+      )}
 
       {/* Dock Popovers */}
       <ApplicationsPopover
@@ -439,6 +555,7 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
         onOpenStickies={() => windows.openWindow('Stickies')}
         onOpenXcode={() => windows.openWindow('Xcode')}
         onOpenAppStore={() => windows.openWindow('App Store')}
+        onOpenShortcuts={() => windows.openWindow('Shortcuts')}
       />
 
       <DownloadsPopover
@@ -479,6 +596,19 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
         onClose={overlays.closeForceQuit}
         openApps={windows.openApps}
         onForceQuit={handleForceQuitApp}
+      />
+
+      <ClipboardManager
+        isOpen={overlays.clipboard}
+        onClose={overlays.closeClipboard}
+      />
+
+      <MissionControl
+        isOpen={overlays.missionControl}
+        onClose={overlays.closeMissionControl}
+        openApps={windows.openApps}
+        onSelectApp={windows.openWindow}
+        onFocusWindow={windows.focusWindow}
       />
 
       {/* Context Menu */}

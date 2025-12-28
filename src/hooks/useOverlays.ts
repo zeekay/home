@@ -7,6 +7,8 @@ export interface OverlayState {
   about: boolean;
   applications: boolean;
   downloads: boolean;
+  clipboard: boolean;
+  missionControl: boolean;
 }
 
 export interface OverlayActions {
@@ -31,6 +33,14 @@ export interface OverlayActions {
   closeDownloads: () => void;
   toggleDownloads: () => void;
 
+  openClipboard: () => void;
+  closeClipboard: () => void;
+  toggleClipboard: () => void;
+
+  openMissionControl: () => void;
+  closeMissionControl: () => void;
+  toggleMissionControl: () => void;
+
   closeAllOverlays: () => void;
 }
 
@@ -41,6 +51,8 @@ export function useOverlays(): OverlayState & OverlayActions {
   const [about, setAbout] = useState(false);
   const [applications, setApplications] = useState(false);
   const [downloads, setDownloads] = useState(false);
+  const [clipboard, setClipboard] = useState(false);
+  const [missionControl, setMissionControl] = useState(false);
 
   // Spotlight actions
   const openSpotlight = useCallback(() => setSpotlight(true), []);
@@ -85,6 +97,31 @@ export function useOverlays(): OverlayState & OverlayActions {
     });
   }, []);
 
+  // Clipboard manager actions
+  const openClipboard = useCallback(() => setClipboard(true), []);
+  const closeClipboard = useCallback(() => setClipboard(false), []);
+  const toggleClipboard = useCallback(() => setClipboard(prev => !prev), []);
+
+  // Mission Control actions
+  const openMissionControl = useCallback(() => {
+    // Close other overlays when opening Mission Control
+    setSpotlight(false);
+    setApplications(false);
+    setDownloads(false);
+    setMissionControl(true);
+  }, []);
+  const closeMissionControl = useCallback(() => setMissionControl(false), []);
+  const toggleMissionControl = useCallback(() => {
+    setMissionControl(prev => {
+      if (!prev) {
+        setSpotlight(false);
+        setApplications(false);
+        setDownloads(false);
+      }
+      return !prev;
+    });
+  }, []);
+
   // Close all overlays
   const closeAllOverlays = useCallback(() => {
     setSpotlight(false);
@@ -93,6 +130,8 @@ export function useOverlays(): OverlayState & OverlayActions {
     setAbout(false);
     setApplications(false);
     setDownloads(false);
+    setClipboard(false);
+    setMissionControl(false);
   }, []);
 
   return useMemo(() => ({
@@ -103,6 +142,8 @@ export function useOverlays(): OverlayState & OverlayActions {
     about,
     applications,
     downloads,
+    clipboard,
+    missionControl,
 
     // Actions
     openSpotlight,
@@ -120,13 +161,21 @@ export function useOverlays(): OverlayState & OverlayActions {
     openDownloads,
     closeDownloads,
     toggleDownloads,
+    openClipboard,
+    closeClipboard,
+    toggleClipboard,
+    openMissionControl,
+    closeMissionControl,
+    toggleMissionControl,
     closeAllOverlays,
   }), [
-    spotlight, forceQuit, appSwitcher, about, applications, downloads,
+    spotlight, forceQuit, appSwitcher, about, applications, downloads, clipboard, missionControl,
     openSpotlight, closeSpotlight, toggleSpotlight,
     openForceQuit, closeForceQuit, openAppSwitcher, closeAppSwitcher,
     openAbout, closeAbout, openApplications, closeApplications,
     toggleApplications, openDownloads, closeDownloads, toggleDownloads,
+    openClipboard, closeClipboard, toggleClipboard,
+    openMissionControl, closeMissionControl, toggleMissionControl,
     closeAllOverlays
   ]);
 }

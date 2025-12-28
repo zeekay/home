@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import ZWindow from './ZWindow';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { useDropTarget, type DragItem, type DragFileItem, type DragOperation } from '@/contexts/DragDropContext';
 import {
   Send,
   Phone,
@@ -49,6 +51,26 @@ const sampleMessages = [
 
 const ZMessagesWindow: React.FC<ZMessagesWindowProps> = ({ onClose, onFocus }) => {
   const [messageInput, setMessageInput] = useState('');
+
+  // Handle file/image drops for sharing
+  const handleFileDrop = useCallback((item: DragItem, _operation: DragOperation) => {
+    if (item.itemType === 'url') {
+      const url = item.data as string;
+      setMessageInput((prev) => prev + (prev ? '\n' : '') + url);
+      toast.success('URL added to message');
+    } else {
+      const fileData = item.data as DragFileItem;
+      toast.success(`Ready to share: ${fileData.name}`);
+      // In a real app, this would attach the file to the message
+    }
+  }, []);
+
+  // Drop target for the chat area
+  const chatDropTarget = useDropTarget(
+    'messages-chat',
+    ['file', 'folder', 'image', 'url', 'text'],
+    handleFileDrop
+  );
 
   const handleSendMessage = () => {
     if (!messageInput.trim()) return;
@@ -107,8 +129,17 @@ const ZMessagesWindow: React.FC<ZMessagesWindowProps> = ({ onClose, onFocus }) =
           </div>
         </div>
 
-        {/* Chat Area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#000000]">
+        {/* Chat Area - supports drag & drop */}
+        <div
+          ref={chatDropTarget.ref}
+          className={`flex-1 overflow-y-auto p-4 space-y-3 bg-[#000000] transition-colors ${
+            chatDropTarget.isOver && chatDropTarget.canDrop ? 'bg-blue-500/10 ring-2 ring-blue-500/30 ring-inset' : ''
+          }`}
+          onDragOver={chatDropTarget.onDragOver}
+          onDragEnter={chatDropTarget.onDragEnter}
+          onDragLeave={chatDropTarget.onDragLeave}
+          onDrop={chatDropTarget.onDrop}
+        >
           {/* Profile Card at Top */}
           <div className="flex flex-col items-center py-6 mb-4">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-2xl mb-3 shadow-lg">

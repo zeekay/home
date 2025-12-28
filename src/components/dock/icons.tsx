@@ -594,6 +594,30 @@ export const StickiesIcon: React.FC<{ className?: string }> = ({ className = "w-
   </svg>
 );
 
+// Shortcuts Icon - macOS Shortcuts app style with colorful gradient
+export const ShortcutsIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
+  <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="shortcutsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#FF6B9D" />
+        <stop offset="50%" stopColor="#C84AED" />
+        <stop offset="100%" stopColor="#5E6CF9" />
+      </linearGradient>
+    </defs>
+    <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#shortcutsGrad)" />
+    {/* Overlapping rounded rectangles representing workflow blocks */}
+    <rect x="14" y="14" width="24" height="12" rx="4" fill="white" opacity="0.9" />
+    <rect x="26" y="22" width="24" height="12" rx="4" fill="white" opacity="0.95" />
+    <rect x="14" y="30" width="24" height="12" rx="4" fill="white" opacity="0.85" />
+    <rect x="26" y="38" width="24" height="12" rx="4" fill="white" />
+    {/* Connection dots */}
+    <circle cx="38" cy="20" r="2" fill="#C84AED" />
+    <circle cx="26" cy="28" r="2" fill="#C84AED" />
+    <circle cx="38" cy="36" r="2" fill="#C84AED" />
+    <circle cx="26" cy="44" r="2" fill="#C84AED" />
+  </svg>
+);
+
 // App Store Icon - macOS style with blue gradient and stylized A
 export const AppStoreIcon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <svg viewBox="0 0 64 64" className={className} xmlns="http://www.w3.org/2000/svg">
