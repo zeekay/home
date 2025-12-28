@@ -160,28 +160,56 @@ async function spotifyFetch<T>(endpoint: string, token: string): Promise<T> {
   return response.json();
 }
 
+// Fetch all playlists with pagination (up to maxItems)
+async function fetchAllPlaylists(token: string, maxItems = 200): Promise<SpotifyPlaylistItem[]> {
+  const allPlaylists: SpotifyPlaylistItem[] = [];
+  let offset = 0;
+  const limit = 50; // Spotify max per request
+
+  while (allPlaylists.length < maxItems) {
+    const response = await spotifyFetch<SpotifyPaginated<SpotifyPlaylistItem>>(
+      `/me/playlists?limit=${limit}&offset=${offset}`,
+      token
+    );
+    
+    allPlaylists.push(...response.items);
+    
+    // Stop if no more playlists
+    if (!response.next || response.items.length < limit) {
+      break;
+    }
+    
+    offset += limit;
+  }
+
+  return allPlaylists.slice(0, maxItems);
+}
+
 async function main() {
   console.log('🎵 Fetching Spotify data...');
   
   const token = await getAccessToken();
   console.log('✓ Got access token');
 
-  // Fetch all data in parallel
-  const [profile, topTracksShort, topTracksMedium, topTracksLong, topArtists, recentlyPlayed, playlists] = await Promise.all([
+  // Fetch playlists with pagination (up to 200)
+  const playlistsPromise = fetchAllPlaylists(token, 200);
+
+  // Fetch other data in parallel
+  const [profile, topTracksShort, topTracksMedium, topTracksLong, topArtists, recentlyPlayed, allPlaylists] = await Promise.all([
     spotifyFetch<SpotifyProfile>('/me', token),
     spotifyFetch<SpotifyPaginated<SpotifyTrack>>('/me/top/tracks?time_range=short_term&limit=50', token),
     spotifyFetch<SpotifyPaginated<SpotifyTrack>>('/me/top/tracks?time_range=medium_term&limit=50', token),
     spotifyFetch<SpotifyPaginated<SpotifyTrack>>('/me/top/tracks?time_range=long_term&limit=50', token),
     spotifyFetch<SpotifyPaginated<SpotifyArtist>>('/me/top/artists?time_range=medium_term&limit=50', token),
     spotifyFetch<SpotifyPaginated<SpotifyPlayHistory>>('/me/player/recently-played?limit=50', token),
-    spotifyFetch<SpotifyPaginated<SpotifyPlaylistItem>>('/me/playlists?limit=50', token),
+    playlistsPromise,
   ]);
 
   console.log('✓ Fetched profile:', profile.display_name);
   console.log('✓ Fetched top tracks (short/medium/long term)');
   console.log('✓ Fetched top artists');
   console.log('✓ Fetched recently played');
-  console.log('✓ Fetched playlists:', playlists.items?.length || 0);
+  console.log('✓ Fetched playlists:', allPlaylists.length);
 
   const data = {
     profile,
@@ -192,7 +220,7 @@ async function main() {
     },
     topArtists: topArtists.items,
     recentlyPlayed: recentlyPlayed.items,
-    playlists: playlists.items,
+    playlists: allPlaylists,
     fetchedAt: new Date().toISOString(),
   };
 
@@ -230,7 +258,7 @@ async function main() {
       genres: a.genres?.slice(0, 3),
       external_urls: a.external_urls,
     })),
-    playlists: playlists.items.map((p) => ({
+    playlists: allPlaylists.map((p) => ({
       id: p.id,
       name: p.name,
       description: p.description,
