@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ZWindow from './ZWindow';
-import { Search, ExternalLink, Instagram, Github, Upload } from 'lucide-react';
+import { Search, ExternalLink, Instagram, Github, Upload, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { socialProfiles, pinnedProjects } from '@/data/socials';
 import { cn } from '@/lib/utils';
@@ -10,10 +10,45 @@ interface ZPhotosWindowProps {
   onFocus?: () => void;
 }
 
+const INSTAGRAM_USERNAME = 'zeekayai';
+
 const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose, onFocus }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'photos' | 'projects' | 'brands'>('photos');
+  const [embedLoaded, setEmbedLoaded] = useState(false);
+
+  // Load Instagram embed script
+  useEffect(() => {
+    if (activeTab === 'photos' && !embedLoaded) {
+      const script = document.createElement('script');
+      script.src = 'https://www.instagram.com/embed.js';
+      script.async = true;
+      script.onload = () => {
+        setEmbedLoaded(true);
+        // Process any existing embeds
+        if ((window as unknown as { instgrm?: { Embeds?: { process?: () => void } } }).instgrm?.Embeds?.process) {
+          (window as unknown as { instgrm: { Embeds: { process: () => void } } }).instgrm.Embeds.process();
+        }
+      };
+      document.body.appendChild(script);
+      
+      return () => {
+        // Cleanup if needed
+      };
+    }
+  }, [activeTab, embedLoaded]);
+
+  // Re-process embeds when tab changes
+  useEffect(() => {
+    if (activeTab === 'photos' && embedLoaded) {
+      setTimeout(() => {
+        if ((window as unknown as { instgrm?: { Embeds?: { process?: () => void } } }).instgrm?.Embeds?.process) {
+          (window as unknown as { instgrm: { Embeds: { process: () => void } } }).instgrm.Embeds.process();
+        }
+      }, 100);
+    }
+  }, [activeTab, embedLoaded]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -49,11 +84,11 @@ const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose, onFocus }) => {
       title="Photos"
       onClose={onClose}
       onFocus={onFocus}
-      defaultWidth={800}
-      defaultHeight={600}
+      defaultWidth={900}
+      defaultHeight={700}
       minWidth={600}
       minHeight={400}
-      defaultPosition={{ x: 180, y: 80 }}
+      defaultPosition={{ x: 150, y: 60 }}
     >
       <div className="h-full flex flex-col bg-[#1a1a1a]">
         {/* Header */}
@@ -124,61 +159,95 @@ const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose, onFocus }) => {
             <>
               {/* Photos Tab - Instagram Integration */}
               {activeTab === 'photos' && (
-                <div>
-                  <div className="mb-6 p-6 rounded-xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 border border-pink-500/20 text-center">
-                    <Instagram className="w-12 h-12 mx-auto mb-3 text-pink-500" />
-                    <h3 className="text-lg font-semibold text-white mb-2">Instagram Photos</h3>
-                    <p className="text-sm text-white/60 mb-4">
-                      View photos and stories on Instagram @{socialProfiles.instagram.handle}
-                    </p>
+                <div className="space-y-6">
+                  {/* Profile Header */}
+                  <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 border border-pink-500/20">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 p-0.5">
+                      <div className="w-full h-full rounded-full bg-[#1a1a1a] flex items-center justify-center">
+                        <Instagram className="w-8 h-8 text-pink-500" />
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-white">@{INSTAGRAM_USERNAME}</h3>
+                      <p className="text-sm text-white/60">Instagram Photos & Stories</p>
+                    </div>
                     <a
                       href={socialProfiles.instagram.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white rounded-lg hover:opacity-90 transition-opacity"
+                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white text-sm rounded-lg hover:opacity-90 transition-opacity"
                     >
-                      Open Instagram <ExternalLink className="w-4 h-4" />
+                      View Profile <ExternalLink className="w-4 h-4" />
                     </a>
                   </div>
 
-                  <h3 className="text-sm font-medium mb-3 text-white/70">Quick Links</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <a
-                      href={`${socialProfiles.instagram.url}/reels`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-4 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 transition-colors text-center border border-white/5"
-                    >
-                      <span className="text-2xl">🎬</span>
-                      <p className="text-sm font-medium text-white/80 mt-2">Reels</p>
-                    </a>
-                    <a
-                      href={socialProfiles.instagram.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-4 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30 transition-colors text-center border border-white/5"
-                    >
-                      <span className="text-2xl">📸</span>
-                      <p className="text-sm font-medium text-white/80 mt-2">Posts</p>
-                    </a>
-                    <a
-                      href={`${socialProfiles.instagram.url}/tagged`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-4 rounded-lg bg-gradient-to-br from-green-500/20 to-teal-500/20 hover:from-green-500/30 hover:to-teal-500/30 transition-colors text-center border border-white/5"
-                    >
-                      <span className="text-2xl">🏷️</span>
-                      <p className="text-sm font-medium text-white/80 mt-2">Tagged</p>
-                    </a>
-                    <a
-                      href={socialProfiles.github.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-4 rounded-lg bg-gradient-to-br from-gray-500/20 to-gray-600/20 hover:from-gray-500/30 hover:to-gray-600/30 transition-colors text-center border border-white/5"
-                    >
-                      <span className="text-2xl">💻</span>
-                      <p className="text-sm font-medium text-white/80 mt-2">GitHub</p>
-                    </a>
+                  {/* Instagram Embed */}
+                  <div className="flex justify-center">
+                    <div className="w-full max-w-lg">
+                      <blockquote 
+                        className="instagram-media" 
+                        data-instgrm-permalink={`https://www.instagram.com/${INSTAGRAM_USERNAME}/`}
+                        data-instgrm-version="14"
+                        style={{
+                          background: '#1a1a1a',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          borderRadius: '12px',
+                          margin: '0 auto',
+                          maxWidth: '540px',
+                          minWidth: '326px',
+                          padding: 0,
+                          width: '100%'
+                        }}
+                      >
+                        <div className="p-8 text-center">
+                          <RefreshCw className="w-8 h-8 text-white/40 mx-auto mb-3 animate-spin" />
+                          <p className="text-white/60 text-sm">Loading Instagram...</p>
+                        </div>
+                      </blockquote>
+                    </div>
+                  </div>
+
+                  {/* Quick Links */}
+                  <div>
+                    <h3 className="text-sm font-medium mb-3 text-white/70">Quick Links</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <a
+                        href={`${socialProfiles.instagram.url}/reels`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-4 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 transition-colors text-center border border-white/5"
+                      >
+                        <span className="text-2xl">🎬</span>
+                        <p className="text-sm font-medium text-white/80 mt-2">Reels</p>
+                      </a>
+                      <a
+                        href={socialProfiles.instagram.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-4 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30 transition-colors text-center border border-white/5"
+                      >
+                        <span className="text-2xl">📸</span>
+                        <p className="text-sm font-medium text-white/80 mt-2">Posts</p>
+                      </a>
+                      <a
+                        href={`${socialProfiles.instagram.url}/tagged`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-4 rounded-lg bg-gradient-to-br from-green-500/20 to-teal-500/20 hover:from-green-500/30 hover:to-teal-500/30 transition-colors text-center border border-white/5"
+                      >
+                        <span className="text-2xl">🏷️</span>
+                        <p className="text-sm font-medium text-white/80 mt-2">Tagged</p>
+                      </a>
+                      <a
+                        href={socialProfiles.github.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-4 rounded-lg bg-gradient-to-br from-gray-500/20 to-gray-600/20 hover:from-gray-500/30 hover:to-gray-600/30 transition-colors text-center border border-white/5"
+                      >
+                        <span className="text-2xl">💻</span>
+                        <p className="text-sm font-medium text-white/80 mt-2">GitHub</p>
+                      </a>
+                    </div>
                   </div>
                 </div>
               )}
