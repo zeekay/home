@@ -6,8 +6,8 @@
  * Setup:
  * 1. Go to developers.facebook.com and create an app
  * 2. Add Instagram Basic Display product
- * 3. Generate a long-lived access token
- * 4. Set INSTAGRAM_ACCESS_TOKEN in GitHub secrets
+ * 3. Instagram App ID: 1183980133342202
+ * 4. Generate access token and set INSTAGRAM_ACCESS_TOKEN in GitHub secrets
  * 
  * Run: npx ts-node scripts/fetch-instagram.ts
  */
