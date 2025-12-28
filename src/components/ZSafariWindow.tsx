@@ -12,7 +12,7 @@ import SafariTabBar from './safari/SafariTabBar';
 import SafariSidebar from './safari/SafariSidebar';
 import SafariBookmarksBar from './safari/SafariBookmarksBar';
 import SafariStartPage from './safari/SafariStartPage';
-import { calculateSizeReduction, checkIfInIframe } from './safari/safariUtils';
+import { calculateSizeReduction } from './safari/safariUtils';
 import {
   SafariTab,
   TabGroup,
@@ -458,6 +458,33 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
     setFavorites(loadFavorites());
   }, [activeTab]);
 
+  // Handle URL drops - navigate to dropped URL
+  const handleUrlDrop = useCallback((item: DragItem, _operation: DragOperation) => {
+    if (item.itemType === 'url') {
+      const url = item.data as string;
+      navigateToUrl(url);
+      toast.success(`Navigating to ${extractDomain(url)}`);
+    } else if (item.itemType === 'text') {
+      // Treat dropped text as a search query or URL
+      const text = item.data as string;
+      if (text.match(/^https?:\/\//i) || text.match(/^[\w.-]+\.[a-z]{2,}/i)) {
+        navigateToUrl(text);
+        toast.success(`Navigating to ${text.substring(0, 40)}...`);
+      } else {
+        // Search for the text
+        navigateToUrl(`https://www.google.com/search?q=${encodeURIComponent(text)}`);
+        toast.success('Searching for dropped text');
+      }
+    }
+  }, [navigateToUrl]);
+
+  // Drop target for the browser content area
+  const contentDropTarget = useDropTarget(
+    'safari-content',
+    ['url', 'text'],
+    handleUrlDrop
+  );
+
   // Open recursive Safari window
   const openRecursiveSafari = () => {
     const newWindow = document.createElement('div');
@@ -610,24 +637,45 @@ const ZSafariWindow: React.FC<ZSafariWindowProps> = ({
             />
           )}
 
-          {/* Content Area */}
-          {showingStartPage ? (
-            <SafariStartPage
-              favorites={favorites}
-              frequentlyVisited={getFrequentlyVisited(12)}
-              readingList={readingList}
-              onOpenUrl={(url) => navigateToUrl(url)}
-              onRemoveFavorite={handleRemoveFavorite}
-              onAddFavorite={handleAddFavorite}
-            />
-          ) : (
-            <SafariContent
-              url={activeTab?.url || ''}
-              depth={depth}
-              iframeKey={iframeKey}
-              onNavigate={(newUrl) => navigateToUrl(newUrl)}
-            />
-          )}
+          {/* Content Area - supports URL/text drops */}
+          <div
+            ref={contentDropTarget.ref}
+            className={`flex-1 relative ${
+              contentDropTarget.isOver && contentDropTarget.canDrop
+                ? 'ring-2 ring-blue-500/50 ring-inset'
+                : ''
+            }`}
+            onDragOver={contentDropTarget.onDragOver}
+            onDragEnter={contentDropTarget.onDragEnter}
+            onDragLeave={contentDropTarget.onDragLeave}
+            onDrop={contentDropTarget.onDrop}
+          >
+            {/* Drop overlay indicator */}
+            {contentDropTarget.isOver && contentDropTarget.canDrop && (
+              <div className="absolute inset-0 bg-blue-500/10 z-50 flex items-center justify-center pointer-events-none">
+                <div className="bg-black/80 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                  Drop URL to navigate
+                </div>
+              </div>
+            )}
+            {showingStartPage ? (
+              <SafariStartPage
+                favorites={favorites}
+                frequentlyVisited={getFrequentlyVisited(12)}
+                readingList={readingList}
+                onOpenUrl={(url) => navigateToUrl(url)}
+                onRemoveFavorite={handleRemoveFavorite}
+                onAddFavorite={handleAddFavorite}
+              />
+            ) : (
+              <SafariContent
+                url={activeTab?.url || ''}
+                depth={depth}
+                iframeKey={iframeKey}
+                onNavigate={(newUrl) => navigateToUrl(newUrl)}
+              />
+            )}
+          </div>
         </div>
       </div>
     </ZWindow>

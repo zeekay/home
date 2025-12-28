@@ -21,6 +21,7 @@ import { DragDropProvider } from "./contexts/DragDropContext";
 import { ShortcutsProvider } from "./contexts/ShortcutsContext";
 import { AccessibilityProvider } from "./contexts/AccessibilityContext";
 import { UserProvider } from "./contexts/UserContext";
+import { FileTagsProvider } from "./contexts/FileTagsContext";
 import { ScreenRecorderProvider } from "./components/ScreenRecorder";
 import NotificationCenter from "./components/NotificationCenter";
 import BootSequence from "./components/BootSequence";
@@ -128,6 +129,7 @@ const App = () => {
                           <FocusModeProvider>
                             <ShortcutsProvider>
                               <DragDropProvider>
+                                <FileTagsProvider>
                                 <ScreenRecorderProvider>
                                   {/* Boot sequence */}
                                   {systemState === 'booting' && (
@@ -170,6 +172,7 @@ const App = () => {
                                     </Routes>
                                   </BrowserRouter>
                                 </ScreenRecorderProvider>
+                                </FileTagsProvider>
                               </DragDropProvider>
                             </ShortcutsProvider>
                           </FocusModeProvider>
