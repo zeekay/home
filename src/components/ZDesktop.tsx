@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSystem } from '@/App';
 import { ANIMATION_DURATIONS } from '@/utils/animationConstants';
+import { playSound } from '@/lib/sounds';
 import ZDock from './ZDock';
 import ZMenuBar from './ZMenuBar';
 // Lightweight windows loaded synchronously
@@ -41,16 +42,20 @@ import SpotlightSearch from './SpotlightSearch';
 import ForceQuitDialog from './ForceQuitDialog';
 import DesktopContextMenu from './DesktopContextMenu';
 import ClipboardManager from './ClipboardManager';
+import ScreenshotToolbar from './ScreenshotToolbar';
 import AboutAppDialog from './AboutAppDialog';
 import {
   useWindowManager,
   useDesktopSettings,
   useOverlays,
-  useKeyboardShortcuts,
   toast,
   type AppType,
-  type KeyboardShortcut,
 } from '@/hooks';
+import {
+  useGlobalShortcuts,
+  createSystemShortcuts,
+  type ShortcutDefinition,
+} from '@/contexts/GlobalShortcutsContext';
 import { useTerminal } from '@/contexts/TerminalContext';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useFocusMode } from '@/contexts/FocusModeContext';
@@ -290,10 +295,12 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
   }, [windows.activeApp, handleQuitCurrentApp]);
 
   const handleScreenshot = useCallback(() => {
+    playSound('screenshot');
     toast({ title: 'Screenshot Captured', description: 'Full screen screenshot saved to Desktop.' });
   }, []);
 
   const handleScreenshotSelection = useCallback(() => {
+    playSound('screenshot');
     toast({ title: 'Screenshot Selection', description: 'Click and drag to select an area for screenshot.' });
   }, []);
 
@@ -339,31 +346,163 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
     handleDesktopDrop
   );
 
-  // Keyboard shortcuts
-  const shortcuts: KeyboardShortcut[] = useMemo(() => [
-    { key: 'n', meta: true, action: () => windows.openWindow('Notes'), description: 'New Note' },
-    { key: ',', meta: true, action: handleOpenSettings, description: 'Open Settings' },
-    { key: 'q', meta: true, action: handleQuitCurrentApp, description: 'Quit App' },
-    { key: 'w', meta: true, action: handleQuitCurrentApp, description: 'Close Window' },
-    { key: 'm', meta: true, action: handleMinimizeWindow, description: 'Minimize Window' },
-    { key: 'h', meta: true, action: handleHideApp, description: 'Hide App' },
-    { key: 'Tab', meta: true, action: () => { if (windows.openApps.length > 0) { overlays.openAppSwitcher(); } }, description: 'App Switcher' },
-    { key: ' ', meta: true, action: overlays.openSpotlight, description: 'Spotlight Search' },
-    { key: 'k', meta: true, action: overlays.openSpotlight, description: 'Command Palette' },
-    { key: '3', meta: true, shift: true, action: handleScreenshot, description: 'Screenshot' },
-    { key: '4', meta: true, shift: true, action: handleScreenshotSelection, description: 'Screenshot Selection' },
-    { key: 'Escape', meta: true, alt: true, action: overlays.openForceQuit, description: 'Force Quit' },
-    { key: 'q', meta: true, ctrl: true, action: lockScreen, description: 'Lock Screen' },
-    { key: 'f', meta: true, action: overlays.openSpotlight, description: 'Find' },
-    { key: 'o', meta: true, action: () => windows.openWindow('Finder'), description: 'Open Finder' },
-    { key: 'v', meta: true, shift: true, action: overlays.toggleClipboard, description: 'Clipboard Manager' },
-    { key: 'ArrowUp', ctrl: true, action: overlays.toggleMissionControl, description: 'Mission Control' },
-    { key: 'F3', action: overlays.toggleMissionControl, description: 'Mission Control' },
-    { key: 'Escape', action: overlays.closeAllOverlays, description: 'Close Overlay', preventDefault: false },
-    { key: 'd', meta: true, shift: true, action: handleToggleFocusMode, description: 'Toggle Focus Mode' },
-  ], [windows, overlays, handleOpenSettings, handleQuitCurrentApp, handleMinimizeWindow, handleHideApp, handleScreenshot, handleScreenshotSelection, lockScreen, handleToggleFocusMode]);
+  // Screenshot toolbar state
+  const [showScreenshotToolbar, setShowScreenshotToolbar] = useState(false);
 
-  useKeyboardShortcuts({ shortcuts });
+  // Window switcher for same app (Cmd+`)
+  const handleWindowSwitcher = useCallback(() => {
+    // Cycle through windows of the same app
+    if (windows.activeApp) {
+      toast({ title: 'Window Switcher', description: `Cycling ${windows.activeApp} windows` });
+    }
+  }, [windows.activeApp]);
+
+  // Show desktop (minimize all)
+  const handleShowDesktop = useCallback(() => {
+    windows.openApps.forEach(app => {
+      windows.minimizeWindow(app);
+    });
+    toast({ title: 'Show Desktop', description: 'All windows minimized' });
+  }, [windows]);
+
+  // Dashboard/Widgets toggle
+  const { toggleEditMode } = useWidgets();
+  const handleDashboard = useCallback(() => {
+    toggleEditMode();
+    toast({ title: 'Widgets', description: 'Toggle widget edit mode' });
+  }, [toggleEditMode]);
+
+  // Screenshot toolbar
+  const handleScreenshotToolbar = useCallback(() => {
+    setShowScreenshotToolbar(true);
+    toast({ title: 'Screenshot Toolbar', description: 'Select screenshot mode' });
+  }, []);
+
+  // Help
+  const handleHelp = useCallback(() => {
+    toast({ title: 'Help', description: 'Press Cmd+Space to search for help' });
+  }, []);
+
+  // File operations (placeholder handlers for app-specific behavior)
+  const handleSaveFile = useCallback(() => {
+    toast({ title: 'Save', description: 'Document saved' });
+  }, []);
+
+  const handleSaveAs = useCallback(() => {
+    toast({ title: 'Save As', description: 'Opening save dialog...' });
+  }, []);
+
+  const handlePrint = useCallback(() => {
+    window.print();
+  }, []);
+
+  // Edit operations (let browser handle, just provide visual feedback)
+  const handleUndo = useCallback(() => {
+    // Browser handles actual undo
+  }, []);
+
+  const handleRedo = useCallback(() => {
+    // Browser handles actual redo
+  }, []);
+
+  const handleCut = useCallback(() => {
+    // Browser handles actual cut
+  }, []);
+
+  const handleCopy = useCallback(() => {
+    // Browser handles actual copy
+  }, []);
+
+  const handlePaste = useCallback(() => {
+    // Browser handles actual paste
+  }, []);
+
+  const handleSelectAll = useCallback(() => {
+    // Browser handles actual select all
+  }, []);
+
+  const handleFindNext = useCallback(() => {
+    toast({ title: 'Find Next', description: 'Use Cmd+G to find next occurrence' });
+  }, []);
+
+  // Global Shortcuts registration
+  const { register } = useGlobalShortcuts();
+
+  // Create and register all system shortcuts
+  const systemShortcuts = useMemo(() => createSystemShortcuts({
+    spotlight: overlays.openSpotlight,
+    appSwitcher: () => { if (windows.openApps.length > 0) { overlays.openAppSwitcher(); } },
+    windowSwitcher: handleWindowSwitcher,
+    hideApp: handleHideApp,
+    minimizeWindow: handleMinimizeWindow,
+    closeWindow: handleQuitCurrentApp,
+    quitApp: handleQuitCurrentApp,
+    preferences: handleOpenSettings,
+    help: handleHelp,
+    lockScreen,
+    screenshot: handleScreenshot,
+    screenshotSelection: handleScreenshotSelection,
+    screenshotToolbar: handleScreenshotToolbar,
+    showDesktop: handleShowDesktop,
+    dashboard: handleDashboard,
+    newDocument: () => windows.openWindow('Notes'),
+    openFile: () => windows.openWindow('Finder'),
+    saveFile: handleSaveFile,
+    saveAs: handleSaveAs,
+    print: handlePrint,
+    undo: handleUndo,
+    redo: handleRedo,
+    cut: handleCut,
+    copy: handleCopy,
+    paste: handlePaste,
+    selectAll: handleSelectAll,
+    find: overlays.openSpotlight,
+    findNext: handleFindNext,
+    missionControl: overlays.toggleMissionControl,
+    forceQuit: overlays.openForceQuit,
+    clipboardManager: overlays.toggleClipboard,
+    toggleFocusMode: handleToggleFocusMode,
+  }), [
+    overlays, windows, handleWindowSwitcher, handleHideApp, handleMinimizeWindow,
+    handleQuitCurrentApp, handleOpenSettings, handleHelp, lockScreen, handleScreenshot,
+    handleScreenshotSelection, handleScreenshotToolbar, handleShowDesktop, handleDashboard,
+    handleSaveFile, handleSaveAs, handlePrint, handleUndo, handleRedo, handleCut,
+    handleCopy, handlePaste, handleSelectAll, handleFindNext, handleToggleFocusMode,
+  ]);
+
+  // Register all shortcuts on mount
+  useEffect(() => {
+    const unregisters = systemShortcuts.map(s => register(s));
+
+    // Also add Escape to close overlays (low priority, doesn't preventDefault)
+    const escapeUnregister = register({
+      id: 'global:escape-close',
+      key: 'Escape',
+      modifiers: [],
+      action: overlays.closeAllOverlays,
+      description: 'Close Overlay',
+      category: 'global',
+      priority: 10,
+      preventDefault: false,
+    });
+
+    // Command palette alias (Cmd+K)
+    const cmdKUnregister = register({
+      id: 'global:cmd-k',
+      key: 'k',
+      modifiers: ['meta'],
+      action: overlays.openSpotlight,
+      description: 'Command Palette',
+      category: 'global',
+      priority: 90,
+    });
+
+    return () => {
+      unregisters.forEach(u => u());
+      escapeUnregister();
+      cmdKUnregister();
+    };
+  }, [systemShortcuts, register, overlays]);
 
   // Compute active dock apps from window state
   const activeDockApps = useMemo(() => {
@@ -589,6 +728,12 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
         openApps={windows.openApps}
         onSelectApp={windows.openWindow}
         onFocusWindow={windows.focusWindow}
+      />
+
+      {/* Screenshot Toolbar */}
+      <ScreenshotToolbar
+        isOpen={showScreenshotToolbar}
+        onClose={() => setShowScreenshotToolbar(false)}
       />
 
       {/* Context Menu */}

@@ -406,7 +406,7 @@ const MissionControl: React.FC<MissionControlProps> = ({
       onClick={handleBackgroundClick}
       className={cn(
         "fixed inset-0 z-[40000]",
-        "bg-black/60 backdrop-blur-xl",
+        "vibrancy-mission",
         "transition-opacity duration-300",
         isAnimating ? "opacity-0" : "opacity-100"
       )}
@@ -414,7 +414,7 @@ const MissionControl: React.FC<MissionControlProps> = ({
       {/* Spaces bar at top */}
       <div className={cn(
         "absolute top-0 left-0 right-0 px-8 py-4",
-        "bg-black/40 backdrop-blur-md border-b border-white/10",
+        "vibrancy-menubar border-b border-white/10",
         "transition-transform duration-400",
         isAnimating ? "-translate-y-full" : "translate-y-0"
       )}>

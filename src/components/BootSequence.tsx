@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { cn } from '@/lib/utils';
+import { playStartup } from '@/lib/sounds';
 
 interface BootSequenceProps {
   onComplete: () => void;
@@ -7,38 +8,9 @@ interface BootSequenceProps {
   mode?: 'classic' | 'modern'; // classic = text, modern = Apple-style
 }
 
-// Apple-style startup chime using Web Audio API
+// Startup chime - uses centralized sound system
 const playStartupChime = (): void => {
-  try {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const now = audioContext.currentTime;
-    
-    // Create the classic Mac chime (F major chord)
-    const frequencies = [349.23, 440, 523.25, 698.46]; // F4, A4, C5, F5
-    const duration = 1.2;
-    
-    frequencies.forEach((freq, i) => {
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(freq, now);
-      
-      // Staggered attack for richness
-      const startTime = now + (i * 0.02);
-      gainNode.gain.setValueAtTime(0, startTime);
-      gainNode.gain.linearRampToValueAtTime(0.15 - (i * 0.02), startTime + 0.05);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
-      
-      oscillator.start(startTime);
-      oscillator.stop(startTime + duration);
-    });
-  } catch {
-    // Audio not available, fail silently
-  }
+  playStartup();
 };
 
 // Boot tips/quotes

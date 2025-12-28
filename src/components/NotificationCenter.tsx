@@ -278,7 +278,7 @@ const NotificationCenter: React.FC = () => {
         ref={panelRef}
         className={cn(
           "fixed top-[25px] right-0 bottom-0 w-[350px] z-50",
-          "bg-black/70 backdrop-blur-2xl border-l border-white/10",
+          "vibrancy-notification",
           "transform transition-transform duration-300 ease-out",
           "flex flex-col",
           isOpen ? "translate-x-0" : "translate-x-full"

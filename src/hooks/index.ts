@@ -29,3 +29,7 @@ export { useStackOverflow } from './useStackOverflow';
 export { useTerminal } from './useTerminal';
 export { useIsMobile } from './use-mobile';
 export { useToast, toast } from './use-toast';
+
+// Sound system
+export { useSounds } from './useSounds';
+export type { UseSoundsReturn } from './useSounds';

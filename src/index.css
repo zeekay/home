@@ -1,49 +1,68 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Geist Font */
-@font-face {
-  font-family: 'Geist';
-  src: url('https://cdn.jsdelivr.net/npm/geist@1.2.0/dist/fonts/geist-sans/Geist-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
+/* ==========================================================================
+   macOS SF Pro Typography System
+   Matches macOS system fonts exactly for native look and feel
+   ========================================================================== */
 
-@font-face {
-  font-family: 'Geist';
-  src: url('https://cdn.jsdelivr.net/npm/geist@1.2.0/dist/fonts/geist-sans/Geist-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
+/*
+   SF Pro Font Stack
+   Uses system-ui which resolves to SF Pro on macOS/iOS
+   Falls back gracefully on other platforms
+*/
 
-@font-face {
-  font-family: 'Geist';
-  src: url('https://cdn.jsdelivr.net/npm/geist@1.2.0/dist/fonts/geist-sans/Geist-SemiBold.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
+:root {
+  /* SF Pro Display - For headings and large text (20pt+) */
+  --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-@font-face {
-  font-family: 'Geist';
-  src: url('https://cdn.jsdelivr.net/npm/geist@1.2.0/dist/fonts/geist-sans/Geist-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+  /* SF Pro Text - For body text and UI elements */
+  --font-text: "SF Pro Text", -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-@font-face {
-  font-family: 'Geist Mono';
-  src: url('https://cdn.jsdelivr.net/npm/geist@1.2.0/dist/fonts/geist-mono/GeistMono-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+  /* SF Pro Rounded - For friendly UI elements */
+  --font-rounded: "SF Pro Rounded", -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* SF Mono - For code and terminal */
+  --font-mono: "SF Mono", ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+
+  /* Font Weights - SF Pro weight scale */
+  --font-ultralight: 100;
+  --font-thin: 200;
+  --font-light: 300;
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-heavy: 800;
+  --font-black: 900;
+
+  /* macOS Font Sizes */
+  --text-mini: 9px;        /* Mini labels */
+  --text-small: 11px;      /* Small labels, secondary text */
+  --text-body: 13px;       /* Body text, menu items, window titles */
+  --text-headline: 14px;   /* Headlines in lists */
+  --text-subhead: 15px;    /* Subheadings */
+  --text-title3: 17px;     /* Title 3 */
+  --text-title2: 20px;     /* Title 2 - switches to SF Pro Display */
+  --text-title1: 22px;     /* Title 1 */
+  --text-large-title: 26px; /* Large titles */
+  --text-display: 34px;    /* Display text */
+
+  /* Letter Spacing - Apple's tracking values */
+  --tracking-tighter: -0.03em;  /* For large display text */
+  --tracking-tight: -0.02em;    /* For headings */
+  --tracking-normal: 0;         /* Default */
+  --tracking-wide: 0.01em;      /* For small caps/labels */
+  --tracking-wider: 0.02em;     /* For tiny text */
+
+  /* Line Heights - Apple's leading values */
+  --leading-none: 1;
+  --leading-tight: 1.1;      /* Headings */
+  --leading-snug: 1.2;       /* Compact UI */
+  --leading-normal: 1.35;    /* Body text */
+  --leading-relaxed: 1.5;    /* Readable paragraphs */
+  --leading-loose: 1.75;     /* Spacious text */
 }
 
 @layer base {
@@ -119,6 +138,100 @@
       rgba(255, 255, 255, 0) 50%
     );
     --glass-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+
+    /* ==========================================================================
+       macOS Vibrancy System - Dark Mode
+       Matches Apple's NSVisualEffectView materials and blur radii
+       ========================================================================== */
+
+    /* Menu Bar - adapts to wallpaper with subtle translucency */
+    --vibrancy-menubar-bg: rgba(29, 29, 31, 0.72);
+    --vibrancy-menubar-blur: 30px;
+    --vibrancy-menubar-saturate: 180%;
+    --vibrancy-menubar-brightness: 1.1;
+    --vibrancy-menubar-border: rgba(255, 255, 255, 0.08);
+
+    /* Dock - heavy blur for frosted glass effect */
+    --vibrancy-dock-bg: rgba(30, 30, 30, 0.50);
+    --vibrancy-dock-blur: 50px;
+    --vibrancy-dock-saturate: 200%;
+    --vibrancy-dock-brightness: 0.95;
+    --vibrancy-dock-border: rgba(255, 255, 255, 0.12);
+
+    /* Window Titlebar - slightly more opaque than sidebar */
+    --vibrancy-titlebar-bg: rgba(40, 40, 42, 0.92);
+    --vibrancy-titlebar-blur: 30px;
+    --vibrancy-titlebar-saturate: 150%;
+    --vibrancy-titlebar-border: rgba(255, 255, 255, 0.06);
+
+    /* Sidebar - Finder, Safari, Mail sidebar vibrancy */
+    --vibrancy-sidebar-bg: rgba(30, 30, 32, 0.78);
+    --vibrancy-sidebar-blur: 40px;
+    --vibrancy-sidebar-saturate: 180%;
+    --vibrancy-sidebar-border: rgba(255, 255, 255, 0.08);
+
+    /* Notification Center - right panel vibrancy */
+    --vibrancy-notification-bg: rgba(28, 28, 30, 0.75);
+    --vibrancy-notification-blur: 50px;
+    --vibrancy-notification-saturate: 190%;
+    --vibrancy-notification-border: rgba(255, 255, 255, 0.1);
+
+    /* Spotlight Search - prominent blur for readability */
+    --vibrancy-spotlight-bg: rgba(30, 30, 32, 0.65);
+    --vibrancy-spotlight-blur: 80px;
+    --vibrancy-spotlight-saturate: 200%;
+    --vibrancy-spotlight-border: rgba(255, 255, 255, 0.15);
+
+    /* Control Center - dropdown panel vibrancy */
+    --vibrancy-control-bg: rgba(28, 28, 30, 0.72);
+    --vibrancy-control-blur: 50px;
+    --vibrancy-control-saturate: 180%;
+    --vibrancy-control-border: rgba(255, 255, 255, 0.12);
+
+    /* Context Menu / Dropdown - standard menu vibrancy */
+    --vibrancy-menu-bg: rgba(30, 30, 32, 0.80);
+    --vibrancy-menu-blur: 40px;
+    --vibrancy-menu-saturate: 170%;
+    --vibrancy-menu-border: rgba(255, 255, 255, 0.15);
+
+    /* Sheet/Dialog - modal overlay vibrancy */
+    --vibrancy-sheet-bg: rgba(36, 36, 38, 0.85);
+    --vibrancy-sheet-blur: 50px;
+    --vibrancy-sheet-saturate: 150%;
+    --vibrancy-sheet-border: rgba(255, 255, 255, 0.1);
+
+    /* Widget - desktop widget vibrancy */
+    --vibrancy-widget-bg: rgba(38, 38, 40, 0.68);
+    --vibrancy-widget-blur: 40px;
+    --vibrancy-widget-saturate: 180%;
+    --vibrancy-widget-border: rgba(255, 255, 255, 0.12);
+
+    /* Popover - small popup vibrancy */
+    --vibrancy-popover-bg: rgba(32, 32, 34, 0.82);
+    --vibrancy-popover-blur: 35px;
+    --vibrancy-popover-saturate: 160%;
+    --vibrancy-popover-border: rgba(255, 255, 255, 0.12);
+
+    /* HUD (Heads-Up Display) - volume/brightness overlay */
+    --vibrancy-hud-bg: rgba(20, 20, 22, 0.85);
+    --vibrancy-hud-blur: 30px;
+    --vibrancy-hud-saturate: 140%;
+    --vibrancy-hud-border: rgba(255, 255, 255, 0.08);
+
+    /* Tooltip - small informational popups */
+    --vibrancy-tooltip-bg: rgba(45, 45, 48, 0.95);
+    --vibrancy-tooltip-blur: 15px;
+    --vibrancy-tooltip-saturate: 120%;
+    --vibrancy-tooltip-border: rgba(255, 255, 255, 0.1);
+
+    /* Mission Control - full screen overlay */
+    --vibrancy-mission-bg: rgba(0, 0, 0, 0.55);
+    --vibrancy-mission-blur: 60px;
+    --vibrancy-mission-saturate: 150%;
+
+    /* Selection highlight - for selected items */
+    --vibrancy-selection-bg: rgba(0, 122, 255, 0.35);
+    --vibrancy-selection-border: rgba(0, 122, 255, 0.5);
   }
 
   .light {
@@ -166,14 +279,98 @@
     @apply border-border selection:bg-primary/10 selection:text-primary;
   }
 
-  body {
-    @apply bg-background text-foreground antialiased overflow-hidden;
-    font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
-  }
-
   html {
     @apply scroll-smooth overflow-hidden;
     height: 100%;
+    /* Base text rendering for macOS fidelity */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-foreground overflow-hidden;
+    /* SF Pro Text for body - matches macOS system UI */
+    font-family: var(--font-text);
+    font-size: var(--text-body);
+    font-weight: var(--font-regular);
+    line-height: var(--leading-normal);
+    letter-spacing: var(--tracking-normal);
+    /* Text rendering optimizations */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* OpenType features for SF Pro */
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 1, "ss02" 1;
+    /* Optical sizing for variable fonts */
+    font-optical-sizing: auto;
+  }
+
+  /* Heading hierarchy using SF Pro Display */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  h1 {
+    font-size: var(--text-large-title);
+    font-weight: var(--font-bold);
+    letter-spacing: var(--tracking-tighter);
+  }
+
+  h2 {
+    font-size: var(--text-title1);
+    font-weight: var(--font-semibold);
+  }
+
+  h3 {
+    font-size: var(--text-title2);
+    font-weight: var(--font-semibold);
+  }
+
+  h4 {
+    font-size: var(--text-title3);
+    font-weight: var(--font-medium);
+  }
+
+  h5 {
+    font-size: var(--text-subhead);
+    font-weight: var(--font-medium);
+  }
+
+  h6 {
+    font-size: var(--text-headline);
+    font-weight: var(--font-medium);
+  }
+
+  /* Paragraph and prose text */
+  p {
+    font-size: var(--text-body);
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Small text */
+  small {
+    font-size: var(--text-small);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  /* Code elements use SF Mono */
+  code, kbd, samp, pre {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    font-feature-settings: "liga" 0;
+  }
+
+  pre {
+    font-size: var(--text-body);
+  }
+
+  /* Strong/Bold text */
+  strong, b {
+    font-weight: var(--font-semibold);
   }
 }
 
@@ -403,25 +600,500 @@
   .terminal-shadow {
     box-shadow: var(--glass-shadow-lg);
   }
+
+  /* ==========================================================================
+     macOS Vibrancy Utility Classes
+     Apply authentic macOS blur effects to UI elements
+     ========================================================================== */
+
+  /* Menu Bar vibrancy - top system bar */
+  .vibrancy-menubar {
+    background: var(--vibrancy-menubar-bg);
+    backdrop-filter: blur(var(--vibrancy-menubar-blur)) saturate(var(--vibrancy-menubar-saturate)) brightness(var(--vibrancy-menubar-brightness));
+    -webkit-backdrop-filter: blur(var(--vibrancy-menubar-blur)) saturate(var(--vibrancy-menubar-saturate)) brightness(var(--vibrancy-menubar-brightness));
+    border: 1px solid var(--vibrancy-menubar-border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 0.5px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Dock vibrancy - bottom app launcher */
+  .vibrancy-dock {
+    background: var(--vibrancy-dock-bg);
+    backdrop-filter: blur(var(--vibrancy-dock-blur)) saturate(var(--vibrancy-dock-saturate)) brightness(var(--vibrancy-dock-brightness));
+    -webkit-backdrop-filter: blur(var(--vibrancy-dock-blur)) saturate(var(--vibrancy-dock-saturate)) brightness(var(--vibrancy-dock-brightness));
+    border: 1px solid var(--vibrancy-dock-border);
+    box-shadow:
+      0 10px 40px rgba(0, 0, 0, 0.4),
+      0 0 1px rgba(0, 0, 0, 0.3),
+      inset 0 0.5px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  /* Window Titlebar vibrancy */
+  .vibrancy-titlebar {
+    background: var(--vibrancy-titlebar-bg);
+    backdrop-filter: blur(var(--vibrancy-titlebar-blur)) saturate(var(--vibrancy-titlebar-saturate));
+    -webkit-backdrop-filter: blur(var(--vibrancy-titlebar-blur)) saturate(var(--vibrancy-titlebar-saturate));
+    border-bottom: 1px solid var(--vibrancy-titlebar-border);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  /* Sidebar vibrancy - Finder, Safari, etc. */
+  .vibrancy-sidebar {
+    background: var(--vibrancy-sidebar-bg);
+    backdrop-filter: blur(var(--vibrancy-sidebar-blur)) saturate(var(--vibrancy-sidebar-saturate));
+    -webkit-backdrop-filter: blur(var(--vibrancy-sidebar-blur)) saturate(var(--vibrancy-sidebar-saturate));
+    border-right: 1px solid var(--vibrancy-sidebar-border);
+  }
+
+  /* Notification Center vibrancy */
+  .vibrancy-notification {
+    background: var(--vibrancy-notification-bg);
+    backdrop-filter: blur(var(--vibrancy-notification-blur)) saturate(var(--vibrancy-notification-saturate));
+    -webkit-backdrop-filter: blur(var(--vibrancy-notification-blur)) saturate(var(--vibrancy-notification-saturate));
+    border-left: 1px solid var(--vibrancy-notification-border);
+  }
+
+  /* Spotlight Search vibrancy */
+  .vibrancy-spotlight {
+    background: var(--vibrancy-spotlight-bg);
+    backdrop-filter: blur(var(--vibrancy-spotlight-blur)) saturate(var(--vibrancy-spotlight-saturate));
+    -webkit-backdrop-filter: blur(var(--vibrancy-spotlight-blur)) saturate(var(--vibrancy-spotlight-saturate));
+    border: 1px solid var(--vibrancy-spotlight-border);
+    box-shadow:
+      0 25px 80px rgba(0, 0, 0, 0.55),
+      0 10px 30px rgba(0, 0, 0, 0.35),
+      inset 0 0.5px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* Control Center vibrancy */
+  .vibrancy-control {
+    background: var(--vibrancy-control-bg);
+    backdrop-filter: blur(var(--vibrancy-control-blur)) saturate(var(--vibrancy-control-saturate));
+    -webkit-backdrop-filter: blur(var(--vibrancy-control-blur)) saturate(var(--vibrancy-control-saturate));
+    border: 1px solid var(--vibrancy-control-border);
+    box-shadow:
+      0 15px 50px rgba(0, 0, 0, 0.45),
+      inset 0 0.5px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  /* Context Menu / Dropdown vibrancy */
+  .vibrancy-menu {
+    background: var(--vibrancy-menu-bg);
+    backdrop-filter: blur(var(--vibrancy-menu-blur)) saturate(var(--vibrancy-menu-saturate));
+    -webkit-backdrop-filter: blur(var(--vibrancy-menu-blur)) saturate(var(--vibrancy-menu-saturate));
+    border: 1px solid var(--vibrancy-menu-border);
+    box-shadow:
+      0 10px 40px rgba(0, 0, 0, 0.4),
+      0 0 1px rgba(0, 0, 0, 0.2),
+      inset 0 0.5px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  /* Sheet/Dialog vibrancy */
+  .vibrancy-sheet {
+    background: var(--vibrancy-sheet-bg);
+    backdrop-filter: blur(var(--vibrancy-sheet-blur)) saturate(var(--vibrancy-sheet-saturate));
+    -webkit-backdrop-filter: blur(var(--vibrancy-sheet-blur)) saturate(var(--vibrancy-sheet-saturate));
+    border: 1px solid var(--vibrancy-sheet-border);
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.5),
+      inset 0 0.5px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* Widget vibrancy */
+  .vibrancy-widget {
+    background: var(--vibrancy-widget-bg);
+    backdrop-filter: blur(var(--vibrancy-widget-blur)) saturate(var(--vibrancy-widget-saturate));
+    -webkit-backdrop-filter: blur(var(--vibrancy-widget-blur)) saturate(var(--vibrancy-widget-saturate));
+    border: 1px solid var(--vibrancy-widget-border);
+    box-shadow:
+      0 8px 30px rgba(0, 0, 0, 0.35),
+      inset 0 0.5px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* Popover vibrancy */
+  .vibrancy-popover {
+    background: var(--vibrancy-popover-bg);
+    backdrop-filter: blur(var(--vibrancy-popover-blur)) saturate(var(--vibrancy-popover-saturate));
+    -webkit-backdrop-filter: blur(var(--vibrancy-popover-blur)) saturate(var(--vibrancy-popover-saturate));
+    border: 1px solid var(--vibrancy-popover-border);
+    box-shadow:
+      0 8px 25px rgba(0, 0, 0, 0.35),
+      inset 0 0.5px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  /* HUD vibrancy */
+  .vibrancy-hud {
+    background: var(--vibrancy-hud-bg);
+    backdrop-filter: blur(var(--vibrancy-hud-blur)) saturate(var(--vibrancy-hud-saturate));
+    -webkit-backdrop-filter: blur(var(--vibrancy-hud-blur)) saturate(var(--vibrancy-hud-saturate));
+    border: 1px solid var(--vibrancy-hud-border);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Tooltip vibrancy */
+  .vibrancy-tooltip {
+    background: var(--vibrancy-tooltip-bg);
+    backdrop-filter: blur(var(--vibrancy-tooltip-blur)) saturate(var(--vibrancy-tooltip-saturate));
+    -webkit-backdrop-filter: blur(var(--vibrancy-tooltip-blur)) saturate(var(--vibrancy-tooltip-saturate));
+    border: 1px solid var(--vibrancy-tooltip-border);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Mission Control vibrancy */
+  .vibrancy-mission {
+    background: var(--vibrancy-mission-bg);
+    backdrop-filter: blur(var(--vibrancy-mission-blur)) saturate(var(--vibrancy-mission-saturate));
+    -webkit-backdrop-filter: blur(var(--vibrancy-mission-blur)) saturate(var(--vibrancy-mission-saturate));
+  }
+
+  /* Selection highlight */
+  .vibrancy-selection {
+    background: var(--vibrancy-selection-bg);
+    border: 1px solid var(--vibrancy-selection-border);
+  }
+
+  /* ==========================================================================
+     Vibrancy Fallbacks for unsupported browsers
+     Provides solid backgrounds when backdrop-filter is not available
+     ========================================================================== */
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .vibrancy-menubar {
+      background: rgba(29, 29, 31, 0.95);
+    }
+    .vibrancy-dock {
+      background: rgba(30, 30, 30, 0.92);
+    }
+    .vibrancy-titlebar {
+      background: rgba(40, 40, 42, 0.98);
+    }
+    .vibrancy-sidebar {
+      background: rgba(30, 30, 32, 0.95);
+    }
+    .vibrancy-notification {
+      background: rgba(28, 28, 30, 0.95);
+    }
+    .vibrancy-spotlight {
+      background: rgba(30, 30, 32, 0.95);
+    }
+    .vibrancy-control {
+      background: rgba(28, 28, 30, 0.95);
+    }
+    .vibrancy-menu {
+      background: rgba(30, 30, 32, 0.98);
+    }
+    .vibrancy-sheet {
+      background: rgba(36, 36, 38, 0.98);
+    }
+    .vibrancy-widget {
+      background: rgba(38, 38, 40, 0.95);
+    }
+    .vibrancy-popover {
+      background: rgba(32, 32, 34, 0.98);
+    }
+    .vibrancy-hud {
+      background: rgba(20, 20, 22, 0.98);
+    }
+    .vibrancy-tooltip {
+      background: rgba(45, 45, 48, 0.98);
+    }
+    .vibrancy-mission {
+      background: rgba(0, 0, 0, 0.85);
+    }
+  }
+
+  /* Reduce Transparency support for vibrancy classes */
+  .reduce-transparency .vibrancy-menubar,
+  .reduce-transparency .vibrancy-dock,
+  .reduce-transparency .vibrancy-titlebar,
+  .reduce-transparency .vibrancy-sidebar,
+  .reduce-transparency .vibrancy-notification,
+  .reduce-transparency .vibrancy-spotlight,
+  .reduce-transparency .vibrancy-control,
+  .reduce-transparency .vibrancy-menu,
+  .reduce-transparency .vibrancy-sheet,
+  .reduce-transparency .vibrancy-widget,
+  .reduce-transparency .vibrancy-popover,
+  .reduce-transparency .vibrancy-hud,
+  .reduce-transparency .vibrancy-tooltip,
+  .reduce-transparency .vibrancy-mission {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(30, 30, 30, 0.98) !important;
+  }
 }
 
-/* Terminal styling */
+/* ==========================================================================
+   Typography Utility Classes
+   macOS-native typography for all UI elements
+   ========================================================================== */
+
+@layer utilities {
+  /* Font Family Utilities */
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-text {
+    font-family: var(--font-text);
+  }
+
+  .font-rounded {
+    font-family: var(--font-rounded);
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  /* Font Weight Utilities */
+  .font-ultralight {
+    font-weight: var(--font-ultralight);
+  }
+
+  .font-thin {
+    font-weight: var(--font-thin);
+  }
+
+  .font-light {
+    font-weight: var(--font-light);
+  }
+
+  .font-regular {
+    font-weight: var(--font-regular);
+  }
+
+  .font-medium {
+    font-weight: var(--font-medium);
+  }
+
+  .font-semibold {
+    font-weight: var(--font-semibold);
+  }
+
+  .font-bold {
+    font-weight: var(--font-bold);
+  }
+
+  .font-heavy {
+    font-weight: var(--font-heavy);
+  }
+
+  .font-black {
+    font-weight: var(--font-black);
+  }
+
+  /* macOS Size Utilities */
+  .text-mini {
+    font-size: var(--text-mini);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-wider);
+  }
+
+  .text-small {
+    font-size: var(--text-small);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .text-body {
+    font-size: var(--text-body);
+    line-height: var(--leading-normal);
+    letter-spacing: var(--tracking-normal);
+  }
+
+  .text-headline {
+    font-size: var(--text-headline);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-normal);
+  }
+
+  .text-subhead {
+    font-size: var(--text-subhead);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-normal);
+  }
+
+  .text-title3 {
+    font-family: var(--font-display);
+    font-size: var(--text-title3);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .text-title2 {
+    font-family: var(--font-display);
+    font-size: var(--text-title2);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .text-title1 {
+    font-family: var(--font-display);
+    font-size: var(--text-title1);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .text-large-title {
+    font-family: var(--font-display);
+    font-size: var(--text-large-title);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tighter);
+  }
+
+  .text-display {
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    line-height: var(--leading-none);
+    letter-spacing: var(--tracking-tighter);
+  }
+
+  /* Letter Spacing Utilities */
+  .tracking-tighter {
+    letter-spacing: var(--tracking-tighter);
+  }
+
+  .tracking-tight {
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .tracking-normal {
+    letter-spacing: var(--tracking-normal);
+  }
+
+  .tracking-wide {
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .tracking-wider {
+    letter-spacing: var(--tracking-wider);
+  }
+
+  /* Line Height Utilities */
+  .leading-none {
+    line-height: var(--leading-none);
+  }
+
+  .leading-tight {
+    line-height: var(--leading-tight);
+  }
+
+  .leading-snug {
+    line-height: var(--leading-snug);
+  }
+
+  .leading-normal {
+    line-height: var(--leading-normal);
+  }
+
+  .leading-relaxed {
+    line-height: var(--leading-relaxed);
+  }
+
+  .leading-loose {
+    line-height: var(--leading-loose);
+  }
+
+  /* macOS UI Element Classes */
+  .text-menubar {
+    font-family: var(--font-text);
+    font-size: var(--text-body);
+    font-weight: var(--font-medium);
+    line-height: var(--leading-none);
+    letter-spacing: var(--tracking-normal);
+  }
+
+  .text-window-title {
+    font-family: var(--font-text);
+    font-size: var(--text-body);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-none);
+    letter-spacing: var(--tracking-normal);
+  }
+
+  .text-label {
+    font-family: var(--font-text);
+    font-size: var(--text-small);
+    font-weight: var(--font-regular);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .text-caption {
+    font-family: var(--font-text);
+    font-size: var(--text-mini);
+    font-weight: var(--font-regular);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-wider);
+    color: hsl(var(--muted-foreground));
+  }
+
+  .text-button {
+    font-family: var(--font-text);
+    font-size: var(--text-body);
+    font-weight: var(--font-medium);
+    line-height: var(--leading-none);
+    letter-spacing: var(--tracking-normal);
+  }
+
+  .text-sidebar {
+    font-family: var(--font-text);
+    font-size: var(--text-body);
+    font-weight: var(--font-regular);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-normal);
+  }
+
+  .text-sidebar-header {
+    font-family: var(--font-text);
+    font-size: var(--text-small);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Antialiased text (default on, but explicit class) */
+  .antialiased {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Subpixel antialiasing (for light text on dark) */
+  .subpixel-antialiased {
+    -webkit-font-smoothing: auto;
+    -moz-osx-font-smoothing: auto;
+  }
+}
+
+/* Terminal styling - SF Mono */
 .terminal {
-  font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Mono", "Droid Sans Mono", "Source Code Pro", monospace;
+  font-family: var(--font-mono);
+  font-size: var(--text-body);
+  font-weight: var(--font-regular);
+  line-height: var(--leading-relaxed);
+  letter-spacing: var(--tracking-normal);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "liga" 0, "calt" 0;
 }
 
 .terminal-text {
-  font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Mono", "Droid Sans Mono", "Source Code Pro", monospace;
+  font-family: var(--font-mono);
+  font-size: var(--text-body);
+  font-weight: var(--font-regular);
+  line-height: var(--leading-relaxed);
+  font-feature-settings: "liga" 0, "calt" 0;
 }
 
 .terminal-cursor {
   display: inline-block;
   width: 0.55em;
-  height: 1em;
+  height: 1.1em;
   background: currentColor;
-  margin-left: 2px;
-  vertical-align: middle;
-  animation: terminal-cursor 1s infinite;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  animation: terminal-cursor 1s step-end infinite;
 }
 
 /* Remove default margin */
@@ -434,8 +1106,11 @@
 
 /* Utility for inline code blocks */
 .code {
-  font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Mono", "Droid Sans Mono", "Source Code Pro", monospace;
-  @apply bg-muted px-1.5 py-0.5 rounded text-sm;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-weight: var(--font-regular);
+  letter-spacing: var(--tracking-normal);
+  @apply bg-muted px-1.5 py-0.5 rounded;
 }
 
 /* Animations */
@@ -529,4 +1204,1434 @@
 
 .sr-skip-link:focus {
   top: 0;
+}
+
+/* ==========================================================================
+   zOS Cursor System
+   Native macOS-style cursor behaviors for all interactive elements
+   ========================================================================== */
+
+@layer utilities {
+  /* --------------------------------------------------------------------------
+     Custom zOS Cursors
+     SVG-based cursors for specialized interactions
+     -------------------------------------------------------------------------- */
+
+  /* Column resize cursor - vertical double-arrow */
+  .cursor-zos-column-resize {
+    cursor: col-resize;
+  }
+
+  /* Row resize cursor */
+  .cursor-zos-row-resize {
+    cursor: row-resize;
+  }
+
+  /* Window drag cursor - move cursor */
+  .cursor-zos-window-drag {
+    cursor: move;
+  }
+
+  /* Split pane horizontal */
+  .cursor-zos-split-h {
+    cursor: ew-resize;
+  }
+
+  /* Split pane vertical */
+  .cursor-zos-split-v {
+    cursor: ns-resize;
+  }
+
+  /* Dock drag cursor */
+  .cursor-zos-dock-drag {
+    cursor: grab;
+  }
+
+  .cursor-zos-dock-drag:active {
+    cursor: grabbing;
+  }
+
+  /* Selection crosshair */
+  .cursor-zos-selection {
+    cursor: crosshair;
+  }
+
+  /* --------------------------------------------------------------------------
+     Interactive Element Cursors
+     Default cursor states for common interactive patterns
+     -------------------------------------------------------------------------- */
+
+  /* Buttons, links, and clickable elements */
+  .cursor-interactive {
+    cursor: pointer;
+  }
+
+  .cursor-interactive:disabled,
+  .cursor-interactive[aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  /* Draggable elements */
+  .cursor-draggable {
+    cursor: grab;
+  }
+
+  .cursor-draggable:active,
+  .cursor-dragging {
+    cursor: grabbing;
+  }
+
+  /* Text input areas */
+  .cursor-text-input {
+    cursor: text;
+  }
+
+  /* Loading states */
+  .cursor-loading {
+    cursor: progress;
+  }
+
+  .cursor-waiting {
+    cursor: wait;
+  }
+
+  /* --------------------------------------------------------------------------
+     Window Resize Cursors
+     Edge and corner resize handles
+     -------------------------------------------------------------------------- */
+
+  /* Edge cursors */
+  .cursor-resize-n {
+    cursor: n-resize;
+  }
+
+  .cursor-resize-s {
+    cursor: s-resize;
+  }
+
+  .cursor-resize-e {
+    cursor: e-resize;
+  }
+
+  .cursor-resize-w {
+    cursor: w-resize;
+  }
+
+  /* Corner cursors */
+  .cursor-resize-ne {
+    cursor: ne-resize;
+  }
+
+  .cursor-resize-nw {
+    cursor: nw-resize;
+  }
+
+  .cursor-resize-se {
+    cursor: se-resize;
+  }
+
+  .cursor-resize-sw {
+    cursor: sw-resize;
+  }
+
+  /* Bidirectional cursors */
+  .cursor-resize-ns {
+    cursor: ns-resize;
+  }
+
+  .cursor-resize-ew {
+    cursor: ew-resize;
+  }
+
+  .cursor-resize-nesw {
+    cursor: nesw-resize;
+  }
+
+  .cursor-resize-nwse {
+    cursor: nwse-resize;
+  }
+
+  /* --------------------------------------------------------------------------
+     Cursor Transitions
+     Smooth cursor state changes
+     -------------------------------------------------------------------------- */
+
+  .cursor-transition {
+    transition: cursor 0.1s ease;
+  }
+}
+
+/* ==========================================================================
+   Component-Specific Cursor Rules
+   Applied to specific zOS UI components
+   ========================================================================== */
+
+/* Window title bar - grabbable for dragging */
+[data-window-titlebar] {
+  cursor: default;
+}
+
+[data-window-titlebar]:active {
+  cursor: move;
+}
+
+/* Window resize handle */
+[data-resize-handle] {
+  cursor: se-resize;
+}
+
+[data-resize-handle="n"] { cursor: n-resize; }
+[data-resize-handle="s"] { cursor: s-resize; }
+[data-resize-handle="e"] { cursor: e-resize; }
+[data-resize-handle="w"] { cursor: w-resize; }
+[data-resize-handle="ne"] { cursor: ne-resize; }
+[data-resize-handle="nw"] { cursor: nw-resize; }
+[data-resize-handle="se"] { cursor: se-resize; }
+[data-resize-handle="sw"] { cursor: sw-resize; }
+
+/* Finder column view resize handles */
+[data-column-resizer] {
+  cursor: col-resize;
+}
+
+/* Split pane dividers */
+[data-split-handle="horizontal"] {
+  cursor: ew-resize;
+}
+
+[data-split-handle="vertical"] {
+  cursor: ns-resize;
+}
+
+/* Dock items */
+[data-dock] [data-dock-item] {
+  cursor: default;
+}
+
+[data-dock] [data-dock-item][draggable="true"] {
+  cursor: grab;
+}
+
+[data-dock] [data-dock-item][draggable="true"]:active {
+  cursor: grabbing;
+}
+
+/* Dock magnification area */
+[data-dock]:hover {
+  cursor: default;
+}
+
+/* Menu bar */
+[data-menubar] {
+  cursor: default;
+}
+
+[data-menubar] [data-menu-trigger] {
+  cursor: default;
+}
+
+[data-menubar] [data-menu-item] {
+  cursor: default;
+}
+
+[data-menubar] [data-menu-item]:not([aria-disabled="true"]):hover {
+  cursor: pointer;
+}
+
+/* Sidebar items */
+[data-sidebar] [data-sidebar-item] {
+  cursor: pointer;
+}
+
+[data-sidebar] [data-sidebar-resize] {
+  cursor: ew-resize;
+}
+
+/* Desktop icons */
+[data-desktop-icon] {
+  cursor: default;
+}
+
+[data-desktop-icon]:hover {
+  cursor: pointer;
+}
+
+[data-desktop-icon][draggable="true"] {
+  cursor: grab;
+}
+
+[data-desktop-icon][draggable="true"]:active {
+  cursor: grabbing;
+}
+
+/* File list items */
+[data-file-item] {
+  cursor: default;
+}
+
+[data-file-item]:hover {
+  cursor: pointer;
+}
+
+[data-file-item][draggable="true"] {
+  cursor: grab;
+}
+
+[data-file-item][draggable="true"]:active {
+  cursor: grabbing;
+}
+
+/* Context menus */
+[data-context-menu] {
+  cursor: default;
+}
+
+[data-context-menu] [data-menu-item] {
+  cursor: default;
+}
+
+[data-context-menu] [data-menu-item]:not([aria-disabled="true"]):hover {
+  cursor: pointer;
+}
+
+/* Dialog windows */
+[role="dialog"] {
+  cursor: default;
+}
+
+/* Alert dialogs */
+[role="alertdialog"] {
+  cursor: default;
+}
+
+/* Scroll areas */
+[data-scroll-area] {
+  cursor: default;
+}
+
+/* Sliders and range inputs */
+[data-slider],
+input[type="range"] {
+  cursor: pointer;
+}
+
+[data-slider]:active,
+input[type="range"]:active {
+  cursor: grabbing;
+}
+
+/* Toggle switches */
+[data-toggle],
+[role="switch"] {
+  cursor: pointer;
+}
+
+[data-toggle][aria-disabled="true"],
+[role="switch"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* Checkboxes and radios */
+[type="checkbox"],
+[type="radio"],
+[role="checkbox"],
+[role="radio"] {
+  cursor: pointer;
+}
+
+[type="checkbox"]:disabled,
+[type="radio"]:disabled,
+[role="checkbox"][aria-disabled="true"],
+[role="radio"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* Tabs */
+[role="tab"] {
+  cursor: pointer;
+}
+
+[role="tab"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* Accordion headers */
+[data-accordion-trigger] {
+  cursor: pointer;
+}
+
+/* Tooltips (content area, not trigger) */
+[role="tooltip"] {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Progress bars */
+[role="progressbar"] {
+  cursor: default;
+}
+
+/* Editable content */
+[contenteditable="true"] {
+  cursor: text;
+}
+
+/* Links */
+a:not([role="button"]) {
+  cursor: pointer;
+}
+
+a[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* Buttons */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+/* Labels that are clickable (associated with inputs) */
+label[for] {
+  cursor: pointer;
+}
+
+/* Select dropdowns */
+select:not(:disabled) {
+  cursor: pointer;
+}
+
+select:disabled {
+  cursor: not-allowed;
+}
+
+/* Text inputs and textareas */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="url"],
+input[type="tel"],
+input[type="number"],
+textarea {
+  cursor: text;
+}
+
+input:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+}
+
+/* Zoom cursors for image viewers */
+[data-zoom-in] {
+  cursor: zoom-in;
+}
+
+[data-zoom-out] {
+  cursor: zoom-out;
+}
+
+/* Crosshair for selection tools */
+[data-selection-tool] {
+  cursor: crosshair;
+}
+
+/* Help cursors */
+[data-help] {
+  cursor: help;
+}
+
+/* Copy cursors */
+[data-copy-action] {
+  cursor: copy;
+}
+
+/* Alias/shortcut cursors */
+[data-alias] {
+  cursor: alias;
+}
+
+/* Cell selection (spreadsheet-like) */
+[data-cell-select] {
+  cursor: cell;
+}
+
+/* No drop zones */
+[data-no-drop] {
+  cursor: no-drop;
+}
+
+/* ==========================================================================
+   Global Cursor Behaviors
+   Applied during specific application states
+   ========================================================================== */
+
+/* Global dragging state - apply to body during drag operations */
+body.is-dragging,
+body.is-dragging * {
+  cursor: grabbing !important;
+}
+
+/* Global resizing state */
+body.is-resizing,
+body.is-resizing * {
+  cursor: inherit !important;
+}
+
+body.is-resizing-ns,
+body.is-resizing-ns * {
+  cursor: ns-resize !important;
+}
+
+body.is-resizing-ew,
+body.is-resizing-ew * {
+  cursor: ew-resize !important;
+}
+
+body.is-resizing-nwse,
+body.is-resizing-nwse * {
+  cursor: nwse-resize !important;
+}
+
+body.is-resizing-nesw,
+body.is-resizing-nesw * {
+  cursor: nesw-resize !important;
+}
+
+/* Global loading state */
+body.is-loading,
+body.is-loading * {
+  cursor: progress !important;
+}
+
+/* Global wait state */
+body.is-waiting,
+body.is-waiting * {
+  cursor: wait !important;
+}
+
+/* Text selection mode */
+body.is-selecting-text,
+body.is-selecting-text * {
+  cursor: text !important;
+}
+
+/* Crosshair selection mode (for region selection) */
+body.is-region-selecting,
+body.is-region-selecting * {
+  cursor: crosshair !important;
+}
+
+/* Hidden cursor (for presentations, video, etc.) */
+body.cursor-hidden,
+body.cursor-hidden * {
+  cursor: none !important;
+}
+
+/* ==========================================================================
+   Reduced Motion Cursor Adjustments
+   Instant cursor changes when user prefers reduced motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-transition {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   macOS-style Smooth Scrolling System
+   Native scrolling behavior with momentum, rubber-band, and shadows
+   ========================================================================== */
+
+/* Scrollbar Base Styling - macOS thin scrollbars */
+.scrollbar-macos {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.scrollbar-macos::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-macos::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-macos::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.2s ease;
+}
+
+.scrollbar-macos::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.scrollbar-macos::-webkit-scrollbar-thumb:active {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.scrollbar-macos::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Auto-hiding scrollbar (shows on hover/scroll) */
+.scrollbar-autohide {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.scrollbar-autohide::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-autohide::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-autohide::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.3s ease;
+}
+
+.scrollbar-autohide:hover::-webkit-scrollbar-thumb,
+.scrollbar-autohide:focus-within::-webkit-scrollbar-thumb,
+.scrollbar-autohide.is-scrolling::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.scrollbar-autohide:hover::-webkit-scrollbar-thumb:hover,
+.scrollbar-autohide.is-scrolling::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Hidden scrollbar (for custom scrollbar UI) */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Scroll Shadows - Top/Bottom fade indicators */
+.scroll-shadow {
+  position: relative;
+}
+
+.scroll-shadow::before,
+.scroll-shadow::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 40px;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.scroll-shadow::before {
+  top: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.3) 30%,
+    transparent 100%
+  );
+}
+
+.scroll-shadow::after {
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.3) 30%,
+    transparent 100%
+  );
+}
+
+.scroll-shadow.shadow-top::before {
+  opacity: 1;
+}
+
+.scroll-shadow.shadow-bottom::after {
+  opacity: 1;
+}
+
+/* Subtle scroll shadows */
+.scroll-shadow-subtle::before {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.25) 0%,
+    transparent 100%
+  );
+  height: 24px;
+}
+
+.scroll-shadow-subtle::after {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.25) 0%,
+    transparent 100%
+  );
+  height: 24px;
+}
+
+/* Horizontal scroll shadows */
+.scroll-shadow-horizontal::before,
+.scroll-shadow-horizontal::after {
+  top: 0;
+  bottom: 0;
+  height: auto;
+  width: 40px;
+}
+
+.scroll-shadow-horizontal::before {
+  left: 0;
+  right: auto;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.5) 0%,
+    transparent 100%
+  );
+}
+
+.scroll-shadow-horizontal::after {
+  right: 0;
+  left: auto;
+  background: linear-gradient(
+    to left,
+    rgba(0, 0, 0, 0.5) 0%,
+    transparent 100%
+  );
+}
+
+.scroll-shadow-horizontal.shadow-left::before {
+  opacity: 1;
+}
+
+.scroll-shadow-horizontal.shadow-right::after {
+  opacity: 1;
+}
+
+/* Scroll snapping */
+.scroll-snap-y {
+  scroll-snap-type: y mandatory;
+}
+
+.scroll-snap-y-proximity {
+  scroll-snap-type: y proximity;
+}
+
+.scroll-snap-x {
+  scroll-snap-type: x mandatory;
+}
+
+.scroll-snap-x-proximity {
+  scroll-snap-type: x proximity;
+}
+
+.scroll-snap-start {
+  scroll-snap-align: start;
+}
+
+.scroll-snap-center {
+  scroll-snap-align: center;
+}
+
+.scroll-snap-end {
+  scroll-snap-align: end;
+}
+
+/* Smooth scroll behavior */
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+/* Momentum scrolling (iOS/macOS native) */
+.scroll-momentum {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Rubber band prevention (when you want to disable it) */
+.scroll-no-bounce {
+  overscroll-behavior: none;
+}
+
+/* Scroll container with all macOS features */
+.scroll-macos {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.scroll-macos::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scroll-macos::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-macos::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.scroll-macos::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Scroll fade-in animation for loaded content */
+@keyframes scroll-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scroll-item-enter {
+  animation: scroll-fade-in 0.3s ease-out forwards;
+}
+
+/* Rubber band animation for boundaries */
+@keyframes rubber-band-top {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(15px); }
+  50% { transform: translateY(-5px); }
+  70% { transform: translateY(3px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes rubber-band-bottom {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(-15px); }
+  50% { transform: translateY(5px); }
+  70% { transform: translateY(-3px); }
+  100% { transform: translateY(0); }
+}
+
+.rubber-band-top {
+  animation: rubber-band-top 0.4s ease-out;
+}
+
+.rubber-band-bottom {
+  animation: rubber-band-bottom 0.4s ease-out;
+}
+
+/* Loading indicator for infinite scroll */
+.scroll-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.scroll-loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top-color: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: scroll-spinner 0.8s linear infinite;
+}
+
+@keyframes scroll-spinner {
+  to { transform: rotate(360deg); }
+}
+
+/* Custom scrollbar for Radix ScrollArea */
+[data-radix-scroll-area-viewport] {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Radix scrollbar thumb styling */
+[data-radix-scroll-area-scrollbar] {
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+[data-radix-scroll-area-scrollbar][data-state="hidden"] {
+  opacity: 0;
+}
+
+[data-radix-scroll-area-scrollbar][data-state="visible"] {
+  opacity: 1;
+}
+
+[data-radix-scroll-area-thumb] {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-radius: 4px !important;
+  transition: background 0.2s ease;
+}
+
+[data-radix-scroll-area-thumb]:hover {
+  background: rgba(255, 255, 255, 0.4) !important;
+}
+
+[data-radix-scroll-area-thumb]:active {
+  background: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ==========================================================================
+   macOS Finder-style Selection System
+   Rubber band selection, multi-select, and selection highlighting
+   ========================================================================== */
+
+/* Selection color variables */
+:root {
+  --selection-color: #0A84FF;
+  --selection-bg: rgba(10, 132, 255, 0.2);
+  --selection-border: rgba(10, 132, 255, 0.5);
+  --selection-highlight: rgba(10, 132, 255, 0.35);
+  --focus-ring-color: rgba(10, 132, 255, 0.5);
+}
+
+/* --------------------------------------------------------------------------
+   Rubber Band Selection Box
+   The marquee/lasso selection rectangle
+   -------------------------------------------------------------------------- */
+
+.selection-rubber-band {
+  background: var(--selection-bg);
+  border: 1px solid var(--selection-border);
+  border-radius: 2px;
+  pointer-events: none;
+  /* Subtle animation for smooth feel */
+  will-change: width, height, left, top;
+}
+
+/* During rubber band selection, disable text selection */
+body.is-rubber-band-selecting {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  cursor: crosshair !important;
+}
+
+body.is-rubber-band-selecting * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Selectable Item States
+   Visual feedback for selected/focused items
+   -------------------------------------------------------------------------- */
+
+/* Default selected state */
+.selection-item-selected {
+  background-color: var(--selection-highlight) !important;
+  outline: none;
+}
+
+/* Selected state with rounded corners (for icon view) */
+.selection-item-selected-rounded {
+  background-color: var(--selection-highlight) !important;
+  border-radius: 8px;
+  outline: none;
+}
+
+/* List view selected row */
+.selection-item-selected-row {
+  background-color: var(--selection-highlight) !important;
+  border-radius: 4px;
+  outline: none;
+}
+
+/* Focus ring for keyboard navigation */
+.selection-item-focused {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Focused AND selected */
+.selection-item-selected.selection-item-focused,
+.selection-item-selected-rounded.selection-item-focused,
+.selection-item-selected-row.selection-item-focused {
+  outline: 2px solid var(--selection-color);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.15);
+}
+
+/* Inactive window selected state (dimmed) */
+.window-inactive .selection-item-selected,
+.window-inactive .selection-item-selected-rounded,
+.window-inactive .selection-item-selected-row {
+  background-color: rgba(128, 128, 128, 0.25) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Selection Checkmark (Grid View)
+   macOS-style checkmark badge for selected items
+   -------------------------------------------------------------------------- */
+
+.selection-checkmark {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--selection-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  animation: selection-checkmark-pop 0.15s ease-out;
+}
+
+@keyframes selection-checkmark-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.selection-checkmark svg {
+  width: 12px;
+  height: 12px;
+  stroke: white;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+/* --------------------------------------------------------------------------
+   Selection Drag Ghost
+   Visual preview when dragging multiple selected items
+   -------------------------------------------------------------------------- */
+
+.selection-drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  /* Smooth follow with slight delay */
+  transition: transform 0.05s ease-out;
+}
+
+.selection-drag-ghost .ghost-stack {
+  position: relative;
+}
+
+.selection-drag-ghost .ghost-item {
+  position: absolute;
+  background: rgba(60, 60, 67, 0.9);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.selection-drag-ghost .ghost-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 24px;
+  height: 24px;
+  background-color: var(--selection-color);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   Selection Indicator (Status Bar)
+   Shows count of selected items
+   -------------------------------------------------------------------------- */
+
+.selection-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.selection-indicator .count-badge {
+  min-width: 24px;
+  height: 24px;
+  background-color: var(--selection-color);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+}
+
+.selection-indicator .count-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Animation for selection indicator */
+.selection-indicator-enter {
+  animation: selection-indicator-in 0.2s ease-out;
+}
+
+.selection-indicator-exit {
+  animation: selection-indicator-out 0.15s ease-in forwards;
+}
+
+@keyframes selection-indicator-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes selection-indicator-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Text Selection Styling
+   Custom text selection appearance
+   -------------------------------------------------------------------------- */
+
+::selection {
+  background: var(--selection-highlight);
+  color: inherit;
+}
+
+::-moz-selection {
+  background: var(--selection-highlight);
+  color: inherit;
+}
+
+/* Editable content selection */
+[contenteditable]::selection,
+input::selection,
+textarea::selection {
+  background: var(--selection-bg);
+  color: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   Focus Rings for Interactive Elements
+   Consistent focus styling across all focusable elements
+   -------------------------------------------------------------------------- */
+
+/* Remove default focus outline */
+*:focus {
+  outline: none;
+}
+
+/* Custom focus ring for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: 2px;
+}
+
+/* Buttons with focus ring */
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--selection-color);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.15);
+}
+
+/* Input focus ring */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: var(--selection-color);
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
+}
+
+/* Link focus ring */
+a:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Checkbox/Radio focus ring */
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible {
+  outline: 2px solid var(--selection-color);
+  outline-offset: 2px;
+}
+
+/* Slider/Range focus ring */
+input[type="range"]:focus-visible {
+  outline: none;
+}
+
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.3);
+}
+
+/* Tab focus ring */
+[role="tab"]:focus-visible {
+  outline: 2px solid var(--selection-color);
+  outline-offset: -2px;
+  border-radius: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Selectable Data Attributes
+   For programmatic selection styling
+   -------------------------------------------------------------------------- */
+
+[data-selectable] {
+  cursor: default;
+  transition: background-color 0.1s ease;
+}
+
+[data-selectable]:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-selectable][data-selected="true"] {
+  background-color: var(--selection-highlight);
+}
+
+[data-selectable][data-selected="true"]:hover {
+  background-color: rgba(10, 132, 255, 0.4);
+}
+
+/* List items */
+[data-selectable][role="option"],
+[data-selectable][role="listitem"] {
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* Grid items */
+[data-selectable][role="gridcell"] {
+  padding: 8px;
+  border-radius: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   Selection Animations
+   Smooth transitions for selection state changes
+   -------------------------------------------------------------------------- */
+
+@keyframes selection-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(10, 132, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.2);
+  }
+}
+
+.selection-pulse {
+  animation: selection-pulse 1.5s ease-in-out infinite;
+}
+
+/* Multi-select mode indicator */
+.multi-select-mode {
+  cursor: crosshair;
+}
+
+.multi-select-mode [data-selectable] {
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   Accessibility
+   High contrast and reduced motion support
+   -------------------------------------------------------------------------- */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --selection-color: #007AFF;
+    --selection-bg: rgba(0, 122, 255, 0.3);
+    --selection-border: rgba(0, 122, 255, 0.8);
+    --selection-highlight: rgba(0, 122, 255, 0.4);
+    --focus-ring-color: rgba(0, 122, 255, 0.8);
+  }
+
+  .selection-item-selected,
+  .selection-item-selected-rounded,
+  .selection-item-selected-row,
+  [data-selectable][data-selected="true"] {
+    outline: 2px solid var(--selection-color) !important;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .selection-checkmark,
+  .selection-indicator-enter,
+  .selection-indicator-exit,
+  .selection-pulse {
+    animation: none !important;
+  }
+
+  .selection-drag-ghost {
+    transition: none !important;
+  }
+
+  [data-selectable] {
+    transition: none !important;
+  }
+}
+
+/* ==========================================================================
+   macOS Window Shadow System
+   Dynamic shadows based on focus state - matches real macOS behavior
+   ========================================================================== */
+
+/* Window shadow variables */
+:root {
+  /* Focused window shadows (layered for depth) */
+  --window-shadow-focused:
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 8px 16px rgba(0, 0, 0, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.12),
+    0 0 0 0.5px rgba(255, 255, 255, 0.1),
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.1);
+
+  /* Unfocused window shadows (lighter) */
+  --window-shadow-unfocused:
+    0 10px 20px rgba(0, 0, 0, 0.15),
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.08);
+
+  /* Dragging window shadows (elevated) */
+  --window-shadow-dragging:
+    0 30px 60px rgba(0, 0, 0, 0.4),
+    0 15px 30px rgba(0, 0, 0, 0.25),
+    0 5px 15px rgba(0, 0, 0, 0.2),
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.12);
+
+  /* High elevation (modal/alert) */
+  --window-shadow-high:
+    0 25px 50px rgba(0, 0, 0, 0.35),
+    0 10px 20px rgba(0, 0, 0, 0.2),
+    0 3px 8px rgba(0, 0, 0, 0.15),
+    0 0 0 0.5px rgba(255, 255, 255, 0.1),
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* Window shadow utility classes */
+.window-shadow-focused {
+  box-shadow: var(--window-shadow-focused);
+  transition: box-shadow 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.window-shadow-unfocused {
+  box-shadow: var(--window-shadow-unfocused);
+  transition: box-shadow 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.window-shadow-dragging {
+  box-shadow: var(--window-shadow-dragging);
+  transition: box-shadow 0.15s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.window-shadow-high {
+  box-shadow: var(--window-shadow-high);
+}
+
+/* ==========================================================================
+   macOS Window Animation Utilities
+   Pixel-perfect CSS animations matching CoreAnimation timing curves
+   ========================================================================== */
+
+/* Transform origin for genie effect */
+.window-genie-origin {
+  transform-origin: bottom center;
+  perspective: 1000px;
+}
+
+/* Prevent layout shift during animations */
+.window-animating {
+  will-change: transform, opacity, box-shadow;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hardware acceleration for smooth animations */
+.window-hardware-accelerated {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Sheet animation container (slides from title bar) */
+.sheet-container {
+  transform-origin: top center;
+  will-change: transform, opacity;
+}
+
+/* Popover spring physics container */
+.popover-spring {
+  transform-origin: top center;
+  will-change: transform, opacity;
+}
+
+/* Reduced motion support for window animations */
+@media (prefers-reduced-motion: reduce) {
+  .window-genie-origin,
+  .window-animating,
+  .sheet-container,
+  .popover-spring {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
 }

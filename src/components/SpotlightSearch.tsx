@@ -855,11 +855,9 @@ const SpotlightSearch: React.FC<SpotlightSearchProps> = ({
         aria-label="Spotlight Search"
         className={cn(
           "w-[640px] max-w-[90vw]",
-          "bg-black/70 backdrop-blur-2xl",
-          "border border-white/20 rounded-2xl",
-          "shadow-2xl shadow-black/50",
-          "overflow-hidden",
-          "ring-1 ring-white/10"
+          "vibrancy-spotlight",
+          "rounded-2xl",
+          "overflow-hidden"
         )}
         onClick={e => e.stopPropagation()}
         onKeyDown={handleKeyDown}
