@@ -4,7 +4,7 @@ on:
   push:
     branches: [master, main]
   schedule:
-    # Run daily at 6am UTC to refresh Spotify data
+    # Run daily at 6am UTC to refresh Spotify and Instagram data
     - cron: '0 6 * * *'
   workflow_dispatch:
 
@@ -39,6 +39,12 @@ jobs:
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
+        continue-on-error: true
+
+      - name: Fetch Instagram data
+        run: npx tsx scripts/fetch-instagram.ts
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
         continue-on-error: true
 
       - name: Lint
