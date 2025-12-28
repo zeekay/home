@@ -452,26 +452,6 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
         <LazyZSystemPreferencesWindow
           onClose={() => windows.closeWindow('System Preferences')}
           onFocus={() => windows.focusWindow('System Preferences')}
-          theme={settings.theme}
-          customBgUrl={settings.customBgUrl}
-          onThemeChange={settings.setTheme}
-          onCustomBgUrlChange={settings.setCustomBgUrl}
-          colorScheme={settings.colorScheme}
-          windowTransparency={settings.windowTransparency}
-          fontSize={settings.fontSize}
-          onColorSchemeChange={settings.setColorScheme}
-          onWindowTransparencyChange={settings.setWindowTransparency}
-          onFontSizeChange={settings.setFontSize}
-          dockPosition={settings.dockPosition}
-          dockSize={settings.dockSize}
-          dockMagnification={settings.dockMagnification}
-          dockMagnificationSize={settings.dockMagnificationSize}
-          dockAutoHide={settings.dockAutoHide}
-          onDockPositionChange={settings.setDockPosition}
-          onDockSizeChange={settings.setDockSize}
-          onDockMagnificationChange={settings.setDockMagnification}
-          onDockMagnificationSizeChange={settings.setDockMagnificationSize}
-          onDockAutoHideChange={settings.setDockAutoHide}
         />
       )}
       {windows.isOpen('Photos') && (
