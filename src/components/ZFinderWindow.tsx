@@ -87,6 +87,12 @@ const ZFinderWindow: React.FC<ZFinderWindowProps> = ({ onClose, onFocus }) => {
   const getFilesForPath = (): FileItem[] => {
     const path = currentPath[currentPath.length - 1];
 
+    if (path === 'Trash') {
+      return [
+        { name: 'Trash is Empty', type: 'file', icon: <Trash2 className="w-12 h-12 text-gray-500" /> },
+      ];
+    }
+
     if (path === 'Home' || path === 'zeekay.ai') {
       return [
         { name: 'Applications', type: 'folder', icon: <Folder className="w-12 h-12 text-blue-400" /> },
@@ -302,6 +308,8 @@ ZIPs: https://zips.zoo.ngo
       setCurrentPath(['Home']);
     } else if (name === 'Documents' || name === 'Downloads' || name === 'Applications' || name === 'Desktop') {
       setCurrentPath(['Home', name]);
+    } else if (name === 'Trash') {
+      setCurrentPath(['Trash']);
     } else {
       setCurrentPath([name]);
     }
@@ -511,6 +519,15 @@ ZIPs: https://zips.zoo.ngo
               <button className="w-full flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 text-sm text-white/80">
                 <div className="w-3 h-3 rounded-full bg-blue-500" />
                 Blue
+              </button>
+            </div>
+            <div className="p-2 pt-1 mt-auto border-t border-white/5">
+              <button 
+                className="w-full flex items-center gap-2 px-2 py-1 rounded hover:bg-white/10 text-sm text-white/80"
+                onClick={() => handleSidebarClick('Trash')}
+              >
+                <Trash2 className="w-4 h-4 text-gray-400" />
+                Trash
               </button>
             </div>
           </div>
