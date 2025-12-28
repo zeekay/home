@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import ZWindow from './ZWindow';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Upload, Search, ExternalLink, Instagram, Github } from 'lucide-react';
+import { Search, ExternalLink, Instagram, Github, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { socialProfiles, pinnedProjects } from '@/data/socials';
+import { cn } from '@/lib/utils';
 
 interface ZPhotosWindowProps {
   onClose: () => void;
   onFocus?: () => void;
 }
 
-const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose }) => {
+const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose, onFocus }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'photos' | 'projects' | 'brands'>('photos');
@@ -39,54 +38,62 @@ const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose }) => {
     { name: 'Enso', icon: '◯', color: 'from-indigo-500 to-purple-600', description: 'Multimodal AI' },
   ];
 
+  const tabs = [
+    { id: 'photos' as const, label: 'Photos' },
+    { id: 'projects' as const, label: 'Projects' },
+    { id: 'brands' as const, label: 'Brands' },
+  ];
+
   return (
     <ZWindow
       title="Photos"
       onClose={onClose}
-      initialPosition={{ x: 180, y: 80 }}
-      initialSize={{ width: 800, height: 600 }}
-      windowType="default"
-      className="bg-gray-100/95 dark:bg-gray-900/95"
+      onFocus={onFocus}
+      defaultWidth={800}
+      defaultHeight={600}
+      minWidth={600}
+      minHeight={400}
+      defaultPosition={{ x: 180, y: 80 }}
     >
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col bg-[#1a1a1a]">
         {/* Header */}
-        <div className="bg-gray-200 dark:bg-gray-800 p-2 flex items-center space-x-2 border-b border-gray-300 dark:border-gray-700">
+        <div className="px-4 py-3 flex items-center gap-3 border-b border-white/10 bg-black/30">
           {/* Tabs */}
-          <div className="flex gap-1 bg-gray-300 dark:bg-gray-700 rounded-lg p-0.5">
-            {(['photos', 'projects', 'brands'] as const).map((tab) => (
+          <div className="flex gap-1 glass-sm rounded-lg p-1">
+            {tabs.map((tab) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-                  activeTab === tab
-                    ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white'
-                    : 'text-gray-600 dark:text-gray-400'
-                }`}
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  'px-4 py-2 text-sm font-medium rounded-md transition-all',
+                  activeTab === tab.id
+                    ? 'bg-white/10 text-white shadow-sm'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                )}
               >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {tab.label}
               </button>
             ))}
           </div>
           
           <div className="flex-1 relative">
-            <Input
+            <input
+              type="text"
               placeholder="Search..."
-              className="pl-8 bg-gray-100 dark:bg-gray-950 h-8"
+              className="w-full pl-8 pr-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-white/40 focus:outline-none focus:border-white/20"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Search className="h-4 w-4 absolute left-2 top-2 text-gray-500" />
+            <Search className="h-4 w-4 absolute left-2.5 top-2.5 text-white/40" />
           </div>
           
-          <Button
-            size="sm"
-            variant="ghost"
-            className="text-gray-700 dark:text-gray-300"
+          <button
+            className="flex items-center gap-2 px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
             onClick={() => document.getElementById('photo-upload')?.click()}
           >
-            <Upload className="h-4 w-4 mr-1" />
+            <Upload className="h-4 w-4" />
             Import
-          </Button>
+          </button>
           <input
             type="file"
             id="photo-upload"
@@ -99,19 +106,19 @@ const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose }) => {
         <div className="flex-1 overflow-auto p-4">
           {selectedImage ? (
             <div className="flex flex-col items-center">
-              <div className="bg-white dark:bg-gray-800 p-2 rounded-md shadow-md mb-4">
+              <div className="bg-black/30 p-2 rounded-xl shadow-lg mb-4 border border-white/10">
                 <img
                   src={selectedImage}
                   alt="Uploaded"
-                  className="max-w-full max-h-[400px] object-contain rounded"
+                  className="max-w-full max-h-[400px] object-contain rounded-lg"
                 />
               </div>
-              <Button
-                variant="outline"
+              <button
+                className="px-4 py-2 text-sm bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
                 onClick={() => setSelectedImage(null)}
               >
                 Back to Library
-              </Button>
+              </button>
             </div>
           ) : (
             <>
@@ -120,8 +127,8 @@ const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose }) => {
                 <div>
                   <div className="mb-6 p-6 rounded-xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-orange-500/10 border border-pink-500/20 text-center">
                     <Instagram className="w-12 h-12 mx-auto mb-3 text-pink-500" />
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">Instagram Photos</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <h3 className="text-lg font-semibold text-white mb-2">Instagram Photos</h3>
+                    <p className="text-sm text-white/60 mb-4">
                       View photos and stories on Instagram @{socialProfiles.instagram.handle}
                     </p>
                     <a
@@ -134,43 +141,43 @@ const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose }) => {
                     </a>
                   </div>
 
-                  <h3 className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Quick Links</h3>
+                  <h3 className="text-sm font-medium mb-3 text-white/70">Quick Links</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <a
                       href={`${socialProfiles.instagram.url}/reels`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-4 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 transition-colors text-center"
+                      className="p-4 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 transition-colors text-center border border-white/5"
                     >
                       <span className="text-2xl">🎬</span>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">Reels</p>
+                      <p className="text-sm font-medium text-white/80 mt-2">Reels</p>
                     </a>
                     <a
                       href={socialProfiles.instagram.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-4 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30 transition-colors text-center"
+                      className="p-4 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30 transition-colors text-center border border-white/5"
                     >
                       <span className="text-2xl">📸</span>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">Posts</p>
+                      <p className="text-sm font-medium text-white/80 mt-2">Posts</p>
                     </a>
                     <a
                       href={`${socialProfiles.instagram.url}/tagged`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-4 rounded-lg bg-gradient-to-br from-green-500/20 to-teal-500/20 hover:from-green-500/30 hover:to-teal-500/30 transition-colors text-center"
+                      className="p-4 rounded-lg bg-gradient-to-br from-green-500/20 to-teal-500/20 hover:from-green-500/30 hover:to-teal-500/30 transition-colors text-center border border-white/5"
                     >
                       <span className="text-2xl">🏷️</span>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">Tagged</p>
+                      <p className="text-sm font-medium text-white/80 mt-2">Tagged</p>
                     </a>
                     <a
                       href={socialProfiles.github.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-4 rounded-lg bg-gradient-to-br from-gray-500/20 to-gray-600/20 hover:from-gray-500/30 hover:to-gray-600/30 transition-colors text-center"
+                      className="p-4 rounded-lg bg-gradient-to-br from-gray-500/20 to-gray-600/20 hover:from-gray-500/30 hover:to-gray-600/30 transition-colors text-center border border-white/5"
                     >
                       <span className="text-2xl">💻</span>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">GitHub</p>
+                      <p className="text-sm font-medium text-white/80 mt-2">GitHub</p>
                     </a>
                   </div>
                 </div>
@@ -179,7 +186,7 @@ const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose }) => {
               {/* Projects Tab */}
               {activeTab === 'projects' && (
                 <div>
-                  <h3 className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Pinned Projects</h3>
+                  <h3 className="text-sm font-medium mb-3 text-white/70">Pinned Projects</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {pinnedProjects.map((project, index) => (
                       <a
@@ -187,18 +194,18 @@ const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose }) => {
                         href={project.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors"
+                        className="group p-4 rounded-xl bg-white/5 border border-white/10 hover:border-blue-500/50 transition-colors"
                       >
                         <div className="flex items-center gap-2 mb-2">
-                          <Github className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                          <span className="font-medium text-gray-800 dark:text-white group-hover:text-blue-500 transition-colors">
+                          <Github className="w-5 h-5 text-white/50" />
+                          <span className="font-medium text-white group-hover:text-blue-400 transition-colors">
                             {project.name}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">
+                        <p className="text-xs text-white/50 mb-3 line-clamp-2">
                           {project.description}
                         </p>
-                        <div className="flex items-center gap-3 text-xs text-gray-400">
+                        <div className="flex items-center gap-3 text-xs text-white/40">
                           <span className="flex items-center gap-1">
                             <span className={`w-2 h-2 rounded-full ${
                               project.language === 'TypeScript' ? 'bg-blue-500' :
@@ -220,7 +227,7 @@ const ZPhotosWindow: React.FC<ZPhotosWindowProps> = ({ onClose }) => {
               {/* Brands Tab */}
               {activeTab === 'brands' && (
                 <div>
-                  <h3 className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Companies & Projects</h3>
+                  <h3 className="text-sm font-medium mb-3 text-white/70">Companies & Projects</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {brands.map((brand, index) => (
                       <div
