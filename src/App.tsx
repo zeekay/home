@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import SpotifyCallback from "./pages/SpotifyCallback";
 import ZDesktop from "./components/ZDesktop";
 import TerminalContent from "./components/TerminalContent";
 import { TerminalProvider } from "./contexts/TerminalContext";
@@ -139,6 +140,7 @@ const App = () => {
                   </ZDesktop>
                 } />
                 <Route path="/terminal-content" element={<TerminalContent />} />
+                <Route path="/spotify/callback" element={<SpotifyCallback />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

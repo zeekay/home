@@ -3,6 +3,9 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [master, main]
+  schedule:
+    # Run daily at 6am UTC to refresh Spotify data
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 permissions:
@@ -30,11 +33,21 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
+      - name: Fetch Spotify data
+        run: npx tsx scripts/fetch-spotify.ts
+        env:
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
+        continue-on-error: true
+
       - name: Lint
         run: npm run lint
 
       - name: Build
         run: npm run build
+        env:
+          VITE_SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
