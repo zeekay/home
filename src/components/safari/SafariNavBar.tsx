@@ -1,6 +1,7 @@
 /**
  * Safari Navigation Bar
- * Enhanced nav bar with sidebar toggle, reading list, and bookmark controls
+ * Enhanced nav bar with sidebar toggle, reading list, bookmark controls,
+ * private mode toggle, and closed tabs restoration
  */
 
 import React, { useState } from 'react';
@@ -16,6 +17,8 @@ import {
   Share,
   Plus,
   Download,
+  Shield,
+  RotateCcw,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -31,14 +34,21 @@ interface SafariNavBarProps {
   handleNavigate: (e: React.FormEvent) => void;
   openRecursiveSafari: () => void;
   scaleFactor: number;
-  // New props for enhanced features
+  // Sidebar
   sidebarOpen?: boolean;
   onToggleSidebar?: () => void;
+  // Bookmarks and Reading List
   onAddToReadingList?: () => void;
   onAddBookmark?: () => void;
   onShare?: () => void;
   isBookmarked?: boolean;
   currentUrl?: string;
+  // Private mode
+  privateMode?: boolean;
+  onTogglePrivateMode?: () => void;
+  // Closed tabs
+  closedTabsCount?: number;
+  onReopenClosedTab?: () => void;
 }
 
 // Share menu component
@@ -106,6 +116,10 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
   onShare,
   isBookmarked = false,
   currentUrl = '',
+  privateMode = false,
+  onTogglePrivateMode,
+  closedTabsCount = 0,
+  onReopenClosedTab,
 }) => {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -120,15 +134,20 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
     disabled?: boolean;
     title?: string;
     isActive?: boolean;
+    variant?: 'default' | 'private';
     children: React.ReactNode;
-  }> = ({ onClick, disabled = false, title, isActive = false, children }) => (
+  }> = ({ onClick, disabled = false, title, isActive = false, variant = 'default', children }) => (
     <button
       className={cn(
         'rounded-full transition-colors',
         disabled
           ? 'opacity-50 cursor-not-allowed'
-          : 'hover:bg-gray-200 dark:hover:bg-gray-600 active:bg-gray-300 dark:active:bg-gray-500',
-        isActive && 'bg-gray-200/50 dark:bg-gray-600/50'
+          : variant === 'private'
+            ? 'hover:bg-purple-200 dark:hover:bg-purple-900 active:bg-purple-300 dark:active:bg-purple-800'
+            : 'hover:bg-gray-200 dark:hover:bg-gray-600 active:bg-gray-300 dark:active:bg-gray-500',
+        isActive && (variant === 'private'
+          ? 'bg-purple-200/50 dark:bg-purple-900/50'
+          : 'bg-gray-200/50 dark:bg-gray-600/50')
       )}
       onClick={onClick}
       disabled={disabled}
@@ -141,7 +160,12 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
 
   return (
     <div
-      className="bg-[#F6F6F6] dark:bg-[#2D2D2D] border-b border-gray-300/50 dark:border-gray-600/50 flex items-center px-2 space-x-2"
+      className={cn(
+        'border-b flex items-center px-2 space-x-2',
+        privateMode
+          ? 'bg-purple-100 dark:bg-purple-950 border-purple-300/50 dark:border-purple-700/50'
+          : 'bg-[#F6F6F6] dark:bg-[#2D2D2D] border-gray-300/50 dark:border-gray-600/50'
+      )}
       style={{
         height: `${height}px`,
         fontSize: `${fontSize}px`,
@@ -165,7 +189,7 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
       <NavButton
         onClick={handleBack}
         disabled={historyIndex <= 0}
-        title="Go Back"
+        title="Go Back (Cmd+[)"
       >
         <ChevronLeft
           style={{ width: iconSize, height: iconSize }}
@@ -176,7 +200,7 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
       <NavButton
         onClick={handleForward}
         disabled={historyIndex >= history.length - 1}
-        title="Go Forward"
+        title="Go Forward (Cmd+])"
       >
         <ChevronRight
           style={{ width: iconSize, height: iconSize }}
@@ -184,7 +208,7 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
         />
       </NavButton>
 
-      <NavButton onClick={handleRefresh} title="Reload">
+      <NavButton onClick={handleRefresh} title="Reload (Cmd+R)">
         <RefreshCcw
           style={{ width: iconSize, height: iconSize }}
           className="text-gray-600 dark:text-gray-300"
@@ -202,10 +226,17 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
       <form onSubmit={handleNavigate} className="flex-1 flex items-center">
         <div className="relative w-full">
           <div className="absolute inset-y-0 left-0 flex items-center pl-2">
-            <Search
-              style={{ width: iconSize, height: iconSize }}
-              className="text-gray-400"
-            />
+            {privateMode ? (
+              <Shield
+                style={{ width: iconSize, height: iconSize }}
+                className="text-purple-500"
+              />
+            ) : (
+              <Search
+                style={{ width: iconSize, height: iconSize }}
+                className="text-gray-400"
+              />
+            )}
           </div>
           <input
             type="text"
@@ -213,11 +244,16 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
             onChange={(e) => setInputUrl(e.target.value)}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            placeholder="Search or enter website name"
+            placeholder={privateMode ? 'Private Search or enter website' : 'Search or enter website name'}
             className={cn(
-              'w-full rounded-full bg-[#FFFFFF] dark:bg-[#3A3A3A] border text-sm shadow-inner transition-all',
+              'w-full rounded-full border text-sm shadow-inner transition-all',
+              privateMode
+                ? 'bg-purple-50 dark:bg-purple-900/30 placeholder:text-purple-400'
+                : 'bg-[#FFFFFF] dark:bg-[#3A3A3A]',
               isFocused
-                ? 'border-blue-500 ring-2 ring-blue-500/20'
+                ? privateMode
+                  ? 'border-purple-500 ring-2 ring-purple-500/20'
+                  : 'border-blue-500 ring-2 ring-blue-500/20'
                 : 'border-gray-300/50 dark:border-gray-600/50'
             )}
             style={{
@@ -230,6 +266,39 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
           />
         </div>
       </form>
+
+      {/* Reopen Closed Tab button */}
+      {onReopenClosedTab && closedTabsCount > 0 && (
+        <NavButton
+          onClick={onReopenClosedTab}
+          title={`Reopen Closed Tab (Cmd+Shift+T) - ${closedTabsCount} available`}
+        >
+          <div className="relative">
+            <RotateCcw
+              style={{ width: iconSize, height: iconSize }}
+              className="text-gray-600 dark:text-gray-300"
+            />
+            <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-[8px] rounded-full w-3 h-3 flex items-center justify-center">
+              {closedTabsCount > 9 ? '9+' : closedTabsCount}
+            </span>
+          </div>
+        </NavButton>
+      )}
+
+      {/* Private Mode toggle */}
+      {onTogglePrivateMode && (
+        <NavButton
+          onClick={onTogglePrivateMode}
+          title={privateMode ? 'Exit Private Mode (Cmd+Shift+N)' : 'Enter Private Mode (Cmd+Shift+N)'}
+          isActive={privateMode}
+          variant={privateMode ? 'private' : 'default'}
+        >
+          <Shield
+            style={{ width: iconSize, height: iconSize }}
+            className={privateMode ? 'text-purple-600 dark:text-purple-400' : 'text-gray-600 dark:text-gray-300'}
+          />
+        </NavButton>
+      )}
 
       {/* Share button with menu */}
       <div className="relative">
@@ -255,7 +324,7 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
       {onAddBookmark && (
         <NavButton
           onClick={onAddBookmark}
-          title={isBookmarked ? 'Edit Bookmark' : 'Add Bookmark'}
+          title={isBookmarked ? 'Edit Bookmark (Cmd+D)' : 'Add Bookmark (Cmd+D)'}
         >
           <Star
             style={{ width: iconSize, height: iconSize }}
@@ -272,7 +341,7 @@ const SafariNavBar: React.FC<SafariNavBarProps> = ({
       {onAddToReadingList && (
         <NavButton
           onClick={onAddToReadingList}
-          title="Add to Reading List"
+          title="Add to Reading List (Cmd+Shift+D)"
         >
           <BookOpen
             style={{ width: iconSize, height: iconSize }}
