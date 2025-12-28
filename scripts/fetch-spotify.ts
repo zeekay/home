@@ -28,12 +28,81 @@ if (!REFRESH_TOKEN) {
   process.exit(1);
 }
 
+// Spotify API types
 interface SpotifyTokenResponse {
   access_token: string;
   token_type: string;
   expires_in: number;
   refresh_token?: string;
   scope: string;
+}
+
+interface SpotifyImage {
+  url: string;
+  height: number | null;
+  width: number | null;
+}
+
+interface SpotifyExternalUrls {
+  spotify: string;
+}
+
+interface SpotifyFollowers {
+  href: string | null;
+  total: number;
+}
+
+interface SpotifyProfile {
+  id: string;
+  display_name: string;
+  images: SpotifyImage[];
+  followers: SpotifyFollowers;
+  external_urls: SpotifyExternalUrls;
+}
+
+interface SpotifyArtist {
+  id: string;
+  name: string;
+  images?: SpotifyImage[];
+  genres?: string[];
+  external_urls: SpotifyExternalUrls;
+}
+
+interface SpotifyAlbum {
+  id: string;
+  name: string;
+  images: SpotifyImage[];
+}
+
+interface SpotifyTrack {
+  id: string;
+  name: string;
+  artists: SpotifyArtist[];
+  album: SpotifyAlbum;
+  duration_ms: number;
+  external_urls: SpotifyExternalUrls;
+}
+
+interface SpotifyPlaylistItem {
+  id: string;
+  name: string;
+  description: string | null;
+  images: SpotifyImage[];
+  tracks: { total: number };
+  external_urls: SpotifyExternalUrls;
+}
+
+interface SpotifyPlayHistory {
+  track: SpotifyTrack;
+  played_at: string;
+}
+
+interface SpotifyPaginated<T> {
+  items: T[];
+  total: number;
+  limit: number;
+  offset: number;
+  next: string | null;
 }
 
 async function getAccessToken(): Promise<string> {
@@ -99,31 +168,31 @@ async function main() {
 
   // Fetch all data in parallel
   const [profile, topTracksShort, topTracksMedium, topTracksLong, topArtists, recentlyPlayed, playlists] = await Promise.all([
-    spotifyFetch('/me', token),
-    spotifyFetch('/me/top/tracks?time_range=short_term&limit=50', token),
-    spotifyFetch('/me/top/tracks?time_range=medium_term&limit=50', token),
-    spotifyFetch('/me/top/tracks?time_range=long_term&limit=50', token),
-    spotifyFetch('/me/top/artists?time_range=medium_term&limit=50', token),
-    spotifyFetch('/me/player/recently-played?limit=50', token),
-    spotifyFetch('/me/playlists?limit=50', token),
+    spotifyFetch<SpotifyProfile>('/me', token),
+    spotifyFetch<SpotifyPaginated<SpotifyTrack>>('/me/top/tracks?time_range=short_term&limit=50', token),
+    spotifyFetch<SpotifyPaginated<SpotifyTrack>>('/me/top/tracks?time_range=medium_term&limit=50', token),
+    spotifyFetch<SpotifyPaginated<SpotifyTrack>>('/me/top/tracks?time_range=long_term&limit=50', token),
+    spotifyFetch<SpotifyPaginated<SpotifyArtist>>('/me/top/artists?time_range=medium_term&limit=50', token),
+    spotifyFetch<SpotifyPaginated<SpotifyPlayHistory>>('/me/player/recently-played?limit=50', token),
+    spotifyFetch<SpotifyPaginated<SpotifyPlaylistItem>>('/me/playlists?limit=50', token),
   ]);
 
-  console.log('✓ Fetched profile:', (profile as any).display_name);
+  console.log('✓ Fetched profile:', profile.display_name);
   console.log('✓ Fetched top tracks (short/medium/long term)');
   console.log('✓ Fetched top artists');
   console.log('✓ Fetched recently played');
-  console.log('✓ Fetched playlists:', (playlists as any).items?.length || 0);
+  console.log('✓ Fetched playlists:', playlists.items?.length || 0);
 
   const data = {
     profile,
     topTracks: {
-      shortTerm: (topTracksShort as any).items,
-      mediumTerm: (topTracksMedium as any).items,
-      longTerm: (topTracksLong as any).items,
+      shortTerm: topTracksShort.items,
+      mediumTerm: topTracksMedium.items,
+      longTerm: topTracksLong.items,
     },
-    topArtists: (topArtists as any).items,
-    recentlyPlayed: (recentlyPlayed as any).items,
-    playlists: (playlists as any).items,
+    topArtists: topArtists.items,
+    recentlyPlayed: recentlyPlayed.items,
+    playlists: playlists.items,
     fetchedAt: new Date().toISOString(),
   };
 
@@ -140,26 +209,34 @@ async function main() {
   // Also write minimal version for faster loading
   const minimalData = {
     profile: {
-      id: (profile as any).id,
-      display_name: (profile as any).display_name,
-      images: (profile as any).images,
-      followers: (profile as any).followers,
-      external_urls: (profile as any).external_urls,
+      id: profile.id,
+      display_name: profile.display_name,
+      images: profile.images,
+      followers: profile.followers,
+      external_urls: profile.external_urls,
     },
-    topTracks: (topTracksMedium as any).items.slice(0, 10).map((t: any) => ({
+    topTracks: topTracksMedium.items.slice(0, 10).map((t) => ({
       id: t.id,
       name: t.name,
-      artists: t.artists.map((a: any) => ({ id: a.id, name: a.name })),
+      artists: t.artists.map((a) => ({ id: a.id, name: a.name })),
       album: { id: t.album.id, name: t.album.name, images: t.album.images },
       duration_ms: t.duration_ms,
       external_urls: t.external_urls,
     })),
-    topArtists: (topArtists as any).items.slice(0, 10).map((a: any) => ({
+    topArtists: topArtists.items.slice(0, 10).map((a) => ({
       id: a.id,
       name: a.name,
       images: a.images,
       genres: a.genres?.slice(0, 3),
       external_urls: a.external_urls,
+    })),
+    playlists: playlists.items.map((p) => ({
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      image: p.images?.[0]?.url || null,
+      trackCount: p.tracks.total,
+      url: p.external_urls.spotify,
     })),
     fetchedAt: new Date().toISOString(),
   };
