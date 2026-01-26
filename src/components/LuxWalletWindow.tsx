@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import ZWindow from './ZWindow';
+import { useWallet } from '@/contexts/WalletContext';
+import { formatUnits } from 'viem';
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -368,6 +370,17 @@ const QRCode: React.FC<{ value: string; size?: number }> = ({ size = 128 }) => {
 };
 
 const LuxWalletWindow: React.FC<LuxWalletWindowProps> = ({ onClose, onFocus }) => {
+  // Real wallet context
+  const wallet = useWallet();
+
+  // Password for wallet operations
+  const [walletPassword, setWalletPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [generatedMnemonic, setGeneratedMnemonic] = useState<string | null>(null);
+  const [onboardingStep, setOnboardingStep] = useState<'choice' | 'create' | 'import' | 'backup' | 'confirm'>('choice');
+
   // State
   const [data, setData] = useState<WalletData>(loadData);
   const [activeTab, setActiveTab] = useState<TabId>('dashboard');
@@ -509,47 +522,89 @@ const LuxWalletWindow: React.FC<LuxWalletWindowProps> = ({ onClose, onFocus }) =
     setIsRefreshing(false);
   };
 
-  const handleCreateWallet = () => {
-    const mnemonic = generateMnemonic();
-    setNewMnemonic(mnemonic);
+  const handleCreateWallet = async () => {
+    setPasswordError(null);
 
-    const newAccount: WalletAccount = {
-      id: Date.now().toString(),
-      name: walletName || `Wallet ${data.accounts.length + 1}`,
-      address: generateAddress('C'),
-      type: 'standard',
-      createdAt: Date.now(),
-    };
+    if (walletPassword.length < 8) {
+      setPasswordError('Password must be at least 8 characters');
+      return;
+    }
 
-    setData(prev => ({
-      ...prev,
-      accounts: [...prev.accounts, newAccount],
-      activeAccountId: prev.activeAccountId || newAccount.id,
-    }));
+    if (walletPassword !== confirmPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
 
-    setWalletName('');
+    try {
+      const mnemonic = await wallet.createWallet(walletPassword, 12);
+      setGeneratedMnemonic(mnemonic);
+      setOnboardingStep('backup');
+
+      // Also update local mock data for visual consistency
+      const newAccount: WalletAccount = {
+        id: Date.now().toString(),
+        name: walletName || `Wallet ${data.accounts.length + 1}`,
+        address: wallet.accounts[0]?.address || generateAddress('C'),
+        type: 'standard',
+        createdAt: Date.now(),
+      };
+
+      setData(prev => ({
+        ...prev,
+        accounts: [...prev.accounts, newAccount],
+        activeAccountId: prev.activeAccountId || newAccount.id,
+        settings: { ...prev.settings, isLocked: false },
+      }));
+
+      setWalletName('');
+      setWalletPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      setPasswordError(err instanceof Error ? err.message : 'Failed to create wallet');
+    }
   };
 
-  const handleImportWallet = () => {
+  const handleImportWallet = async () => {
     if (!importValue.trim()) return;
+    setPasswordError(null);
 
-    const newAccount: WalletAccount = {
-      id: Date.now().toString(),
-      name: walletName || `Imported ${data.accounts.length + 1}`,
-      address: generateAddress('C'),
-      type: 'imported',
-      createdAt: Date.now(),
-    };
+    if (walletPassword.length < 8) {
+      setPasswordError('Password must be at least 8 characters');
+      return;
+    }
 
-    setData(prev => ({
-      ...prev,
-      accounts: [...prev.accounts, newAccount],
-      activeAccountId: prev.activeAccountId || newAccount.id,
-    }));
+    try {
+      if (importMethod === 'mnemonic') {
+        await wallet.importFromMnemonic(importValue.trim(), walletPassword);
+      } else if (importMethod === 'privateKey') {
+        await wallet.importFromPrivateKey(importValue.trim(), walletPassword, walletName || undefined);
+      }
 
-    setWalletName('');
-    setImportValue('');
-    setImportMethod(null);
+      // Update local mock data for visual consistency
+      const newAccount: WalletAccount = {
+        id: Date.now().toString(),
+        name: walletName || `Imported ${data.accounts.length + 1}`,
+        address: wallet.accounts[0]?.address || generateAddress('C'),
+        type: 'imported',
+        createdAt: Date.now(),
+      };
+
+      setData(prev => ({
+        ...prev,
+        accounts: [...prev.accounts, newAccount],
+        activeAccountId: prev.activeAccountId || newAccount.id,
+        settings: { ...prev.settings, isLocked: false },
+      }));
+
+      setWalletName('');
+      setImportValue('');
+      setImportMethod(null);
+      setWalletPassword('');
+      setShowOnboarding(false);
+      setOnboardingStep('choice');
+    } catch (err) {
+      setPasswordError(err instanceof Error ? err.message : 'Failed to import wallet');
+    }
   };
 
   const handleSend = () => {
@@ -715,30 +770,51 @@ const LuxWalletWindow: React.FC<LuxWalletWindowProps> = ({ onClose, onFocus }) =
     setCustomTokenAddress('');
   };
 
-  const handleUnlock = () => {
-    setData(prev => ({
-      ...prev,
-      settings: { ...prev.settings, isLocked: false },
-      lastActivity: Date.now(),
-    }));
+  const handleUnlock = async () => {
+    setPasswordError(null);
+
+    if (!walletPassword) {
+      setPasswordError('Please enter your password');
+      return;
+    }
+
+    try {
+      const success = await wallet.unlock(walletPassword);
+      if (success) {
+        setData(prev => ({
+          ...prev,
+          settings: { ...prev.settings, isLocked: false },
+          lastActivity: Date.now(),
+        }));
+        setWalletPassword('');
+      } else {
+        setPasswordError('Invalid password');
+      }
+    } catch (err) {
+      setPasswordError(err instanceof Error ? err.message : 'Failed to unlock wallet');
+    }
   };
 
   const handleLock = () => {
+    wallet.lock();
     setData(prev => ({
       ...prev,
       settings: { ...prev.settings, isLocked: true },
     }));
   };
 
+  // Check if wallet needs onboarding (no wallet exists)
+  const needsOnboarding = !wallet.isInitialized;
+
   // Lock screen
-  if (data.settings.isLocked) {
+  if ((data.settings.isLocked || wallet.isLocked) && wallet.isInitialized) {
     return (
       <ZWindow
         title="Lux Wallet - Locked"
         onClose={onClose}
         onFocus={onFocus}
         initialPosition={{ x: 300, y: 100 }}
-        initialSize={{ width: 420, height: 500 }}
+        initialSize={{ width: 420, height: 520 }}
         windowType="default"
       >
         <div className="flex flex-col h-full bg-gradient-to-b from-indigo-950 via-purple-950 to-black items-center justify-center p-8">
@@ -750,30 +826,254 @@ const LuxWalletWindow: React.FC<LuxWalletWindowProps> = ({ onClose, onFocus }) =
           </div>
 
           <h2 className="text-2xl font-bold text-white mb-2">Wallet Locked</h2>
-          <p className="text-white/50 text-sm mb-8 text-center">
-            Your wallet has been locked for security. Authenticate to continue.
+          <p className="text-white/50 text-sm mb-6 text-center">
+            Enter your password to unlock.
           </p>
 
-          <button
-            onClick={handleUnlock}
-            className="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
-          >
-            {data.settings.biometricEnabled ? (
-              <>
-                <Fingerprint className="w-6 h-6" />
-                Unlock with Biometrics
-              </>
-            ) : (
-              <>
-                <Unlock className="w-6 h-6" />
-                Unlock Wallet
-              </>
+          <div className="w-full max-w-xs space-y-4">
+            <input
+              type="password"
+              value={walletPassword}
+              onChange={(e) => setWalletPassword(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
+              placeholder="Enter password"
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-cyan-500"
+            />
+
+            {passwordError && (
+              <p className="text-red-400 text-sm text-center">{passwordError}</p>
             )}
-          </button>
+
+            <button
+              onClick={handleUnlock}
+              disabled={wallet.isLoading}
+              className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+            >
+              {wallet.isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <>
+                  <Unlock className="w-5 h-5" />
+                  Unlock Wallet
+                </>
+              )}
+            </button>
+          </div>
 
           <p className="text-white/30 text-xs mt-6">
             Auto-lock: {data.settings.autoLockTimeout} minutes
           </p>
+        </div>
+      </ZWindow>
+    );
+  }
+
+  // Onboarding screen (no wallet exists)
+  if (needsOnboarding || showOnboarding) {
+    return (
+      <ZWindow
+        title="Lux Wallet - Setup"
+        onClose={onClose}
+        onFocus={onFocus}
+        initialPosition={{ x: 250, y: 80 }}
+        initialSize={{ width: 480, height: 600 }}
+        windowType="default"
+      >
+        <div className="flex flex-col h-full bg-gradient-to-b from-indigo-950 via-purple-950 to-black p-6">
+          {onboardingStep === 'choice' && (
+            <div className="flex-1 flex flex-col items-center justify-center">
+              <div className="w-20 h-20 mx-auto mb-6 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 rounded-2xl rotate-45 transform" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Wallet className="w-10 h-10 text-white" />
+                </div>
+              </div>
+
+              <h2 className="text-2xl font-bold text-white mb-2">Welcome to Lux Wallet</h2>
+              <p className="text-white/50 text-sm mb-8 text-center max-w-xs">
+                Multi-chain HD wallet with post-quantum security. Create a new wallet or import an existing one.
+              </p>
+
+              <div className="w-full max-w-xs space-y-3">
+                <button
+                  onClick={() => setOnboardingStep('create')}
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
+                >
+                  <Plus className="w-5 h-5" />
+                  Create New Wallet
+                </button>
+
+                <button
+                  onClick={() => { setImportMethod('mnemonic'); setOnboardingStep('import'); }}
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white/10 border border-white/20 rounded-xl text-white font-medium hover:bg-white/20 transition-colors"
+                >
+                  <Import className="w-5 h-5" />
+                  Import with Mnemonic
+                </button>
+
+                <button
+                  onClick={() => { setImportMethod('privateKey'); setOnboardingStep('import'); }}
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white/10 border border-white/20 rounded-xl text-white font-medium hover:bg-white/20 transition-colors"
+                >
+                  <Key className="w-5 h-5" />
+                  Import with Private Key
+                </button>
+              </div>
+            </div>
+          )}
+
+          {onboardingStep === 'create' && (
+            <div className="flex-1 flex flex-col">
+              <button onClick={() => setOnboardingStep('choice')} className="text-white/50 text-sm mb-4 hover:text-white">
+                ← Back
+              </button>
+
+              <h2 className="text-xl font-bold text-white mb-2">Create New Wallet</h2>
+              <p className="text-white/50 text-sm mb-6">
+                Choose a strong password to encrypt your wallet. You'll need this to unlock it.
+              </p>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-white/70 text-sm mb-1 block">Password</label>
+                  <input
+                    type="password"
+                    value={walletPassword}
+                    onChange={(e) => setWalletPassword(e.target.value)}
+                    placeholder="At least 8 characters"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-white/70 text-sm mb-1 block">Confirm Password</label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm password"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                {passwordError && (
+                  <p className="text-red-400 text-sm">{passwordError}</p>
+                )}
+
+                <button
+                  onClick={handleCreateWallet}
+                  disabled={wallet.isLoading || !walletPassword || !confirmPassword}
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  {wallet.isLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    'Create Wallet'
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {onboardingStep === 'import' && (
+            <div className="flex-1 flex flex-col">
+              <button onClick={() => { setOnboardingStep('choice'); setImportMethod(null); }} className="text-white/50 text-sm mb-4 hover:text-white">
+                ← Back
+              </button>
+
+              <h2 className="text-xl font-bold text-white mb-2">
+                Import with {importMethod === 'mnemonic' ? 'Mnemonic' : 'Private Key'}
+              </h2>
+              <p className="text-white/50 text-sm mb-6">
+                {importMethod === 'mnemonic'
+                  ? 'Enter your 12 or 24 word recovery phrase.'
+                  : 'Enter your private key (with or without 0x prefix).'}
+              </p>
+
+              <div className="space-y-4 flex-1">
+                <div>
+                  <label className="text-white/70 text-sm mb-1 block">
+                    {importMethod === 'mnemonic' ? 'Recovery Phrase' : 'Private Key'}
+                  </label>
+                  <textarea
+                    value={importValue}
+                    onChange={(e) => setImportValue(e.target.value)}
+                    placeholder={importMethod === 'mnemonic' ? 'word1 word2 word3 ...' : '0x...'}
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-cyan-500 resize-none"
+                    rows={importMethod === 'mnemonic' ? 4 : 2}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-white/70 text-sm mb-1 block">Password</label>
+                  <input
+                    type="password"
+                    value={walletPassword}
+                    onChange={(e) => setWalletPassword(e.target.value)}
+                    placeholder="Encrypt your wallet"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                {passwordError && (
+                  <p className="text-red-400 text-sm">{passwordError}</p>
+                )}
+
+                <button
+                  onClick={handleImportWallet}
+                  disabled={wallet.isLoading || !importValue || !walletPassword}
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  {wallet.isLoading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    'Import Wallet'
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {onboardingStep === 'backup' && generatedMnemonic && (
+            <div className="flex-1 flex flex-col">
+              <h2 className="text-xl font-bold text-white mb-2">Backup Your Recovery Phrase</h2>
+              <p className="text-white/50 text-sm mb-6">
+                Write down these 12 words in order. This is the ONLY way to recover your wallet. Never share it!
+              </p>
+
+              <div className="bg-white/5 border border-yellow-500/30 rounded-xl p-4 mb-4">
+                <div className="flex items-center gap-2 text-yellow-400 text-sm mb-3">
+                  <AlertTriangle className="w-4 h-4" />
+                  <span>Keep this safe and secret!</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {generatedMnemonic.split(' ').map((word, i) => (
+                    <div key={i} className="flex items-center gap-2 bg-white/5 rounded px-2 py-1.5">
+                      <span className="text-white/30 text-xs">{i + 1}</span>
+                      <span className="text-white text-sm font-mono">{word}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={() => handleCopy(generatedMnemonic)}
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-white/10 rounded-lg text-white/70 text-sm hover:bg-white/20 mb-4"
+              >
+                {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                {copied ? 'Copied!' : 'Copy to Clipboard'}
+              </button>
+
+              <div className="mt-auto">
+                <button
+                  onClick={() => { setShowOnboarding(false); setOnboardingStep('choice'); setGeneratedMnemonic(null); }}
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl text-white font-medium hover:opacity-90 transition-opacity"
+                >
+                  I've Saved My Recovery Phrase
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </ZWindow>
     );

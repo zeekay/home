@@ -742,6 +742,7 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
 }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState(87);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isCharging, setIsCharging] = useState(false);
   const [showBatteryPercent, setShowBatteryPercent] = useState(true);
   const [wifiEnabled, setWifiEnabled] = useState(true);
@@ -779,6 +780,17 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
     };
     window.addEventListener('blur', handleWindowBlur);
     return () => window.removeEventListener('blur', handleWindowBlur);
+  }, []);
+
+  // Detect fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    // Check initial state
+    setIsFullscreen(!!document.fullscreenElement);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
   // Battery and time updates
@@ -830,7 +842,7 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
   };
 
   const luxMenuItems: MenuItemType[] = useMemo(() => [
-    { label: 'About This Mac', action: 'about-mac' },
+    { label: 'About zOS', action: 'about-mac' },
     { type: 'separator' },
     { label: 'System Settings...', action: 'system-settings' },
     { label: 'App Store...', action: 'app-store' },
@@ -1075,6 +1087,7 @@ const ZMenuBar: React.FC<ZMenuBarProps> = ({
         'h-[28px] px-2',
         'flex items-center justify-between',
         'vibrancy-menubar',
+        isFullscreen && 'vibrancy-menubar-fullscreen',
         'rounded-[9px]',
         'text-white/90 text-[13px] font-medium tracking-[-0.01em]',
         'select-none',

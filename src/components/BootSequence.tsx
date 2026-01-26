@@ -5,7 +5,7 @@ import { playStartup } from '@/lib/sounds';
 interface BootSequenceProps {
   onComplete: () => void;
   skipDelay?: number;
-  mode?: 'classic' | 'modern'; // classic = text, modern = Apple-style
+  mode?: 'classic' | 'modern' | 'full'; // classic = text, modern = Apple-style, full = both
 }
 
 // Startup chime - uses centralized sound system
@@ -73,16 +73,16 @@ const AppleLogo: React.FC<{ className?: string }> = ({ className }) => (
   </svg>
 );
 
-// Z Logo for modern boot
+// Z Logo for modern boot - elegant, thin stroke version
 const ZLogo: React.FC<{ className?: string }> = ({ className }) => (
-  <svg viewBox="0 0 100 100" className={className} fill="currentColor">
-    <path d="M 15 15 H 85 V 30 L 35 70 H 85 V 85 H 15 V 70 L 65 30 H 15 Z" />
+  <svg viewBox="0 0 100 100" className={className} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M 22 22 H 78 L 22 78 H 78" />
   </svg>
 );
 
-const BootSequence: React.FC<BootSequenceProps> = ({ 
-  onComplete, 
-  mode = 'modern' 
+const BootSequence: React.FC<BootSequenceProps> = ({
+  onComplete,
+  mode = 'full'
 }) => {
   const [visibleLines, setVisibleLines] = useState<number>(0);
   const [isExiting, setIsExiting] = useState(false);
@@ -92,67 +92,65 @@ const BootSequence: React.FC<BootSequenceProps> = ({
   const [bootTip] = useState(() => getRandomTip());
   const [logoOpacity, setLogoOpacity] = useState(0);
   const chimePlayedRef = useRef(false);
+  const [phase, setPhase] = useState<'terminal' | 'loader'>('terminal'); // For 'full' mode
+  const [terminalFading, setTerminalFading] = useState(false);
 
-  // Play chime on mount (modern mode)
-  useEffect(() => {
-    if (mode === 'modern' && !chimePlayedRef.current) {
-      chimePlayedRef.current = true;
-      // Small delay before chime
-      const timer = setTimeout(() => {
-        playStartupChime();
-      }, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [mode]);
+  // Chime disabled - was too annoying
+  // const shouldPlayChime = (mode === 'modern') || (mode === 'full' && phase === 'loader');
+  // if (shouldPlayChime && !chimePlayedRef.current) { ... }
 
-  // Logo fade in (modern mode)
+  // Logo fade in (modern mode or loader phase in full mode)
   useEffect(() => {
-    if (mode === 'modern') {
+    const showLoader = mode === 'modern' || (mode === 'full' && phase === 'loader');
+    if (showLoader) {
       const timer = setTimeout(() => {
         setLogoOpacity(1);
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [mode]);
+  }, [mode, phase]);
 
-  // Progress bar animation (modern mode)
+  // Progress bar animation (modern mode or loader phase in full mode)
   useEffect(() => {
-    if (mode === 'modern') {
-      const duration = 2500; // 2.5 seconds
+    const showLoader = mode === 'modern' || (mode === 'full' && phase === 'loader');
+    if (showLoader) {
+      const duration = 2000; // 2 seconds for loader
       const interval = 16; // ~60fps
       const steps = duration / interval;
       let step = 0;
-      
+
       const timer = setInterval(() => {
         step++;
         // Ease-out cubic for natural feel
         const t = step / steps;
         const eased = 1 - Math.pow(1 - t, 3);
         setProgress(eased * 100);
-        
+
         if (step >= steps) {
           clearInterval(timer);
           setIsComplete(true);
         }
       }, interval);
-      
+
       return () => clearInterval(timer);
     }
-  }, [mode]);
+  }, [mode, phase]);
 
-  // Cursor blink effect (classic mode)
+  // Cursor blink effect (classic mode or terminal phase in full mode)
   useEffect(() => {
-    if (mode === 'classic') {
+    const showTerminal = mode === 'classic' || (mode === 'full' && phase === 'terminal');
+    if (showTerminal) {
       const cursorInterval = setInterval(() => {
         setCursorVisible(prev => !prev);
       }, 530);
       return () => clearInterval(cursorInterval);
     }
-  }, [mode]);
+  }, [mode, phase]);
 
-  // Show lines progressively (classic mode)
+  // Show lines progressively (classic mode or terminal phase in full mode)
   useEffect(() => {
-    if (mode === 'classic') {
+    const showTerminal = mode === 'classic' || (mode === 'full' && phase === 'terminal');
+    if (showTerminal) {
       if (visibleLines < bootLines.length) {
         const nextLine = bootLines[visibleLines];
         const delay = visibleLines === 0 ? 100 : nextLine.delay - (bootLines[visibleLines - 1]?.delay || 0);
@@ -163,28 +161,53 @@ const BootSequence: React.FC<BootSequenceProps> = ({
 
         return () => clearTimeout(timer);
       } else {
+        // Terminal complete - wait for user input before continuing
         setIsComplete(true);
       }
     }
-  }, [visibleLines, mode]);
+  }, [visibleLines, mode, phase]);
 
-  // Auto-complete after delay (modern mode)
+  // Auto-complete after delay (modern mode or loader phase complete in full mode)
+  // Also auto-transition from terminal to loader in full mode
   useEffect(() => {
-    if (mode === 'modern' && isComplete) {
+    const shouldAutoComplete = (mode === 'modern' && isComplete) ||
+                               (mode === 'full' && phase === 'loader' && isComplete);
+    const shouldAutoTransition = mode === 'full' && phase === 'terminal' && isComplete;
+
+    if (shouldAutoComplete) {
       const timer = setTimeout(() => {
         handleSkip();
-      }, 1000); // 1 second after progress completes
+      }, 800); // Slightly faster transition
       return () => clearTimeout(timer);
     }
-  }, [isComplete, mode]);
 
-  // Allow click/key to skip
+    if (shouldAutoTransition) {
+      const timer = setTimeout(() => {
+        handleSkip(); // This will transition to loader phase
+      }, 1200); // Brief pause before transitioning to loader
+      return () => clearTimeout(timer);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isComplete, mode, phase]);
+
+  // Allow click/key to skip/continue
   const handleSkip = useCallback(() => {
     if (isComplete || (mode === 'classic' && visibleLines >= bootLines.length)) {
-      setIsExiting(true);
-      setTimeout(onComplete, 500); // Longer fade for smoother transition
+      // In 'full' mode with terminal phase, transition to loader
+      if (mode === 'full' && phase === 'terminal') {
+        setTerminalFading(true);
+        setIsComplete(false); // Reset for loader phase
+        setTimeout(() => {
+          setPhase('loader');
+          setTerminalFading(false);
+        }, 500); // Fade out duration
+      } else {
+        // In loader phase or other modes, complete the boot
+        setIsExiting(true);
+        setTimeout(onComplete, 500); // Fade for smoother transition
+      }
     }
-  }, [onComplete, isComplete, visibleLines, mode]);
+  }, [onComplete, isComplete, visibleLines, mode, phase]);
 
   useEffect(() => {
     const handleKeyDown = (_e: KeyboardEvent) => {
@@ -196,7 +219,94 @@ const BootSequence: React.FC<BootSequenceProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleSkip, isComplete]);
 
-  // Modern Apple-style boot
+  // Full mode: Terminal BIOS first, then macOS-style loader
+  if (mode === 'full') {
+    // Terminal phase
+    if (phase === 'terminal') {
+      return (
+        <div
+          className={cn(
+            'fixed inset-0 z-[99999] bg-black flex items-center justify-center',
+            'transition-opacity duration-700 ease-out',
+            terminalFading ? 'opacity-0' : 'opacity-100',
+            isComplete ? 'cursor-pointer' : 'cursor-default'
+          )}
+          onClick={isComplete ? handleSkip : undefined}
+          role="status"
+          aria-label="System booting"
+        >
+          <div className="w-full max-w-2xl px-8 font-mono text-sm">
+            <div className="space-y-0">
+              {bootLines.slice(0, visibleLines).map((line, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    'whitespace-pre leading-relaxed',
+                    line.class || 'text-gray-300'
+                  )}
+                >
+                  {line.text || '\u00A0'}
+                </div>
+              ))}
+              {visibleLines < bootLines.length && (
+                <div className="text-gray-300">
+                  <span className={cn(
+                    'inline-block w-2 h-4 bg-gray-300 ml-0.5',
+                    cursorVisible ? 'opacity-100' : 'opacity-0'
+                  )} />
+                </div>
+              )}
+            </div>
+
+            {isComplete && (
+              <div className={cn(
+                "mt-8 text-center text-xs transition-all duration-300",
+                cursorVisible ? "text-cyan-400 scale-105" : "text-gray-600 scale-100"
+              )}>
+                Press any key or click to continue
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // Loader phase (after terminal)
+    return (
+      <div
+        className={cn(
+          'fixed inset-0 z-[99999] bg-black flex flex-col items-center justify-center',
+          'transition-opacity duration-500 ease-out',
+          isExiting ? 'opacity-0' : 'opacity-100',
+          isComplete ? 'cursor-pointer' : 'cursor-default'
+        )}
+        onClick={isComplete ? handleSkip : undefined}
+        role="status"
+        aria-label="System starting up"
+      >
+        {/* Elegant Z with fade-in */}
+        <div
+          className="transition-opacity duration-1000 ease-out mb-12"
+          style={{ opacity: logoOpacity }}
+        >
+          <ZLogo className="w-16 h-16 text-white/60" />
+        </div>
+
+        {/* Minimal progress bar */}
+        <div
+          className="w-40 h-[2px] bg-white/10 rounded-full overflow-hidden transition-opacity duration-500"
+          style={{ opacity: logoOpacity }}
+        >
+          <div
+            className="h-full bg-white/50 rounded-full transition-all duration-100 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Modern Apple-style boot (standalone)
   if (mode === 'modern') {
     return (
       <div
@@ -210,42 +320,41 @@ const BootSequence: React.FC<BootSequenceProps> = ({
         role="status"
         aria-label="System starting up"
       >
-        {/* Logo with fade-in */}
-        <div 
+        {/* Elegant Z logo with fade-in */}
+        <div
           className="transition-opacity duration-1000 ease-out"
           style={{ opacity: logoOpacity }}
         >
-          <ZLogo className="w-20 h-20 text-white/90 mb-8" />
+          <ZLogo className="w-16 h-16 text-white/60 mb-10" />
         </div>
 
-        {/* Progress bar container */}
-        <div 
-          className="w-48 h-1 bg-white/20 rounded-full overflow-hidden transition-opacity duration-500"
+        {/* Minimal progress bar */}
+        <div
+          className="w-40 h-[2px] bg-white/10 rounded-full overflow-hidden transition-opacity duration-500"
           style={{ opacity: logoOpacity }}
         >
-          {/* Progress bar fill */}
-          <div 
-            className="h-full bg-white/80 rounded-full transition-all duration-100 ease-out"
+          <div
+            className="h-full bg-white/50 rounded-full transition-all duration-100 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>
 
-        {/* Boot tip */}
-        <div 
+        {/* Boot tip - more subtle */}
+        <div
           className={cn(
-            "absolute bottom-12 text-center text-white/40 text-sm italic max-w-md px-4",
+            "absolute bottom-12 text-center text-white/25 text-xs italic max-w-sm px-4 font-light tracking-wide",
             "transition-opacity duration-1000 delay-500"
           )}
-          style={{ opacity: logoOpacity * 0.8 }}
+          style={{ opacity: logoOpacity * 0.7 }}
         >
-          "{bootTip}"
+          {bootTip}
         </div>
 
         {/* Skip hint */}
         {isComplete && (
-          <div 
+          <div
             className={cn(
-              "absolute bottom-6 text-center text-xs text-white/30",
+              "absolute bottom-6 text-center text-xs text-white/20",
               "animate-pulse"
             )}
           >

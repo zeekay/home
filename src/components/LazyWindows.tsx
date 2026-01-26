@@ -180,3 +180,123 @@ export const LazyZShortcutsWindow = createLazyWindow(
   () => import('./ZShortcutsWindow'),
   'Shortcuts'
 );
+
+// Digital Color Meter - Color picker utility
+export const LazyZDigitalColorMeterWindow = createLazyWindow(
+  () => import('./ZDigitalColorMeterWindow'),
+  'Digital Color Meter'
+);
+
+// Grapher - Math equation visualization
+export const LazyZGrapherWindow = createLazyWindow(
+  () => import('./ZGrapherWindow'),
+  'Grapher'
+);
+
+// Disk Utility - Disk management utility
+export const LazyZDiskUtilityWindow = createLazyWindow(
+  () => import('./ZDiskUtilityWindow'),
+  'Disk Utility'
+);
+
+// Discord - Discord integration widget
+export const LazyZDiscordWindow = createLazyWindow(
+  () => import('./ZDiscordWindow'),
+  'Discord'
+);
+
+// Twitter/X - Twitter integration widget
+export const LazyZTwitterWindow = createLazyWindow(
+  () => import('./ZTwitterWindow'),
+  'X'
+);
+
+// Slack - Slack integration widget
+export const LazyZSlackWindow = createLazyWindow(
+  () => import('./ZSlackWindow'),
+  'Slack'
+);
+
+// Logic Pro - DAW for music production
+export const LazyZLogicProWindow = createLazyWindow(
+  () => import('./ZLogicProWindow'),
+  'Logic Pro'
+);
+
+// FL Studio - DAW for music production
+export const LazyZFLStudioWindow = createLazyWindow(
+  () => import('./ZFLStudioWindow'),
+  'FL Studio'
+);
+
+// Ableton Live - DAW for music production and performance
+export const LazyZAbletonLiveWindow = createLazyWindow(
+  () => import('./ZAbletonLiveWindow'),
+  'Ableton Live'
+);
+
+// rekordbox - DJ software
+export const LazyZRekordboxWindow = createLazyWindow(
+  () => import('./ZRekordboxWindow'),
+  'rekordbox'
+);
+
+// VS Code - Code editor
+export const LazyZVSCodeWindow = createLazyWindow(
+  () => import('./ZVSCodeWindow'),
+  'Visual Studio Code'
+);
+
+// Figma - Design tool
+export const LazyZFigmaWindow = createLazyWindow(
+  () => import('./ZFigmaWindow'),
+  'Figma'
+);
+
+// Sketch - Design tool
+export const LazyZSketchWindow = createLazyWindow(
+  () => import('./ZSketchWindow'),
+  'Sketch'
+);
+
+// After Effects - Motion graphics
+export const LazyZAfterEffectsWindow = createLazyWindow(
+  () => import('./ZAfterEffectsWindow'),
+  'After Effects'
+);
+
+// Console - System logs
+export const LazyZConsoleWindow = createLazyWindow(
+  () => import('./ZConsoleWindow'),
+  'Console'
+);
+
+// Keychain Access - Password manager
+export const LazyZKeychainAccessWindow = createLazyWindow(
+  () => import('./ZKeychainAccessWindow'),
+  'Keychain Access'
+);
+
+// Audio MIDI Setup - Audio device configuration
+export const LazyZAudioMIDISetupWindow = createLazyWindow(
+  () => import('./ZAudioMIDISetupWindow'),
+  'Audio MIDI Setup'
+);
+
+// Screenshot - Screen capture utility
+export const LazyZScreenshotWindow = createLazyWindow(
+  () => import('./ZScreenshotWindow'),
+  'Screenshot'
+);
+
+// Screen Time - Usage tracking
+export const LazyZScreenTimeWindow = createLazyWindow(
+  () => import('./ZScreenTimeWindow'),
+  'Screen Time'
+);
+
+// Mastodon - Decentralized social network
+export const LazyZMastodonWindow = createLazyWindow(
+  () => import('./ZMastodonWindow'),
+  'Mastodon'
+);

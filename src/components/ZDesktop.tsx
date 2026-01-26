@@ -44,6 +44,7 @@ import DesktopContextMenu from './DesktopContextMenu';
 import ClipboardManager from './ClipboardManager';
 import ScreenshotToolbar from './ScreenshotToolbar';
 import AboutAppDialog from './AboutAppDialog';
+import WindowSnapOverlay from './window/WindowSnapOverlay';
 import {
   useWindowManager,
   useDesktopSettings,
@@ -471,7 +472,7 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
     handleCopy, handlePaste, handleSelectAll, handleFindNext, handleToggleFocusMode,
   ]);
 
-  // Register all shortcuts on mount
+  // Register all shortcuts - re-register when shortcuts change to avoid stale closures
   useEffect(() => {
     const unregisters = systemShortcuts.map(s => register(s));
 
@@ -503,8 +504,7 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
       escapeUnregister();
       cmdKUnregister();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [systemShortcuts, register, overlays.closeAllOverlays, overlays.openSpotlight]);
 
   // Compute active dock apps from window state
   const activeDockApps = useMemo(() => {
@@ -694,6 +694,9 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
         isOpen={aboutApp !== null}
         onClose={() => setAboutApp(null)}
       />
+
+      {/* Window tiling snap preview */}
+      <WindowSnapOverlay />
 
       {/* Overlays */}
       <AppSwitcher

@@ -223,7 +223,7 @@ const defaultDesktopDock: DesktopDockSettings = {
   wallpaperFit: 'fill',
   dockSize: 64,
   dockMagnification: true,
-  dockMagnificationSize: 128,
+  dockMagnificationSize: 72,
   dockPosition: 'bottom',
   minimizeEffect: 'genie',
   minimizeToAppIcon: false,

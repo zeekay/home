@@ -272,9 +272,17 @@ const WindowControls: React.FC<WindowControlsProps> = ({
 
   const handleMaximizeClick = (e: React.MouseEvent) => {
     if (onMaximize) {
-      // Option+click behavior could trigger fullscreen in a real implementation
-      // For now, just call the regular maximize
-      onMaximize();
+      // Option+click triggers native browser fullscreen
+      if (isOptionPressed || e.altKey) {
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        } else {
+          document.documentElement.requestFullscreen();
+        }
+      } else {
+        // Regular click does window maximize/restore
+        onMaximize();
+      }
     }
   };
 

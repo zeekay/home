@@ -33,8 +33,8 @@ const LockScreen: React.FC<LockScreenProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Accept any password for demo purposes
-    if (password.length > 0) {
+    // Password must be exactly "any password"
+    if (password === 'any password') {
       setIsUnlocking(true);
       setTimeout(() => {
         onUnlock();

@@ -212,23 +212,23 @@ describe('useOverlays', () => {
     it('closes all open overlays', () => {
       const { result } = renderHook(() => useOverlays());
 
-      // Open all overlays
+      // Open overlays (note: applications and downloads are mutually exclusive)
       act(() => {
         result.current.openSpotlight();
         result.current.openForceQuit();
         result.current.openAppSwitcher();
         result.current.openAbout();
         result.current.openApplications();
-        result.current.openDownloads();
+        // Note: openDownloads closes applications, so we skip it to test closeAll
       });
 
-      // Verify all are open
+      // Verify the ones that can be open together are open
       expect(result.current.spotlight).toBe(true);
       expect(result.current.forceQuit).toBe(true);
       expect(result.current.appSwitcher).toBe(true);
       expect(result.current.about).toBe(true);
       expect(result.current.applications).toBe(true);
-      expect(result.current.downloads).toBe(true);
+      // downloads is false because we didn't open it (it would close applications)
 
       // Close all
       act(() => {
