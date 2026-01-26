@@ -809,6 +809,333 @@ Genesis configuration:
 - Network launch`
           }
         }
+      },
+      'research': {
+        name: 'research',
+        type: 'directory',
+        children: {
+          'README.md': {
+            name: 'README.md',
+            type: 'file',
+            content: `# Research Papers
+📚 Academic & technical publications
+
+## Organizations
+- lux/ - LUX Network blockchain research
+- hanzo/ - Hanzo AI infrastructure papers
+- zoo/ - Zoo Labs Foundation DeSci research
+- zen/ - Zen AI model family whitepapers
+
+All papers available as PDFs in respective GitHub repos.`
+          },
+          'lux': {
+            name: 'lux',
+            type: 'directory',
+            children: {
+              'README.md': {
+                name: 'README.md',
+                type: 'file',
+                content: `# LUX Network Research
+⚡ Blockchain & cryptography papers
+
+GitHub: https://github.com/luxfi/papers
+
+Papers on consensus, post-quantum crypto, bridges, and more.`
+              },
+              'consensus.md': {
+                name: 'consensus.md',
+                type: 'file',
+                content: `# LUX Consensus Papers
+🔗 Novel consensus mechanisms
+
+## Snow++ Consensus
+- lux-consensus.pdf - Core Snow++ protocol
+- lux-fpc-consensus.pdf - Fast Probabilistic Consensus
+- lux-quasar-consensus.pdf - Quasar high-throughput variant
+- lux-quantum-consensus.pdf - Quantum-resistant consensus
+
+GitHub: https://github.com/luxfi/papers`
+              },
+              'crypto.md': {
+                name: 'crypto.md',
+                type: 'file',
+                content: `# LUX Cryptography Papers
+🔐 Post-quantum & threshold signatures
+
+## Papers
+- lux-ethfalcon-post-quantum.pdf - FALCON signature integration
+- lux-universal-threshold-signatures.pdf - Multi-party threshold sigs
+- lux-ntt-transform.pdf - Number Theoretic Transform
+- lux-verkle-trees.pdf - Verkle tree implementation
+- lux-tee-computing-mesh.pdf - TEE secure computing
+
+GitHub: https://github.com/luxfi/papers`
+              },
+              'infrastructure.md': {
+                name: 'infrastructure.md',
+                type: 'file',
+                content: `# LUX Infrastructure Papers
+🏗️ Network architecture & tooling
+
+## Papers
+- lux-bridge.pdf - Cross-chain bridge protocol
+- lux-zchain.pdf - Z-Chain architecture
+- lux-achain-attestation.pdf - A-Chain attestation system
+- lux-gchain-graphql.pdf - G-Chain GraphQL layer
+- lux-mchain-mpc.pdf - M-Chain multi-party computation
+- lux-oracle-infrastructure.pdf - Decentralized oracles
+- lux-fraud-proofs.pdf - Optimistic fraud proofs
+
+GitHub: https://github.com/luxfi/papers`
+              },
+              'defi.md': {
+                name: 'defi.md',
+                type: 'file',
+                content: `# LUX DeFi Papers
+💰 Decentralized finance protocols
+
+## Papers
+- lux-lightspeed-dex.pdf - High-speed DEX design
+- lux-credit-lending.pdf - Lending protocol
+- lux-perpetuals-derivatives.pdf - Perpetual futures
+- lux-market-nft.pdf - NFT marketplace design
+
+GitHub: https://github.com/luxfi/papers`
+              },
+              'governance.md': {
+                name: 'governance.md',
+                type: 'file',
+                content: `# LUX Governance Papers
+🏛️ DAO & identity systems
+
+## Papers
+- lux-dao-governance-framework.pdf - DAO architecture
+- lux-id-did-specification.pdf - DID specification
+- lux-id-iam.pdf - Identity & access management
+
+GitHub: https://github.com/luxfi/papers`
+              }
+            }
+          },
+          'hanzo': {
+            name: 'hanzo',
+            type: 'directory',
+            children: {
+              'README.md': {
+                name: 'README.md',
+                type: 'file',
+                content: `# Hanzo AI Research
+🤖 AI infrastructure & models
+
+GitHub: https://github.com/hanzoai/papers
+
+Papers on AI architectures, optimization, and network design.`
+              },
+              'network.md': {
+                name: 'network.md',
+                type: 'file',
+                content: `# Hanzo Network Whitepaper
+🌐 AI infrastructure architecture
+
+## hanzo-network-whitepaper.pdf
+Complete technical specification for Hanzo AI's
+distributed inference and training infrastructure.
+
+- Model Context Protocol (MCP)
+- Agent orchestration
+- Inference optimization
+- Multi-modal pipelines
+
+GitHub: https://github.com/hanzoai/papers`
+              },
+              'optimization.md': {
+                name: 'optimization.md',
+                type: 'file',
+                content: `# Hanzo Optimization Papers
+⚡ AI performance & efficiency
+
+## Papers
+- hanzo-aso.pdf - Agentic System Optimization
+  Techniques for optimizing multi-agent systems
+
+- hanzo-dso.pdf - Distributed System Optimization
+  Scaling AI inference across distributed nodes
+
+- hanzo-hmm.pdf - Hierarchical Model Management
+  Managing model hierarchies and routing
+
+GitHub: https://github.com/hanzoai/papers`
+              },
+              'jin.md': {
+                name: 'jin.md',
+                type: 'file',
+                content: `# Jin Architecture
+🧠 Unified multimodal AI framework
+
+GitHub: https://github.com/hanzoai/papers/jin
+
+Jin is Hanzo's unified architecture for:
+- Vision-language models
+- Audio processing
+- Cross-modal understanding
+- Real-time inference
+
+Technical papers in jin/ subdirectory.`
+              }
+            }
+          },
+          'zoo': {
+            name: 'zoo',
+            type: 'directory',
+            children: {
+              'README.md': {
+                name: 'README.md',
+                type: 'file',
+                content: `# Zoo Labs Foundation Research
+🦁 Decentralized AI & Science
+
+GitHub: https://github.com/zooai/papers
+
+DeSci research on decentralized AI training and inference.`
+              },
+              'foundation.md': {
+                name: 'foundation.md',
+                type: 'file',
+                content: `# Zoo Foundation Papers
+🌱 Core network & mission
+
+## Papers
+- zoo-genesis-whitepaper.md - Network genesis & vision
+- zoo-foundation-mission.pdf - Foundation mission statement
+- zoo-network-architecture.pdf - Technical architecture
+- zoo-tokenomics.pdf - Token economics design
+
+GitHub: https://github.com/zooai/papers`
+              },
+              'training.md': {
+                name: 'training.md',
+                type: 'file',
+                content: `# Zoo Training Research
+🏋️ Decentralized AI training
+
+## Papers
+- gym-training-platform.pdf - Distributed training platform
+- hllm-training-free-grpo.pdf - Training-free GRPO optimization
+- experience-ledger-dso.pdf - Experience ledger for distributed training
+
+GitHub: https://github.com/zooai/papers`
+              },
+              'zips.md': {
+                name: 'zips.md',
+                type: 'file',
+                content: `# Zoo Improvement Proposals
+📋 Technical specifications
+
+## Notable ZIPs
+- zip-002-zen-reranker.pdf - Zen reranker specification
+
+All ZIPs: https://zips.zoo.ngo
+GitHub: https://github.com/zooai/zips`
+              }
+            }
+          },
+          'zen': {
+            name: 'zen',
+            type: 'directory',
+            children: {
+              'README.md': {
+                name: 'README.md',
+                type: 'file',
+                content: `# Zen AI Model Family
+🧘 Frontier AI model whitepapers
+
+GitHub: https://github.com/hanzoai/zen-papers
+
+The Zen family of AI models spans multiple modalities:
+- Language (Coder, Scribe, Next)
+- Vision (Artist, Designer)
+- Audio (Foley, Musician)
+- Video (Director, Voyager)
+- Multimodal (Omni, Nano, Eco)`
+              },
+              'overview.md': {
+                name: 'overview.md',
+                type: 'file',
+                content: `# Zen Family Overview
+📊 Complete model family
+
+## zen_family_overview.pdf
+Comprehensive overview of all Zen models,
+their capabilities, and architectural choices.
+
+## zen-technical-paper.pdf
+Deep technical dive into Zen architecture.
+
+GitHub: https://github.com/hanzoai/zen-papers`
+              },
+              'language.md': {
+                name: 'language.md',
+                type: 'file',
+                content: `# Zen Language Models
+💬 Code & text generation
+
+## Papers
+- zen-coder_whitepaper.pdf - Code generation & understanding
+- zen-scribe_whitepaper.pdf - Long-form writing assistant
+- zen-next_whitepaper.pdf - Next-token prediction advances
+- zen-guard_whitepaper.pdf - Safety & alignment model
+
+GitHub: https://github.com/hanzoai/zen-papers`
+              },
+              'vision.md': {
+                name: 'vision.md',
+                type: 'file',
+                content: `# Zen Vision Models
+🎨 Image generation & editing
+
+## Papers
+- zen-artist_whitepaper.pdf - Image generation
+- zen-artist-edit_whitepaper.pdf - Image editing & inpainting
+- zen-designer-instruct_whitepaper.pdf - Instruction-following design
+- zen-designer-thinking_whitepaper.pdf - Design reasoning model
+
+GitHub: https://github.com/hanzoai/zen-papers`
+              },
+              'multimodal.md': {
+                name: 'multimodal.md',
+                type: 'file',
+                content: `# Zen Multimodal Models
+🌐 Cross-modal understanding
+
+## Papers
+- zen-omni_whitepaper.pdf - Omni-modal flagship model
+- zen-nano_whitepaper.pdf - Efficient small model
+- zen-eco_whitepaper.pdf - Eco-friendly inference
+- zen-reranker.pdf - Multi-modal reranking
+
+GitHub: https://github.com/hanzoai/zen-papers`
+              },
+              'media.md': {
+                name: 'media.md',
+                type: 'file',
+                content: `# Zen Media Models
+🎬 Audio & video generation
+
+## In Development
+- zen-foley.pdf - Sound effect generation
+- zen-musician.pdf - Music composition
+- zen-director.pdf - Video direction
+- zen-video.pdf - Video generation
+- zen-voyager.pdf - Video understanding
+- zen-world.pdf - World simulation
+- zen-3d.pdf - 3D asset generation
+- zen-agent.pdf - Autonomous agents
+
+GitHub: https://github.com/hanzoai/zen-papers`
+              }
+            }
+          }
+        }
       }
     }
   },

@@ -84,6 +84,12 @@ jobs:
           TWITTER_BEARER_TOKEN: ${{ secrets.TWITTER_BEARER_TOKEN }}
         continue-on-error: true
 
+      - name: Fetch GitHub data
+        run: npx tsx scripts/fetch-github.ts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
       - name: Lint
         run: npm run lint
         continue-on-error: true
