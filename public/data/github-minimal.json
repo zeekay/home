@@ -1,0 +1,148 @@
+{
+  "profile": {
+    "login": "zeekay",
+    "name": "z",
+    "avatar_url": "https://avatars.githubusercontent.com/u/285707?v=4",
+    "bio": "Open Sourceror.",
+    "followers": 555
+  },
+  "featured": [
+    {
+      "name": "flask-uwsgi-websocket",
+      "owner": "zeekay",
+      "description": "🔌 High-performance WebSockets for your Flask apps powered by uWSGI.",
+      "url": "https://github.com/zeekay/flask-uwsgi-websocket",
+      "stars": 273,
+      "language": "Python"
+    },
+    {
+      "name": "bottle-websocket",
+      "owner": "zeekay",
+      "description": "🍾 Easy websockets for bottle.",
+      "url": "https://github.com/zeekay/bottle-websocket",
+      "stars": 132,
+      "language": "Python"
+    },
+    {
+      "name": "handroll",
+      "owner": "zeekay",
+      "description": "🍣 Expertly rolled JavaScript. CLI + library for bundling JavaScript with Rollup.js",
+      "url": "https://github.com/zeekay/handroll",
+      "stars": 65,
+      "language": "CoffeeScript"
+    },
+    {
+      "name": "mcp",
+      "owner": "hanzoai",
+      "description": "🔌 Hanzo MCP: AI + Hanzo Dev exposed via MCP. Enables standardized context exchange across Dev tools, agents, and models. Core to Hanzo’s interoperable AI orchestration framework.",
+      "url": "https://github.com/hanzoai/mcp",
+      "stars": 9,
+      "language": "Makefile"
+    },
+    {
+      "name": "node",
+      "owner": "luxfi",
+      "description": "▼ LUX is a high performance network of blockchains focused on quantum safety and privacy.",
+      "url": "https://github.com/luxfi/node",
+      "stars": 9,
+      "language": "Go"
+    },
+    {
+      "name": "ellipsis",
+      "owner": "zeekay",
+      "description": "Ellipsis is a package manager for dotfiles.",
+      "url": "https://github.com/zeekay/ellipsis",
+      "stars": 4,
+      "language": "Shell"
+    },
+    {
+      "name": "ui",
+      "owner": "hanzoai",
+      "description": "😎 Hanzo UI Library for AI+Blockchain powered apps.",
+      "url": "https://github.com/hanzoai/ui",
+      "stars": 3,
+      "language": "TypeScript"
+    },
+    {
+      "name": "node",
+      "owner": "hanzoai",
+      "description": "Hanzo Network reference Node implementation.",
+      "url": "https://github.com/hanzoai/node",
+      "stars": 0,
+      "language": "Rust"
+    },
+    {
+      "name": "ui",
+      "owner": "luxfi",
+      "description": "😎 Lux UI Library for AI+Blockchain powered apps.",
+      "url": "https://github.com/luxfi/ui",
+      "stars": 0,
+      "language": "HTML"
+    },
+    {
+      "name": "node",
+      "owner": "zooai",
+      "description": null,
+      "url": "https://github.com/zooai/node",
+      "stars": 0,
+      "language": "Rust"
+    }
+  ],
+  "organizations": [
+    "hanzoai",
+    "luxfi",
+    "zooai"
+  ],
+  "papers": {
+    "luxfi": [
+      "lux-achain-attestation",
+      "lux-bridge",
+      "lux-credit-lending",
+      "lux-dao-governance-framework",
+      "lux-ethfalcon-post-quantum",
+      "lux-fpc-consensus",
+      "lux-fraud-proofs",
+      "lux-gchain-graphql",
+      "lux-governance-dao",
+      "lux-id-did-specification"
+    ],
+    "hanzoai": [],
+    "zooai": [
+      "experience-ledger-dso",
+      "gym-training-platform",
+      "hllm-training-free-grpo",
+      "zip-002-zen-reranker",
+      "zoo-foundation-mission",
+      "zoo-network-architecture",
+      "zoo-tokenomics"
+    ]
+  },
+  "stats": {
+    "totalRepos": 411,
+    "totalStars": 941,
+    "totalForks": 227,
+    "languages": [
+      "TypeScript",
+      "JavaScript",
+      "MDX",
+      "HTML",
+      "Vim Script",
+      "Shell",
+      "Go",
+      "Perl",
+      "Python",
+      "CoffeeScript",
+      "Solidity",
+      "Ruby",
+      "Swift",
+      "Haskell",
+      "Emacs Lisp",
+      "VimL",
+      "Lua",
+      "Vim script",
+      "CSS",
+      "Kotlin"
+    ]
+  },
+  "fetchedAt": "2026-01-26T23:09:28.256Z"
+}

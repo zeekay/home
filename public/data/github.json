@@ -1,0 +1,2878 @@
+{
+  "profile": {
+    "login": "zeekay",
+    "name": "z",
+    "avatar_url": "https://avatars.githubusercontent.com/u/285707?v=4",
+    "html_url": "https://github.com/zeekay",
+    "bio": "Open Sourceror.",
+    "company": " @hanzoai @zooai @luxfi",
+    "location": "▼",
+    "blog": "zeekay.ai",
+    "twitter_username": "zeekay",
+    "public_repos": 373,
+    "followers": 555,
+    "following": 494
+  },
+  "organizations": [
+    {
+      "name": "hanzoai",
+      "repoCount": 90,
+      "url": "https://github.com/hanzoai"
+    },
+    {
+      "name": "luxfi",
+      "repoCount": 99,
+      "url": "https://github.com/luxfi"
+    },
+    {
+      "name": "zooai",
+      "repoCount": 22,
+      "url": "https://github.com/zooai"
+    }
+  ],
+  "repos": {
+    "personal": [
+      {
+        "name": "home",
+        "full_name": "zeekay/home",
+        "description": "My personal home page.",
+        "url": "https://github.com/zeekay/home",
+        "homepage": "https://zeekay.ai",
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2026-01-26T22:05:49Z"
+      },
+      {
+        "name": "zeekay.github.io",
+        "full_name": "zeekay/zeekay.github.io",
+        "description": "Personal homepage.",
+        "url": "https://github.com/zeekay/zeekay.github.io",
+        "homepage": "http://zeekay.io",
+        "stars": 1,
+        "forks": 1,
+        "language": "JavaScript",
+        "topics": [],
+        "updated_at": "2026-01-26T20:47:46Z"
+      },
+      {
+        "name": "zap-protocol.github.io",
+        "full_name": "zeekay/zap-protocol.github.io",
+        "description": "ZAP Protocol Documentation - https://zap-protocol.github.io",
+        "url": "https://github.com/zeekay/zap-protocol.github.io",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "MDX",
+        "topics": [],
+        "updated_at": "2026-01-26T17:08:19Z"
+      },
+      {
+        "name": "stats",
+        "full_name": "zeekay/stats",
+        "description": "Analyze your real GitHub contribution history - actual lines of code added/deleted across all repositories",
+        "url": "https://github.com/zeekay/stats",
+        "homepage": "http://zeekay.io/stats/",
+        "stars": 0,
+        "forks": 0,
+        "language": "HTML",
+        "topics": [],
+        "updated_at": "2026-01-01T02:59:48Z"
+      },
+      {
+        "name": "zap-cs",
+        "full_name": "zeekay/zap-cs",
+        "description": "ZAP .NET - Zero-Copy App Proto implementation for .NET Standard and .NET Core",
+        "url": "https://github.com/zeekay/zap-cs",
+        "homepage": "",
+        "stars": 0,
+        "forks": 0,
+        "language": null,
+        "topics": [],
+        "updated_at": "2026-01-26T04:50:03Z"
+      },
+      {
+        "name": "zap-java",
+        "full_name": "zeekay/zap-java",
+        "description": "ZAP Java - Zero-Copy App Proto implementation in pure Java",
+        "url": "https://github.com/zeekay/zap-java",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": null,
+        "topics": [],
+        "updated_at": "2026-01-26T04:50:08Z"
+      },
+      {
+        "name": "zap-go",
+        "full_name": "zeekay/zap-go",
+        "description": "ZAP Go - Zero-Copy App Proto bindings for Go",
+        "url": "https://github.com/zeekay/zap-go",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": null,
+        "topics": [],
+        "updated_at": "2026-01-26T04:48:58Z"
+      },
+      {
+        "name": "zap-rust",
+        "full_name": "zeekay/zap-rust",
+        "description": "ZAP Rust - Zero-Copy App Proto implementation for Rust",
+        "url": "https://github.com/zeekay/zap-rust",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": null,
+        "topics": [],
+        "updated_at": "2026-01-26T04:50:12Z"
+      },
+      {
+        "name": "zap-cpp",
+        "full_name": "zeekay/zap-cpp",
+        "description": "ZAP C++ - Zero-Copy App Proto core library and tools",
+        "url": "https://github.com/zeekay/zap-cpp",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": null,
+        "topics": [],
+        "updated_at": "2026-01-26T04:49:13Z"
+      },
+      {
+        "name": "zap-js",
+        "full_name": "zeekay/zap-js",
+        "description": "ZAP JavaScript/TypeScript - Zero-Copy App Proto bindings for JS/TS",
+        "url": "https://github.com/zeekay/zap-js",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": null,
+        "topics": [],
+        "updated_at": "2026-01-26T04:49:08Z"
+      },
+      {
+        "name": "zap-py",
+        "full_name": "zeekay/zap-py",
+        "description": "ZAP Python - Zero-Copy App Proto bindings for Python",
+        "url": "https://github.com/zeekay/zap-py",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": null,
+        "topics": [],
+        "updated_at": "2026-01-26T04:49:03Z"
+      },
+      {
+        "name": "zap",
+        "full_name": "zeekay/zap",
+        "description": "ZAP - Zero-Copy App Proto: High-performance RPC for AI agents",
+        "url": "https://github.com/zeekay/zap",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": null,
+        "topics": [],
+        "updated_at": "2026-01-26T04:48:53Z"
+      },
+      {
+        "name": "zap-cpp-core",
+        "full_name": "zeekay/zap-cpp-core",
+        "description": "ZAP C++ core - Zero-Copy App Proto serialization/RPC system",
+        "url": "https://github.com/zeekay/zap-cpp-core",
+        "homepage": "https://capnproto.org",
+        "stars": 0,
+        "forks": 0,
+        "language": null,
+        "topics": [],
+        "updated_at": "2026-01-26T04:50:17Z"
+      },
+      {
+        "name": "ai.vim",
+        "full_name": "zeekay/ai.vim",
+        "description": "Vim/Neovim AI code generation plugin (OpenAI, ChatGPT, and more)",
+        "url": "https://github.com/zeekay/ai.vim",
+        "homepage": "",
+        "stars": 1,
+        "forks": 1,
+        "language": "Vim Script",
+        "topics": [],
+        "updated_at": "2026-01-23T02:29:27Z"
+      },
+      {
+        "name": "zap-python",
+        "full_name": "zeekay/zap-python",
+        "description": "ZAP Python bindings (legacy)",
+        "url": "https://github.com/zeekay/zap-python",
+        "homepage": "",
+        "stars": 0,
+        "forks": 0,
+        "language": null,
+        "topics": [],
+        "updated_at": "2026-01-26T04:50:23Z"
+      },
+      {
+        "name": "dot-vim",
+        "full_name": "zeekay/dot-vim",
+        "description": "My vim dotfiles, ellipsis.sh compatible.",
+        "url": "https://github.com/zeekay/dot-vim",
+        "homepage": "",
+        "stars": 3,
+        "forks": 3,
+        "language": "Vim Script",
+        "topics": [],
+        "updated_at": "2026-01-05T21:01:51Z"
+      },
+      {
+        "name": "zos-preview",
+        "full_name": "zeekay/zos-preview",
+        "description": "Quick Look file preview",
+        "url": "https://github.com/zeekay/zos-preview",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:51:21Z"
+      },
+      {
+        "name": "zos-spotlight",
+        "full_name": "zeekay/zos-spotlight",
+        "description": "Universal search and command launcher (⌘K)",
+        "url": "https://github.com/zeekay/zos-spotlight",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:51:05Z"
+      },
+      {
+        "name": "zos-youtube",
+        "full_name": "zeekay/zos-youtube",
+        "description": "Video streaming platform",
+        "url": "https://github.com/zeekay/zos-youtube",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:47:41Z"
+      },
+      {
+        "name": "zos-whatsapp",
+        "full_name": "zeekay/zos-whatsapp",
+        "description": "Secure messaging and calls",
+        "url": "https://github.com/zeekay/zos-whatsapp",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:47:36Z"
+      },
+      {
+        "name": "zos-weather",
+        "full_name": "zeekay/zos-weather",
+        "description": "Weather forecast and conditions",
+        "url": "https://github.com/zeekay/zos-weather",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:47:26Z"
+      },
+      {
+        "name": "zos-vscode",
+        "full_name": "zeekay/zos-vscode",
+        "description": "Code editor",
+        "url": "https://github.com/zeekay/zos-vscode",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:47:12Z"
+      },
+      {
+        "name": "zos-twitter",
+        "full_name": "zeekay/zos-twitter",
+        "description": "Real-time social media and news",
+        "url": "https://github.com/zeekay/zos-twitter",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:47:02Z"
+      },
+      {
+        "name": "zos-todo",
+        "full_name": "zeekay/zos-todo",
+        "description": "Task list and reminders",
+        "url": "https://github.com/zeekay/zos-todo",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:46:42Z"
+      },
+      {
+        "name": "zos-tldraw",
+        "full_name": "zeekay/zos-tldraw",
+        "description": "A tiny little drawing app",
+        "url": "https://github.com/zeekay/zos-tldraw",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:46:35Z"
+      },
+      {
+        "name": "zos-tetris",
+        "full_name": "zeekay/zos-tetris",
+        "description": "Classic block-stacking puzzle game",
+        "url": "https://github.com/zeekay/zos-tetris",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:46:28Z"
+      },
+      {
+        "name": "zos-terminal",
+        "full_name": "zeekay/zos-terminal",
+        "description": "Command line interface",
+        "url": "https://github.com/zeekay/zos-terminal",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:46:23Z"
+      },
+      {
+        "name": "zos-mud",
+        "full_name": "zeekay/zos-mud",
+        "description": "Multiplayer text adventure with AI dungeon master",
+        "url": "https://github.com/zeekay/zos-mud",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:46:07Z"
+      },
+      {
+        "name": "zos-sudoku",
+        "full_name": "zeekay/zos-sudoku",
+        "description": "Classic number puzzle",
+        "url": "https://github.com/zeekay/zos-sudoku",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:46:07Z"
+      },
+      {
+        "name": "zos-spotify",
+        "full_name": "zeekay/zos-spotify",
+        "description": "Music streaming service",
+        "url": "https://github.com/zeekay/zos-spotify",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:45:57Z"
+      },
+      {
+        "name": "zos-solitaire",
+        "full_name": "zeekay/zos-solitaire",
+        "description": "Classic Klondike solitaire card game",
+        "url": "https://github.com/zeekay/zos-solitaire",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:45:43Z"
+      },
+      {
+        "name": "zos-snes",
+        "full_name": "zeekay/zos-snes",
+        "description": "Super Nintendo emulator - relive the classics",
+        "url": "https://github.com/zeekay/zos-snes",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:45:32Z"
+      },
+      {
+        "name": "zos-snake",
+        "full_name": "zeekay/zos-snake",
+        "description": "Classic snake game",
+        "url": "https://github.com/zeekay/zos-snake",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:45:25Z"
+      },
+      {
+        "name": "zos-slack",
+        "full_name": "zeekay/zos-slack",
+        "description": "Business communication and collaboration",
+        "url": "https://github.com/zeekay/zos-slack",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:45:14Z"
+      },
+      {
+        "name": "zos-screenshot",
+        "full_name": "zeekay/zos-screenshot",
+        "description": "Capture and annotate screenshots",
+        "url": "https://github.com/zeekay/zos-screenshot",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:45:00Z"
+      },
+      {
+        "name": "zos-screen-time",
+        "full_name": "zeekay/zos-screen-time",
+        "description": "Monitor and manage screen usage",
+        "url": "https://github.com/zeekay/zos-screen-time",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:44:52Z"
+      },
+      {
+        "name": "zos-reminders",
+        "full_name": "zeekay/zos-reminders",
+        "description": "Task reminders",
+        "url": "https://github.com/zeekay/zos-reminders",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:44:45Z"
+      },
+      {
+        "name": "zos-rekordbox",
+        "full_name": "zeekay/zos-rekordbox",
+        "description": "DJ performance and music management",
+        "url": "https://github.com/zeekay/zos-rekordbox",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:44:36Z"
+      },
+      {
+        "name": "zos-podcasts",
+        "full_name": "zeekay/zos-podcasts",
+        "description": "Listen to podcasts",
+        "url": "https://github.com/zeekay/zos-podcasts",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:44:13Z"
+      },
+      {
+        "name": "zos-photos",
+        "full_name": "zeekay/zos-photos",
+        "description": "View and organize your photos",
+        "url": "https://github.com/zeekay/zos-photos",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:44:01Z"
+      },
+      {
+        "name": "zos-observable",
+        "full_name": "zeekay/zos-observable",
+        "description": "Interactive data notebooks",
+        "url": "https://github.com/zeekay/zos-observable",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:43:53Z"
+      },
+      {
+        "name": "zos-notes",
+        "full_name": "zeekay/zos-notes",
+        "description": "Quick notes and markdown editor",
+        "url": "https://github.com/zeekay/zos-notes",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:43:49Z"
+      },
+      {
+        "name": "zos-netflix",
+        "full_name": "zeekay/zos-netflix",
+        "description": "Streaming movies and TV shows",
+        "url": "https://github.com/zeekay/zos-netflix",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:43:43Z"
+      },
+      {
+        "name": "zos-myst",
+        "full_name": "zeekay/zos-myst",
+        "description": "A mysterious island appears in the fog...",
+        "url": "https://github.com/zeekay/zos-myst",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:43:35Z"
+      },
+      {
+        "name": "zos-music",
+        "full_name": "zeekay/zos-music",
+        "description": "Music player",
+        "url": "https://github.com/zeekay/zos-music",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:43:28Z"
+      },
+      {
+        "name": "zos-minesweeper",
+        "full_name": "zeekay/zos-minesweeper",
+        "description": "Classic mine-sweeping puzzle game",
+        "url": "https://github.com/zeekay/zos-minesweeper",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:43:20Z"
+      },
+      {
+        "name": "zos-maps",
+        "full_name": "zeekay/zos-maps",
+        "description": "Navigate the world",
+        "url": "https://github.com/zeekay/zos-maps",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:43:07Z"
+      },
+      {
+        "name": "zos-linkedin",
+        "full_name": "zeekay/zos-linkedin",
+        "description": "Professional networking and career development",
+        "url": "https://github.com/zeekay/zos-linkedin",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:43:00Z"
+      },
+      {
+        "name": "zos-keychain-access",
+        "full_name": "zeekay/zos-keychain-access",
+        "description": "Manage passwords and secure notes",
+        "url": "https://github.com/zeekay/zos-keychain-access",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:42:22Z"
+      },
+      {
+        "name": "zos-grapher",
+        "full_name": "zeekay/zos-grapher",
+        "description": "2D and 3D equation graphing calculator",
+        "url": "https://github.com/zeekay/zos-grapher",
+        "homepage": null,
+        "stars": 0,
+        "forks": 0,
+        "language": "TypeScript",
+        "topics": [],
+        "updated_at": "2025-12-28T09:41:03Z"
+      }
+    ],
+    "organizations": {
+      "hanzoai": [
+        {
+          "name": "kotlin-sdk",
+          "full_name": "hanzoai/kotlin-sdk",
+          "description": "Hanzo AI Kotlin SDK.",
+          "url": "https://github.com/hanzoai/kotlin-sdk",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Kotlin",
+          "topics": [],
+          "updated_at": "2025-03-27T04:22:02Z"
+        },
+        {
+          "name": "ruby-sdk",
+          "full_name": "hanzoai/ruby-sdk",
+          "description": "Hanzo AI Ruby SDK.",
+          "url": "https://github.com/hanzoai/ruby-sdk",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Ruby",
+          "topics": [],
+          "updated_at": "2025-04-05T03:10:54Z"
+        },
+        {
+          "name": "js-sdk",
+          "full_name": "hanzoai/js-sdk",
+          "description": "Hanzo AI JavaScript/TypeScript SDK.",
+          "url": "https://github.com/hanzoai/js-sdk",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2025-04-05T03:10:40Z"
+        },
+        {
+          "name": "java-sdk",
+          "full_name": "hanzoai/java-sdk",
+          "description": "Hanzo AI Java SDK.",
+          "url": "https://github.com/hanzoai/java-sdk",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Kotlin",
+          "topics": [],
+          "updated_at": "2025-03-27T20:24:07Z"
+        },
+        {
+          "name": "terraform-provider-hanzo",
+          "full_name": "hanzoai/terraform-provider-hanzo",
+          "description": "Terraform SDK for Hanzo AI.",
+          "url": "https://github.com/hanzoai/terraform-provider-hanzo",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": null,
+          "topics": [],
+          "updated_at": "2025-03-27T04:47:28Z"
+        },
+        {
+          "name": "go-sdk",
+          "full_name": "hanzoai/go-sdk",
+          "description": "Hanzo AI Go SDK.",
+          "url": "https://github.com/hanzoai/go-sdk",
+          "homepage": null,
+          "stars": 1,
+          "forks": 1,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2025-09-20T21:35:28Z"
+        },
+        {
+          "name": "python-sdk",
+          "full_name": "hanzoai/python-sdk",
+          "description": "✨ Hanzo Python SDK — Your all-in-one gateway to cutting-edge foundational models and a robust, scalable AI cloud platform. ",
+          "url": "https://github.com/hanzoai/python-sdk",
+          "homepage": "https://hanzo.ai",
+          "stars": 2,
+          "forks": 0,
+          "language": "Python",
+          "topics": [],
+          "updated_at": "2026-01-24T21:21:26Z"
+        },
+        {
+          "name": "hanzo.ai",
+          "full_name": "hanzoai/hanzo.ai",
+          "description": "Hanzo Home page.",
+          "url": "https://github.com/hanzoai/hanzo.ai",
+          "homepage": "https://hanzo.ai",
+          "stars": 2,
+          "forks": 0,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2026-01-26T22:14:17Z"
+        },
+        {
+          "name": "blog",
+          "full_name": "hanzoai/blog",
+          "description": "Hanzo AI blog - hanzo.blog",
+          "url": "https://github.com/hanzoai/blog",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": null,
+          "topics": [],
+          "updated_at": "2026-01-26T20:30:16Z"
+        },
+        {
+          "name": "hanzo.industries",
+          "full_name": "hanzoai/hanzo.industries",
+          "description": null,
+          "url": "https://github.com/hanzoai/hanzo.industries",
+          "homepage": "https://hanzo-industries.vercel.app",
+          "stars": 1,
+          "forks": 0,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2026-01-26T20:05:24Z"
+        },
+        {
+          "name": "bootnode",
+          "full_name": "hanzoai/bootnode",
+          "description": "Hanzo Nodes - Multi-chain blockchain infrastructure platform (RPC, APIs, Webhooks, ERC-4337)",
+          "url": "https://github.com/hanzoai/bootnode",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Python",
+          "topics": [],
+          "updated_at": "2026-01-26T18:20:58Z"
+        },
+        {
+          "name": "identity",
+          "full_name": "hanzoai/identity",
+          "description": "Hanzo Identity",
+          "url": "https://github.com/hanzoai/identity",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [],
+          "updated_at": "2026-01-26T14:46:37Z"
+        },
+        {
+          "name": "node",
+          "full_name": "hanzoai/node",
+          "description": "Hanzo Network reference Node implementation.",
+          "url": "https://github.com/hanzoai/node",
+          "homepage": "https://hanzo.network",
+          "stars": 0,
+          "forks": 0,
+          "language": "Rust",
+          "topics": [],
+          "updated_at": "2026-01-26T06:37:54Z"
+        },
+        {
+          "name": "press",
+          "full_name": "hanzoai/press",
+          "description": "Hanzo AI press kit and media resources",
+          "url": "https://github.com/hanzoai/press",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "HTML",
+          "topics": [],
+          "updated_at": "2026-01-26T05:09:59Z"
+        },
+        {
+          "name": "brand",
+          "full_name": "hanzoai/brand",
+          "description": "Official brand assets and design system for Hanzo AI",
+          "url": "https://github.com/hanzoai/brand",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2026-01-26T05:09:55Z"
+        },
+        {
+          "name": "logo",
+          "full_name": "hanzoai/logo",
+          "description": "Official Hanzo logo package with TypeScript/React components and utilities",
+          "url": "https://github.com/hanzoai/logo",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "HTML",
+          "topics": [],
+          "updated_at": "2026-01-26T05:09:52Z"
+        },
+        {
+          "name": "rust-sdk",
+          "full_name": "hanzoai/rust-sdk",
+          "description": "Hanzo AI Rust SDK.",
+          "url": "https://github.com/hanzoai/rust-sdk",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Rust",
+          "topics": [],
+          "updated_at": "2026-01-26T01:33:07Z"
+        },
+        {
+          "name": "dev",
+          "full_name": "hanzoai/dev",
+          "description": "Lightweight coding agent that runs in your terminal",
+          "url": "https://github.com/hanzoai/dev",
+          "homepage": "",
+          "stars": 1,
+          "forks": 0,
+          "language": "Rust",
+          "topics": [],
+          "updated_at": "2026-01-26T00:57:56Z"
+        },
+        {
+          "name": "dashboards",
+          "full_name": "hanzoai/dashboards",
+          "description": "Beautiful observability dashboards",
+          "url": "https://github.com/hanzoai/dashboards",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2026-01-20T02:45:10Z"
+        },
+        {
+          "name": "console",
+          "full_name": "hanzoai/console",
+          "description": "☁️ Hanzo Console: Unified development environment for LLMs — debug, fine-tune, and collaborate on AI systems in real time.",
+          "url": "https://github.com/hanzoai/console",
+          "homepage": "https://console.hanzo.ai",
+          "stars": 1,
+          "forks": 0,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2026-01-25T17:56:47Z"
+        },
+        {
+          "name": "ui",
+          "full_name": "hanzoai/ui",
+          "description": "😎 Hanzo UI Library for AI+Blockchain powered apps.",
+          "url": "https://github.com/hanzoai/ui",
+          "homepage": "https://ui.hanzo.ai",
+          "stars": 3,
+          "forks": 5,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2026-01-25T23:45:18Z"
+        },
+        {
+          "name": ".github",
+          "full_name": "hanzoai/.github",
+          "description": "Hanzo organization profile",
+          "url": "https://github.com/hanzoai/.github",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": null,
+          "topics": [],
+          "updated_at": "2026-01-25T21:53:20Z"
+        },
+        {
+          "name": "iam",
+          "full_name": "hanzoai/iam",
+          "description": "Hanzo IAM - Identity, authentication and access management",
+          "url": "https://github.com/hanzoai/iam",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-25T20:36:06Z"
+        },
+        {
+          "name": "mcp",
+          "full_name": "hanzoai/mcp",
+          "description": "🔌 Hanzo MCP: AI + Hanzo Dev exposed via MCP. Enables standardized context exchange across Dev tools, agents, and models. Core to Hanzo’s interoperable AI orchestration framework.",
+          "url": "https://github.com/hanzoai/mcp",
+          "homepage": "https://hanzo.ai",
+          "stars": 9,
+          "forks": 7,
+          "language": "Makefile",
+          "topics": [],
+          "updated_at": "2026-01-24T21:20:29Z"
+        },
+        {
+          "name": "cli",
+          "full_name": "hanzoai/cli",
+          "description": " Hanzo CLI is an AI Engineer in your Terminal.",
+          "url": "https://github.com/hanzoai/cli",
+          "homepage": "https://dev.hanzo.ai",
+          "stars": 0,
+          "forks": 0,
+          "language": "Python",
+          "topics": [],
+          "updated_at": "2025-03-14T21:06:58Z"
+        },
+        {
+          "name": "agent",
+          "full_name": "hanzoai/agent",
+          "description": "Hanzo AI Agent SDK.",
+          "url": "https://github.com/hanzoai/agent",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Python",
+          "topics": [],
+          "updated_at": "2026-01-24T21:17:07Z"
+        },
+        {
+          "name": "app",
+          "full_name": "hanzoai/app",
+          "description": "Hanzo AI - AI-powered web development platform with natural language prompts",
+          "url": "https://github.com/hanzoai/app",
+          "homepage": "https://hanzo.app",
+          "stars": 0,
+          "forks": 0,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2026-01-24T09:43:58Z"
+        },
+        {
+          "name": "docs",
+          "full_name": "hanzoai/docs",
+          "description": "The beautiful & flexible React.js docs framework.",
+          "url": "https://github.com/hanzoai/docs",
+          "homepage": "https://fumadocs.dev",
+          "stars": 0,
+          "forks": 0,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2026-01-03T06:21:54Z"
+        },
+        {
+          "name": "zoo-chat",
+          "full_name": "hanzoai/zoo-chat",
+          "description": "Zoo Chat - AI Chat Interface",
+          "url": "https://github.com/hanzoai/zoo-chat",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2026-01-24T02:05:03Z"
+        },
+        {
+          "name": "datastore-go",
+          "full_name": "hanzoai/datastore-go",
+          "description": "Hanzo Datastore Go - Go client library for Hanzo Datastore",
+          "url": "https://github.com/hanzoai/datastore-go",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-20T03:45:57Z"
+        }
+      ],
+      "luxfi": [
+        {
+          "name": "papers",
+          "full_name": "luxfi/papers",
+          "description": "Lux Network research papers.",
+          "url": "https://github.com/luxfi/papers",
+          "homepage": "https://papers.lux.network",
+          "stars": 0,
+          "forks": 0,
+          "language": "TeX",
+          "topics": [],
+          "updated_at": "2026-01-26T21:30:00Z"
+        },
+        {
+          "name": "node",
+          "full_name": "luxfi/node",
+          "description": "▼ LUX is a high performance network of blockchains focused on quantum safety and privacy.",
+          "url": "https://github.com/luxfi/node",
+          "homepage": "https://lux.network",
+          "stars": 9,
+          "forks": 6,
+          "language": "Go",
+          "topics": [
+            "blockchain",
+            "evm",
+            "node",
+            "wavm",
+            "web3"
+          ],
+          "updated_at": "2026-01-26T21:24:13Z"
+        },
+        {
+          "name": "vm",
+          "full_name": "luxfi/vm",
+          "description": "Virtual machine types and interfaces for Lux blockchain",
+          "url": "https://github.com/luxfi/vm",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T20:53:56Z"
+        },
+        {
+          "name": "netrunner",
+          "full_name": "luxfi/netrunner",
+          "description": "▼ LUX Network Runner tool",
+          "url": "https://github.com/luxfi/netrunner",
+          "homepage": "",
+          "stars": 1,
+          "forks": 1,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T20:31:59Z"
+        },
+        {
+          "name": "cli",
+          "full_name": "luxfi/cli",
+          "description": "▼ LUX Network CLI for launching and scaling blockchain clusters.",
+          "url": "https://github.com/luxfi/cli",
+          "homepage": "https://lux.network",
+          "stars": 2,
+          "forks": 2,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T20:30:09Z"
+        },
+        {
+          "name": "coreth",
+          "full_name": "luxfi/coreth",
+          "description": null,
+          "url": "https://github.com/luxfi/coreth",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T20:28:28Z"
+        },
+        {
+          "name": "fhe",
+          "full_name": "luxfi/fhe",
+          "description": "Lux FHE (Fully Homomorphic Encryption) with GPU acceleration.",
+          "url": "https://github.com/luxfi/fhe",
+          "homepage": "https://fhe.lux.network",
+          "stars": 0,
+          "forks": 0,
+          "language": "Jupyter Notebook",
+          "topics": [],
+          "updated_at": "2026-01-26T20:27:41Z"
+        },
+        {
+          "name": "zap",
+          "full_name": "luxfi/zap",
+          "description": "Zero-Allocation Protocol for high-performance AI agent communication",
+          "url": "https://github.com/luxfi/zap",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T20:09:57Z"
+        },
+        {
+          "name": "precompile",
+          "full_name": "luxfi/precompile",
+          "description": "Lux EVM Precompiles for AI Mining, Teleport, and Quantum Signatures",
+          "url": "https://github.com/luxfi/precompile",
+          "homepage": "https://precompile.lux.network",
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T17:45:45Z"
+        },
+        {
+          "name": "protocol",
+          "full_name": "luxfi/protocol",
+          "description": null,
+          "url": "https://github.com/luxfi/protocol",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T17:37:15Z"
+        },
+        {
+          "name": "net",
+          "full_name": "luxfi/net",
+          "description": null,
+          "url": "https://github.com/luxfi/net",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T17:33:36Z"
+        },
+        {
+          "name": "timer",
+          "full_name": "luxfi/timer",
+          "description": "Mockable time utilities for Lux blockchain",
+          "url": "https://github.com/luxfi/timer",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T17:32:23Z"
+        },
+        {
+          "name": "genesis",
+          "full_name": "luxfi/genesis",
+          "description": null,
+          "url": "https://github.com/luxfi/genesis",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T17:28:15Z"
+        },
+        {
+          "name": "constants",
+          "full_name": "luxfi/constants",
+          "description": "Lux network constants and IDs",
+          "url": "https://github.com/luxfi/constants",
+          "homepage": "https://lux.network",
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T17:27:55Z"
+        },
+        {
+          "name": "consensus",
+          "full_name": "luxfi/consensus",
+          "description": "Quasar consensus engine: Go implementations of consensus protocols for the Lux Network.",
+          "url": "https://github.com/luxfi/consensus",
+          "homepage": "https://consensus.lux.network",
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T17:26:43Z"
+        },
+        {
+          "name": "codec",
+          "full_name": "luxfi/codec",
+          "description": "Lux codec for serialization",
+          "url": "https://github.com/luxfi/codec",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T17:11:10Z"
+        },
+        {
+          "name": "utxo",
+          "full_name": "luxfi/utxo",
+          "description": null,
+          "url": "https://github.com/luxfi/utxo",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T17:10:50Z"
+        },
+        {
+          "name": "lpm",
+          "full_name": "luxfi/lpm",
+          "description": "▼ LUX Plugin Manager for Lux Network.",
+          "url": "https://github.com/luxfi/lpm",
+          "homepage": "https://lux.network",
+          "stars": 0,
+          "forks": 1,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T17:10:10Z"
+        },
+        {
+          "name": "evm",
+          "full_name": "luxfi/evm",
+          "description": "▼ LUX EVM: Launch your own Ethereum compatible EVM on Lux Network.",
+          "url": "https://github.com/luxfi/evm",
+          "homepage": "https://lux.network",
+          "stars": 1,
+          "forks": 3,
+          "language": "Go",
+          "topics": [
+            "blockchain",
+            "ethereum",
+            "evm",
+            "golang",
+            "lux",
+            "luxdefi"
+          ],
+          "updated_at": "2026-01-26T16:54:31Z"
+        },
+        {
+          "name": "geth",
+          "full_name": "luxfi/geth",
+          "description": "▼ Ethereum virtual machine without network/consensus, for building custom blockchain services. ",
+          "url": "https://github.com/luxfi/geth",
+          "homepage": "",
+          "stars": 1,
+          "forks": 1,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T16:51:19Z"
+        },
+        {
+          "name": "runtime",
+          "full_name": "luxfi/runtime",
+          "description": null,
+          "url": "https://github.com/luxfi/runtime",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T16:45:41Z"
+        },
+        {
+          "name": "sdk",
+          "full_name": "luxfi/sdk",
+          "description": "▼ LUX Chain SDK for building high performance blockchains on Lux Network.",
+          "url": "https://github.com/luxfi/sdk",
+          "homepage": "https://lux.network",
+          "stars": 2,
+          "forks": 1,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T16:37:27Z"
+        },
+        {
+          "name": "p2p",
+          "full_name": "luxfi/p2p",
+          "description": "P2P networking library for Lux blockchain",
+          "url": "https://github.com/luxfi/p2p",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T16:31:24Z"
+        },
+        {
+          "name": "database",
+          "full_name": "luxfi/database",
+          "description": "Pluggable storage layer: adapters for BadgerDB, Pebble, Merkle-tree indexing, snapshots, and chain state persistence.",
+          "url": "https://github.com/luxfi/database",
+          "homepage": "https://lux.network",
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T16:30:57Z"
+        },
+        {
+          "name": "compress",
+          "full_name": "luxfi/compress",
+          "description": null,
+          "url": "https://github.com/luxfi/compress",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T16:29:05Z"
+        },
+        {
+          "name": "utils",
+          "full_name": "luxfi/utils",
+          "description": "Lux utils package",
+          "url": "https://github.com/luxfi/utils",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T16:26:47Z"
+        },
+        {
+          "name": "keys",
+          "full_name": "luxfi/keys",
+          "description": null,
+          "url": "https://github.com/luxfi/keys",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Go",
+          "topics": [],
+          "updated_at": "2026-01-26T16:10:52Z"
+        },
+        {
+          "name": "identity",
+          "full_name": "luxfi/identity",
+          "description": "Lux Network identity, soul, and values",
+          "url": "https://github.com/luxfi/identity",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "HTML",
+          "topics": [],
+          "updated_at": "2026-01-26T14:47:34Z"
+        },
+        {
+          "name": "press",
+          "full_name": "luxfi/press",
+          "description": "Lux Network press kit and media resources",
+          "url": "https://github.com/luxfi/press",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "HTML",
+          "topics": [],
+          "updated_at": "2026-01-26T05:10:26Z"
+        },
+        {
+          "name": "brand",
+          "full_name": "luxfi/brand",
+          "description": "Official brand assets and design system for Lux Finance",
+          "url": "https://github.com/luxfi/brand",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2026-01-26T05:10:22Z"
+        }
+      ],
+      "zooai": [
+        {
+          "name": "identity",
+          "full_name": "zooai/identity",
+          "description": "Zoo Labs identity, soul, and values",
+          "url": "https://github.com/zooai/identity",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "HTML",
+          "topics": [],
+          "updated_at": "2026-01-26T14:46:43Z"
+        },
+        {
+          "name": "press",
+          "full_name": "zooai/press",
+          "description": "Zoo Labs press kit and media resources",
+          "url": "https://github.com/zooai/press",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "HTML",
+          "topics": [],
+          "updated_at": "2026-01-26T05:10:41Z"
+        },
+        {
+          "name": "brand",
+          "full_name": "zooai/brand",
+          "description": "Official brand guidelines and assets for Zoo Labs Foundation (501c3) - Democratizing AI",
+          "url": "https://github.com/zooai/brand",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "HTML",
+          "topics": [],
+          "updated_at": "2026-01-26T05:10:37Z"
+        },
+        {
+          "name": "logo",
+          "full_name": "zooai/logo",
+          "description": "Official Zoo logo package - TypeScript/React components and utilities for consistent branding",
+          "url": "https://github.com/zooai/logo",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "HTML",
+          "topics": [],
+          "updated_at": "2026-01-26T05:10:32Z"
+        },
+        {
+          "name": "chat",
+          "full_name": "zooai/chat",
+          "description": "Zoo Chat - AI Chat Interface",
+          "url": "https://github.com/zooai/chat",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2026-01-24T01:14:03Z"
+        },
+        {
+          "name": "zooai.github.io",
+          "full_name": "zooai/zooai.github.io",
+          "description": "Zoo AI Organization Landing Page",
+          "url": "https://github.com/zooai/zooai.github.io",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "HTML",
+          "topics": [],
+          "updated_at": "2026-01-23T04:08:49Z"
+        },
+        {
+          "name": "papers",
+          "full_name": "zooai/papers",
+          "description": "Zoo Labs Foundation research papers",
+          "url": "https://github.com/zooai/papers",
+          "homepage": "https://papers.zoo.ngo",
+          "stars": 0,
+          "forks": 0,
+          "language": "TeX",
+          "topics": [],
+          "updated_at": "2026-01-22T05:08:26Z"
+        },
+        {
+          "name": "zen-agentic-dataset",
+          "full_name": "zooai/zen-agentic-dataset",
+          "description": "8.47B tokens of agentic AI programming data - Contact z@hanzo.ai for licensing",
+          "url": "https://github.com/zooai/zen-agentic-dataset",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": null,
+          "topics": [],
+          "updated_at": "2025-12-31T00:55:41Z"
+        },
+        {
+          "name": "ZIPs",
+          "full_name": "zooai/ZIPs",
+          "description": "Zoo Improvement Proposals - Governance framework for Zoo ecosystem",
+          "url": "https://github.com/zooai/ZIPs",
+          "homepage": "https://zips.zoo.ngo",
+          "stars": 0,
+          "forks": 0,
+          "language": "Python",
+          "topics": [],
+          "updated_at": "2025-12-28T18:14:17Z"
+        },
+        {
+          "name": "tools",
+          "full_name": "zooai/tools",
+          "description": null,
+          "url": "https://github.com/zooai/tools",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "JavaScript",
+          "topics": [],
+          "updated_at": "2025-12-12T06:04:32Z"
+        },
+        {
+          "name": "node",
+          "full_name": "zooai/node",
+          "description": null,
+          "url": "https://github.com/zooai/node",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "Rust",
+          "topics": [],
+          "updated_at": "2025-12-09T08:22:23Z"
+        },
+        {
+          "name": "app",
+          "full_name": "zooai/app",
+          "description": null,
+          "url": "https://github.com/zooai/app",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2025-12-09T02:16:59Z"
+        },
+        {
+          "name": "gym",
+          "full_name": "zooai/gym",
+          "description": "Gym",
+          "url": "https://github.com/zooai/gym",
+          "homepage": "https://gym.zoo.ngo",
+          "stars": 0,
+          "forks": 0,
+          "language": "Python",
+          "topics": [],
+          "updated_at": "2025-10-29T07:39:22Z"
+        },
+        {
+          "name": "ui",
+          "full_name": "zooai/ui",
+          "description": "😎 Zoo UI Library for AI+Blockchain powered apps.",
+          "url": "https://github.com/zooai/ui",
+          "homepage": "https://ui.zoo.ngo",
+          "stars": 0,
+          "forks": 1,
+          "language": null,
+          "topics": [],
+          "updated_at": "2025-09-15T18:17:57Z"
+        },
+        {
+          "name": "genesis",
+          "full_name": "zooai/genesis",
+          "description": null,
+          "url": "https://github.com/zooai/genesis",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": "PLpgSQL",
+          "topics": [],
+          "updated_at": "2025-07-20T19:32:35Z"
+        },
+        {
+          "name": "explore",
+          "full_name": "zooai/explore",
+          "description": "Zoo Network Blockchain Explorer.",
+          "url": "https://github.com/zooai/explore",
+          "homepage": "https://explore.lux.network",
+          "stars": 0,
+          "forks": 0,
+          "language": null,
+          "topics": [],
+          "updated_at": "2025-06-26T19:25:57Z"
+        },
+        {
+          "name": "explorer",
+          "full_name": "zooai/explorer",
+          "description": "Blockchain explorer for Zoo Network and a tool for inspecting and analyzing EVM based blockchains. ",
+          "url": "https://github.com/zooai/explorer",
+          "homepage": "https://explore.lux.network",
+          "stars": 0,
+          "forks": 0,
+          "language": null,
+          "topics": [],
+          "updated_at": "2025-06-26T19:22:41Z"
+        },
+        {
+          "name": ".github",
+          "full_name": "zooai/.github",
+          "description": "ZOO Github profile",
+          "url": "https://github.com/zooai/.github",
+          "homepage": null,
+          "stars": 0,
+          "forks": 0,
+          "language": null,
+          "topics": [],
+          "updated_at": "2025-05-19T06:34:36Z"
+        },
+        {
+          "name": "zoo",
+          "full_name": "zooai/zoo",
+          "description": "🧬 ZOO is a decentralized protocol to collect, breed, and trade Metaverse-ready AI animals on the blockchain.",
+          "url": "https://github.com/zooai/zoo",
+          "homepage": "https://zoolabs.io",
+          "stars": 0,
+          "forks": 0,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2025-05-19T05:24:43Z"
+        },
+        {
+          "name": "agent",
+          "full_name": "zooai/agent",
+          "description": "Autonomous agents for everyone",
+          "url": "https://github.com/zooai/agent",
+          "homepage": "https://hanzo.ai",
+          "stars": 0,
+          "forks": 0,
+          "language": null,
+          "topics": [],
+          "updated_at": "2025-01-24T22:44:16Z"
+        },
+        {
+          "name": "ai",
+          "full_name": "zooai/ai",
+          "description": " 🧬 ZOO Chat app",
+          "url": "https://github.com/zooai/ai",
+          "homepage": "https://zooai.vercel.app",
+          "stars": 3,
+          "forks": 1,
+          "language": "TypeScript",
+          "topics": [],
+          "updated_at": "2025-05-19T06:37:50Z"
+        },
+        {
+          "name": "yapp",
+          "full_name": "zooai/yapp",
+          "description": "🧬 ZOO Mac app.",
+          "url": "https://github.com/zooai/yapp",
+          "homepage": "https://zoo.ngo",
+          "stars": 0,
+          "forks": 0,
+          "language": "Swift",
+          "topics": [],
+          "updated_at": "2025-05-19T06:38:18Z"
+        }
+      ]
+    }
+  },
+  "categorized": {
+    "featured": [
+      {
+        "name": "flask-uwsgi-websocket",
+        "full_name": "zeekay/flask-uwsgi-websocket",
+        "description": "🔌 High-performance WebSockets for your Flask apps powered by uWSGI.",
+        "url": "https://github.com/zeekay/flask-uwsgi-websocket",
+        "stars": 273,
+        "language": "Python"
+      },
+      {
+        "name": "bottle-websocket",
+        "full_name": "zeekay/bottle-websocket",
+        "description": "🍾 Easy websockets for bottle.",
+        "url": "https://github.com/zeekay/bottle-websocket",
+        "stars": 132,
+        "language": "Python"
+      },
+      {
+        "name": "handroll",
+        "full_name": "zeekay/handroll",
+        "description": "🍣 Expertly rolled JavaScript. CLI + library for bundling JavaScript with Rollup.js",
+        "url": "https://github.com/zeekay/handroll",
+        "stars": 65,
+        "language": "CoffeeScript"
+      },
+      {
+        "name": "mcp",
+        "full_name": "hanzoai/mcp",
+        "description": "🔌 Hanzo MCP: AI + Hanzo Dev exposed via MCP. Enables standardized context exchange across Dev tools, agents, and models. Core to Hanzo’s interoperable AI orchestration framework.",
+        "url": "https://github.com/hanzoai/mcp",
+        "stars": 9,
+        "language": "Makefile"
+      },
+      {
+        "name": "node",
+        "full_name": "luxfi/node",
+        "description": "▼ LUX is a high performance network of blockchains focused on quantum safety and privacy.",
+        "url": "https://github.com/luxfi/node",
+        "stars": 9,
+        "language": "Go"
+      },
+      {
+        "name": "ellipsis",
+        "full_name": "zeekay/ellipsis",
+        "description": "Ellipsis is a package manager for dotfiles.",
+        "url": "https://github.com/zeekay/ellipsis",
+        "stars": 4,
+        "language": "Shell"
+      },
+      {
+        "name": "ui",
+        "full_name": "hanzoai/ui",
+        "description": "😎 Hanzo UI Library for AI+Blockchain powered apps.",
+        "url": "https://github.com/hanzoai/ui",
+        "stars": 3,
+        "language": "TypeScript"
+      },
+      {
+        "name": "node",
+        "full_name": "hanzoai/node",
+        "description": "Hanzo Network reference Node implementation.",
+        "url": "https://github.com/hanzoai/node",
+        "stars": 0,
+        "language": "Rust"
+      },
+      {
+        "name": "ui",
+        "full_name": "luxfi/ui",
+        "description": "😎 Lux UI Library for AI+Blockchain powered apps.",
+        "url": "https://github.com/luxfi/ui",
+        "stars": 0,
+        "language": "HTML"
+      },
+      {
+        "name": "node",
+        "full_name": "zooai/node",
+        "description": null,
+        "url": "https://github.com/zooai/node",
+        "stars": 0,
+        "language": "Rust"
+      },
+      {
+        "name": "ui",
+        "full_name": "zooai/ui",
+        "description": "😎 Zoo UI Library for AI+Blockchain powered apps.",
+        "url": "https://github.com/zooai/ui",
+        "stars": 0,
+        "language": null
+      }
+    ],
+    "ai": [
+      {
+        "name": "mcp",
+        "full_name": "hanzoai/mcp",
+        "description": "🔌 Hanzo MCP: AI + Hanzo Dev exposed via MCP. Enables standardized context exchange across Dev tools, agents, and models. Core to Hanzo’s interoperable AI orchestration framework.",
+        "url": "https://github.com/hanzoai/mcp",
+        "stars": 9,
+        "language": "Makefile"
+      },
+      {
+        "name": "node",
+        "full_name": "luxfi/node",
+        "description": "▼ LUX is a high performance network of blockchains focused on quantum safety and privacy.",
+        "url": "https://github.com/luxfi/node",
+        "stars": 9,
+        "language": "Go"
+      },
+      {
+        "name": "referential",
+        "full_name": "zeekay/referential",
+        "description": "🕶️ Mutable state container for sharing data safely in a functional or reactive programming style.",
+        "url": "https://github.com/zeekay/referential",
+        "stars": 3,
+        "language": "CoffeeScript"
+      },
+      {
+        "name": "ui",
+        "full_name": "hanzoai/ui",
+        "description": "😎 Hanzo UI Library for AI+Blockchain powered apps.",
+        "url": "https://github.com/hanzoai/ui",
+        "stars": 3,
+        "language": "TypeScript"
+      },
+      {
+        "name": "metamask-extension",
+        "full_name": "zeekay/metamask-extension",
+        "description": ":globe_with_meridians: :electric_plug: The MetaMask browser extension enables browsing Ethereum blockchain enabled websites",
+        "url": "https://github.com/zeekay/metamask-extension",
+        "stars": 2,
+        "language": null
+      },
+      {
+        "name": "python-sdk",
+        "full_name": "hanzoai/python-sdk",
+        "description": "✨ Hanzo Python SDK — Your all-in-one gateway to cutting-edge foundational models and a robust, scalable AI cloud platform. ",
+        "url": "https://github.com/hanzoai/python-sdk",
+        "stars": 2,
+        "language": "Python"
+      },
+      {
+        "name": "cli",
+        "full_name": "luxfi/cli",
+        "description": "▼ LUX Network CLI for launching and scaling blockchain clusters.",
+        "url": "https://github.com/luxfi/cli",
+        "stars": 2,
+        "language": "Go"
+      },
+      {
+        "name": "sdk",
+        "full_name": "luxfi/sdk",
+        "description": "▼ LUX Chain SDK for building high performance blockchains on Lux Network.",
+        "url": "https://github.com/luxfi/sdk",
+        "stars": 2,
+        "language": "Go"
+      },
+      {
+        "name": "ai.vim",
+        "full_name": "zeekay/ai.vim",
+        "description": "Vim/Neovim AI code generation plugin (OpenAI, ChatGPT, and more)",
+        "url": "https://github.com/zeekay/ai.vim",
+        "stars": 1,
+        "language": "Vim Script"
+      },
+      {
+        "name": "ai-hedge-fund",
+        "full_name": "zeekay/ai-hedge-fund",
+        "description": "An AI Hedge Fund Team",
+        "url": "https://github.com/zeekay/ai-hedge-fund",
+        "stars": 1,
+        "language": "Python"
+      },
+      {
+        "name": "autodoc",
+        "full_name": "zeekay/autodoc",
+        "description": "Experimental toolkit for auto-generating codebase documentation using LLMs",
+        "url": "https://github.com/zeekay/autodoc",
+        "stars": 1,
+        "language": null
+      },
+      {
+        "name": "uniswap-docker",
+        "full_name": "zeekay/uniswap-docker",
+        "description": "Containerized Uniswap",
+        "url": "https://github.com/zeekay/uniswap-docker",
+        "stars": 1,
+        "language": null
+      },
+      {
+        "name": "go-sdk",
+        "full_name": "hanzoai/go-sdk",
+        "description": "Hanzo AI Go SDK.",
+        "url": "https://github.com/hanzoai/go-sdk",
+        "stars": 1,
+        "language": "Go"
+      },
+      {
+        "name": "console",
+        "full_name": "hanzoai/console",
+        "description": "☁️ Hanzo Console: Unified development environment for LLMs — debug, fine-tune, and collaborate on AI systems in real time.",
+        "url": "https://github.com/hanzoai/console",
+        "stars": 1,
+        "language": "TypeScript"
+      },
+      {
+        "name": "cx",
+        "full_name": "hanzoai/cx",
+        "description": "Open-source live-chat, email support, omni-channel desk. An alternative to Intercom, Zendesk, Salesforce Service Cloud etc. 🔥💬",
+        "url": "https://github.com/hanzoai/cx",
+        "stars": 1,
+        "language": null
+      },
+      {
+        "name": "cloud",
+        "full_name": "hanzoai/cloud",
+        "description": "Hanzo Cloud - Unified AI infrastructure and MCP management platform",
+        "url": "https://github.com/hanzoai/cloud",
+        "stars": 1,
+        "language": "Go"
+      },
+      {
+        "name": "geth",
+        "full_name": "luxfi/geth",
+        "description": "▼ Ethereum virtual machine without network/consensus, for building custom blockchain services. ",
+        "url": "https://github.com/luxfi/geth",
+        "stars": 1,
+        "language": "Go"
+      },
+      {
+        "name": "zap",
+        "full_name": "zeekay/zap",
+        "description": "ZAP - Zero-Copy App Proto: High-performance RPC for AI agents",
+        "url": "https://github.com/zeekay/zap",
+        "stars": 0,
+        "language": null
+      },
+      {
+        "name": "zos-mud",
+        "full_name": "zeekay/zos-mud",
+        "description": "Multiplayer text adventure with AI dungeon master",
+        "url": "https://github.com/zeekay/zos-mud",
+        "stars": 0,
+        "language": "TypeScript"
+      },
+      {
+        "name": "zos-solitaire",
+        "full_name": "zeekay/zos-solitaire",
+        "description": "Classic Klondike solitaire card game",
+        "url": "https://github.com/zeekay/zos-solitaire",
+        "stars": 0,
+        "language": "TypeScript"
+      }
+    ],
+    "blockchain": [
+      {
+        "name": "evm",
+        "full_name": "luxfi/evm",
+        "description": "▼ LUX EVM: Launch your own Ethereum compatible EVM on Lux Network.",
+        "url": "https://github.com/luxfi/evm",
+        "stars": 1,
+        "language": "Go"
+      },
+      {
+        "name": "consensus",
+        "full_name": "luxfi/consensus",
+        "description": "Quasar consensus engine: Go implementations of consensus protocols for the Lux Network.",
+        "url": "https://github.com/luxfi/consensus",
+        "stars": 0,
+        "language": "Go"
+      }
+    ],
+    "web": [
+      {
+        "name": "handroll",
+        "full_name": "zeekay/handroll",
+        "description": "🍣 Expertly rolled JavaScript. CLI + library for bundling JavaScript with Rollup.js",
+        "url": "https://github.com/zeekay/handroll",
+        "stars": 65,
+        "language": "CoffeeScript"
+      },
+      {
+        "name": "executive",
+        "full_name": "zeekay/executive",
+        "description": "🕴Elegant command execution for Node.",
+        "url": "https://github.com/zeekay/executive",
+        "stars": 37,
+        "language": "CoffeeScript"
+      },
+      {
+        "name": "bebop",
+        "full_name": "zeekay/bebop",
+        "description": "🎷 Jazzy build tool for sophisticated front-end development.",
+        "url": "https://github.com/zeekay/bebop",
+        "stars": 18,
+        "language": "CoffeeScript"
+      },
+      {
+        "name": "requisite",
+        "full_name": "zeekay/requisite",
+        "description": "🕸️ CommonJS bundler with automatic compilation, browser reload and more.",
+        "url": "https://github.com/zeekay/requisite",
+        "stars": 12,
+        "language": "CoffeeScript"
+      },
+      {
+        "name": "postmortem",
+        "full_name": "zeekay/postmortem",
+        "description": "💀 When code dies, it deserves a proper autopsy. Stacktrace library with source maps support.",
+        "url": "https://github.com/zeekay/postmortem",
+        "stars": 7,
+        "language": "CoffeeScript"
+      },
+      {
+        "name": "qrcode-lite",
+        "full_name": "zeekay/qrcode-lite",
+        "description": "QR code/2d barcode generator forked for ES module support.",
+        "url": "https://github.com/zeekay/qrcode-lite",
+        "stars": 3,
+        "language": "JavaScript"
+      },
+      {
+        "name": "find-coffee",
+        "full_name": "zeekay/find-coffee",
+        "description": "Helper to find locally installed copies of CoffeeScript.",
+        "url": "https://github.com/zeekay/find-coffee",
+        "stars": 3,
+        "language": "CoffeeScript"
+      },
+      {
+        "name": "cookies.js",
+        "full_name": "zeekay/cookies.js",
+        "description": "🍪 A simple, lightweight JavaScript API for handling browser cookies",
+        "url": "https://github.com/zeekay/cookies.js",
+        "stars": 3,
+        "language": "JavaScript"
+      },
+      {
+        "name": "exchange",
+        "full_name": "luxfi/exchange",
+        "description": " ▼ Exchange is a decentralized AMM.",
+        "url": "https://github.com/luxfi/exchange",
+        "stars": 3,
+        "language": "TypeScript"
+      },
+      {
+        "name": "ai",
+        "full_name": "zooai/ai",
+        "description": " 🧬 ZOO Chat app",
+        "url": "https://github.com/zooai/ai",
+        "stars": 3,
+        "language": "TypeScript"
+      },
+      {
+        "name": "dot-hyper",
+        "full_name": "zeekay/dot-hyper",
+        "description": null,
+        "url": "https://github.com/zeekay/dot-hyper",
+        "stars": 2,
+        "language": "JavaScript"
+      },
+      {
+        "name": "web3-onboard",
+        "full_name": "zeekay/web3-onboard",
+        "description": "Client library to onboard users to web3 apps",
+        "url": "https://github.com/zeekay/web3-onboard",
+        "stars": 2,
+        "language": "TypeScript"
+      },
+      {
+        "name": "es-is",
+        "full_name": "zeekay/es-is",
+        "description": "The definitive JavaScript type testing library",
+        "url": "https://github.com/zeekay/es-is",
+        "stars": 2,
+        "language": "JavaScript"
+      },
+      {
+        "name": "es-hasown",
+        "full_name": "zeekay/es-hasown",
+        "description": "Shorthand for Object.prototype.hasOwnProperty.call(obj, name)",
+        "url": "https://github.com/zeekay/es-hasown",
+        "stars": 2,
+        "language": "JavaScript"
+      },
+      {
+        "name": "es-microplugin",
+        "full_name": "zeekay/es-microplugin",
+        "description": "A lightweight plugin / dependency system for libraries.",
+        "url": "https://github.com/zeekay/es-microplugin",
+        "stars": 2,
+        "language": "JavaScript"
+      },
+      {
+        "name": "hanzo.ai",
+        "full_name": "hanzoai/hanzo.ai",
+        "description": "Hanzo Home page.",
+        "url": "https://github.com/hanzoai/hanzo.ai",
+        "stars": 2,
+        "language": "TypeScript"
+      },
+      {
+        "name": "zeekay.github.io",
+        "full_name": "zeekay/zeekay.github.io",
+        "description": "Personal homepage.",
+        "url": "https://github.com/zeekay/zeekay.github.io",
+        "stars": 1,
+        "language": "JavaScript"
+      },
+      {
+        "name": "ai",
+        "full_name": "zeekay/ai",
+        "description": "Autonomous agent for Z",
+        "url": "https://github.com/zeekay/ai",
+        "stars": 1,
+        "language": "TypeScript"
+      },
+      {
+        "name": "strapi-cloud-template-blog-474bcf557d",
+        "full_name": "zeekay/strapi-cloud-template-blog-474bcf557d",
+        "description": null,
+        "url": "https://github.com/zeekay/strapi-cloud-template-blog-474bcf557d",
+        "stars": 1,
+        "language": "JavaScript"
+      },
+      {
+        "name": "swapper",
+        "full_name": "zeekay/swapper",
+        "description": "Uniswap swap widget for $FRENS on Base network.",
+        "url": "https://github.com/zeekay/swapper",
+        "stars": 1,
+        "language": "TypeScript"
+      }
+    ],
+    "tools": [
+      {
+        "name": "soundcloud-cli",
+        "full_name": "zeekay/soundcloud-cli",
+        "description": "Soundcloud command-line interface.",
+        "url": "https://github.com/zeekay/soundcloud-cli",
+        "stars": 48,
+        "language": "Python"
+      },
+      {
+        "name": "pathfinder",
+        "full_name": "zeekay/pathfinder",
+        "description": "Cyclic arbitrage detection CLI for DEXs",
+        "url": "https://github.com/zeekay/pathfinder",
+        "stars": 2,
+        "language": null
+      },
+      {
+        "name": "zeekay.chat",
+        "full_name": "zeekay/zeekay.chat",
+        "description": "IRC chat client in < 60 lines of code.",
+        "url": "https://github.com/zeekay/zeekay.chat",
+        "stars": 2,
+        "language": "Python"
+      },
+      {
+        "name": "medalla",
+        "full_name": "zeekay/medalla",
+        "description": "Ethereum 2.0 Multi-Client Testnets Schlesi, Witti, Altona, and the official, public Medalla network.",
+        "url": "https://github.com/zeekay/medalla",
+        "stars": 1,
+        "language": null
+      },
+      {
+        "name": "netlify-go",
+        "full_name": "zeekay/netlify-go",
+        "description": "Golang Netlify API client",
+        "url": "https://github.com/zeekay/netlify-go",
+        "stars": 1,
+        "language": "Go"
+      },
+      {
+        "name": "datastore-go",
+        "full_name": "hanzoai/datastore-go",
+        "description": "Hanzo Datastore Go - Go client library for Hanzo Datastore",
+        "url": "https://github.com/hanzoai/datastore-go",
+        "stars": 0,
+        "language": "Go"
+      },
+      {
+        "name": "documentdb-go",
+        "full_name": "hanzoai/documentdb-go",
+        "description": "Hanzo DocumentDB Go SDK - Go client for Hanzo DocumentDB (MongoDB compatible)",
+        "url": "https://github.com/hanzoai/documentdb-go",
+        "stars": 0,
+        "language": "Go"
+      },
+      {
+        "name": "search-go",
+        "full_name": "hanzoai/search-go",
+        "description": "Hanzo Search Go SDK - Go client for Hanzo Search (Meilisearch)",
+        "url": "https://github.com/hanzoai/search-go",
+        "stars": 0,
+        "language": "Go"
+      },
+      {
+        "name": "storage-go",
+        "full_name": "hanzoai/storage-go",
+        "description": "Hanzo Storage Go SDK - Go client for Hanzo Storage (S3 compatible)",
+        "url": "https://github.com/hanzoai/storage-go",
+        "stars": 0,
+        "language": "Go"
+      },
+      {
+        "name": "kv-go",
+        "full_name": "hanzoai/kv-go",
+        "description": "Hanzo KV Go SDK - Go client for Hanzo KV (Redis/Valkey compatible)",
+        "url": "https://github.com/hanzoai/kv-go",
+        "stars": 0,
+        "language": "Go"
+      },
+      {
+        "name": "vector-go",
+        "full_name": "hanzoai/vector-go",
+        "description": "Hanzo Vector Go SDK - Go client for Hanzo Vector (Qdrant)",
+        "url": "https://github.com/hanzoai/vector-go",
+        "stars": 0,
+        "language": "Go"
+      },
+      {
+        "name": "pubsub-go",
+        "full_name": "hanzoai/pubsub-go",
+        "description": "Hanzo PubSub Go SDK - Go client for Hanzo PubSub (NATS)",
+        "url": "https://github.com/hanzoai/pubsub-go",
+        "stars": 0,
+        "language": "Go"
+      },
+      {
+        "name": "insights-go",
+        "full_name": "hanzoai/insights-go",
+        "description": "Hanzo Insights Go SDK - Go client for Hanzo Insights (PostHog)",
+        "url": "https://github.com/hanzoai/insights-go",
+        "stars": 0,
+        "language": "Go"
+      }
+    ],
+    "dotfiles": [
+      {
+        "name": "dot-irssi",
+        "full_name": "zeekay/dot-irssi",
+        "description": "My irssi dotfiles, ellipsis.sh compatible. ",
+        "url": "https://github.com/zeekay/dot-irssi",
+        "stars": 6,
+        "language": "Perl"
+      },
+      {
+        "name": "dot-files",
+        "full_name": "zeekay/dot-files",
+        "description": "My dotfiles, ellipsis.sh compatible.",
+        "url": "https://github.com/zeekay/dot-files",
+        "stars": 4,
+        "language": "Perl"
+      },
+      {
+        "name": "dot-vim",
+        "full_name": "zeekay/dot-vim",
+        "description": "My vim dotfiles, ellipsis.sh compatible.",
+        "url": "https://github.com/zeekay/dot-vim",
+        "stars": 3,
+        "language": "Vim Script"
+      },
+      {
+        "name": "dot-zsh",
+        "full_name": "zeekay/dot-zsh",
+        "description": "My zsh dotfiles, ellipsis.sh compatible.",
+        "url": "https://github.com/zeekay/dot-zsh",
+        "stars": 3,
+        "language": "Shell"
+      },
+      {
+        "name": "dot-iterm2",
+        "full_name": "zeekay/dot-iterm2",
+        "description": "My issi dotfiles, ellipsis.sh compatible.",
+        "url": "https://github.com/zeekay/dot-iterm2",
+        "stars": 3,
+        "language": "Shell"
+      },
+      {
+        "name": "dot-xmonad",
+        "full_name": "zeekay/dot-xmonad",
+        "description": "My xmonad dotfiles, ellipsis.sh compatible. ",
+        "url": "https://github.com/zeekay/dot-xmonad",
+        "stars": 3,
+        "language": "Haskell"
+      },
+      {
+        "name": "dot-emacs",
+        "full_name": "zeekay/dot-emacs",
+        "description": "My emacs dotfiles, ellipsis.sh compatible. ",
+        "url": "https://github.com/zeekay/dot-emacs",
+        "stars": 3,
+        "language": "Emacs Lisp"
+      },
+      {
+        "name": "dot-spacevim",
+        "full_name": "zeekay/dot-spacevim",
+        "description": "Welcome to space, vim.",
+        "url": "https://github.com/zeekay/dot-spacevim",
+        "stars": 2,
+        "language": "Vim Script"
+      },
+      {
+        "name": "dot-alfred",
+        "full_name": "zeekay/dot-alfred",
+        "description": "My alfred dotfiles, ellipsis.sh compatible. ",
+        "url": "https://github.com/zeekay/dot-alfred",
+        "stars": 2,
+        "language": "Ruby"
+      },
+      {
+        "name": "dot-atom",
+        "full_name": "zeekay/dot-atom",
+        "description": "My atom dotfiles, ellipsis.sh compatible.",
+        "url": "https://github.com/zeekay/dot-atom",
+        "stars": 2,
+        "language": "CoffeeScript"
+      }
+    ],
+    "other": [
+      {
+        "name": "flask-uwsgi-websocket",
+        "full_name": "zeekay/flask-uwsgi-websocket",
+        "description": "🔌 High-performance WebSockets for your Flask apps powered by uWSGI.",
+        "url": "https://github.com/zeekay/flask-uwsgi-websocket",
+        "stars": 273,
+        "language": "Python"
+      },
+      {
+        "name": "bottle-websocket",
+        "full_name": "zeekay/bottle-websocket",
+        "description": "🍾 Easy websockets for bottle.",
+        "url": "https://github.com/zeekay/bottle-websocket",
+        "stars": 132,
+        "language": "Python"
+      },
+      {
+        "name": "zeesh",
+        "full_name": "zeekay/zeesh",
+        "description": "🐚 Putting the zee in your shell. A plugin-based framework for Zsh.",
+        "url": "https://github.com/zeekay/zeesh",
+        "stars": 48,
+        "language": "Shell"
+      },
+      {
+        "name": "die",
+        "full_name": "zeekay/die",
+        "description": "Application and asset management to die for.",
+        "url": "https://github.com/zeekay/die",
+        "stars": 18,
+        "language": "CoffeeScript"
+      },
+      {
+        "name": "decorum",
+        "full_name": "zeekay/decorum",
+        "description": "Python decorator helper library.",
+        "url": "https://github.com/zeekay/decorum",
+        "stars": 14,
+        "language": "Python"
+      },
+      {
+        "name": "vice",
+        "full_name": "zeekay/vice",
+        "description": "💉 My favorite vice and a vim hacking gateway drug.",
+        "url": "https://github.com/zeekay/vice",
+        "stars": 13,
+        "language": "VimL"
+      },
+      {
+        "name": "standard",
+        "full_name": "luxfi/standard",
+        "description": "▼ Standard smart contracts and reference implementation of Teleport protocol and Quantum Signatures.",
+        "url": "https://github.com/luxfi/standard",
+        "stars": 12,
+        "language": "Solidity"
+      },
+      {
+        "name": "vim-beautify",
+        "full_name": "zeekay/vim-beautify",
+        "description": "Code beautifier for vim.",
+        "url": "https://github.com/zeekay/vim-beautify",
+        "stars": 11,
+        "language": "Vim script"
+      },
+      {
+        "name": "brief",
+        "full_name": "zeekay/brief",
+        "description": "Generate and publish Github pages quickly and easily.",
+        "url": "https://github.com/zeekay/brief",
+        "stars": 10,
+        "language": "CoffeeScript"
+      },
+      {
+        "name": "rollup-plugin-coffee",
+        "full_name": "zeekay/rollup-plugin-coffee",
+        "description": null,
+        "url": "https://github.com/zeekay/rollup-plugin-coffee",
+        "stars": 9,
+        "language": "CoffeeScript"
+      },
+      {
+        "name": "trojan",
+        "full_name": "zeekay/trojan",
+        "description": ":unicorn: A simple yet powerful open source mempool & transaction explorer in real time for EVM Dexes",
+        "url": "https://github.com/zeekay/trojan",
+        "stars": 5,
+        "language": null
+      },
+      {
+        "name": "ellipsis",
+        "full_name": "zeekay/ellipsis",
+        "description": "Ellipsis is a package manager for dotfiles.",
+        "url": "https://github.com/zeekay/ellipsis",
+        "stars": 4,
+        "language": "Shell"
+      },
+      {
+        "name": "vice-complete",
+        "full_name": "zeekay/vice-complete",
+        "description": null,
+        "url": "https://github.com/zeekay/vice-complete",
+        "stars": 4,
+        "language": "Vim script"
+      },
+      {
+        "name": "rollup-plugin-shebang",
+        "full_name": "zeekay/rollup-plugin-shebang",
+        "description": "Rollup.js plugin for adding unix-style shebang to your bundle.",
+        "url": "https://github.com/zeekay/rollup-plugin-shebang",
+        "stars": 4,
+        "language": "CoffeeScript"
+      },
+      {
+        "name": "daopanel-chat",
+        "full_name": "zeekay/daopanel-chat",
+        "description": null,
+        "url": "https://github.com/zeekay/daopanel-chat",
+        "stars": 3,
+        "language": null
+      },
+      {
+        "name": "uniswap-v2-periphery",
+        "full_name": "zeekay/uniswap-v2-periphery",
+        "description": "🎚 Peripheral smart contracts for interacting with Uniswap V2",
+        "url": "https://github.com/zeekay/uniswap-v2-periphery",
+        "stars": 3,
+        "language": null
+      },
+      {
+        "name": "threshold",
+        "full_name": "luxfi/threshold",
+        "description": "▼ LUX multiparty CGGMP21, FROST, LSS protocol and other threshold signature schemes.",
+        "url": "https://github.com/luxfi/threshold",
+        "stars": 3,
+        "language": "Go"
+      },
+      {
+        "name": "zeekay",
+        "full_name": "zeekay/zeekay",
+        "description": "README.md",
+        "url": "https://github.com/zeekay/zeekay",
+        "stars": 2,
+        "language": null
+      },
+      {
+        "name": "vice-colorful",
+        "full_name": "zeekay/vice-colorful",
+        "description": "Collection of normalized vim colorschemes.",
+        "url": "https://github.com/zeekay/vice-colorful",
+        "stars": 2,
+        "language": "Vim Script"
+      },
+      {
+        "name": "vice-git",
+        "full_name": "zeekay/vice-git",
+        "description": null,
+        "url": "https://github.com/zeekay/vice-git",
+        "stars": 2,
+        "language": "Vim Script"
+      }
+    ]
+  },
+  "papers": {
+    "luxfi/papers": [
+      {
+        "name": "lux-achain-attestation",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-achain-attestation.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-bridge",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-bridge.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-credit-lending",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-credit-lending.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-dao-governance-framework",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-dao-governance-framework.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-ethfalcon-post-quantum",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-ethfalcon-post-quantum.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-fpc-consensus",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-fpc-consensus.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-fraud-proofs",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-fraud-proofs.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-gchain-graphql",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-gchain-graphql.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-governance-dao",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-governance-dao.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-id-did-specification",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-id-did-specification.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-id-iam",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-id-iam.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-lightspeed-dex",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-lightspeed-dex.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-market-nft",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-market-nft.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-mchain-mpc",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-mchain-mpc.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-ntt-transform",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-ntt-transform.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-oracle-infrastructure",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-oracle-infrastructure.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-perpetuals-derivatives",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-perpetuals-derivatives.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-quantum-consensus",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-quantum-consensus.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-quasar-consensus",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-quasar-consensus.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-tee-computing-mesh",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-tee-computing-mesh.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-universal-threshold-signatures",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-universal-threshold-signatures.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-verkle-trees",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-verkle-trees.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "lux-zchain",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/lux-zchain.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "luxfhe-fhecrdt",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/luxfhe-fhecrdt.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "luxfhe-fhevm",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/luxfhe-fhevm.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "luxfhe-ml-privacy",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/luxfhe-ml-privacy.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "luxfhe-voting",
+        "url": "https://github.com/luxfi/papers/blob/main/pdfs/luxfhe-voting.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "LUX_ID_SUMMARY",
+        "url": "https://github.com/luxfi/papers/blob/main/LUX_ID_SUMMARY.md",
+        "type": "md"
+      },
+      {
+        "name": "PAPER_TIMELINE",
+        "url": "https://github.com/luxfi/papers/blob/main/PAPER_TIMELINE.md",
+        "type": "md"
+      },
+      {
+        "name": "TEE-PAPER-SUMMARY",
+        "url": "https://github.com/luxfi/papers/blob/main/TEE-PAPER-SUMMARY.md",
+        "type": "md"
+      },
+      {
+        "name": "lux-achain-attestation",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-achain-attestation.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-bridge",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-bridge.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-consensus",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-consensus.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-credit-lending",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-credit-lending.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-dao-governance-framework",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-dao-governance-framework.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-dao-paper-summary",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-dao-paper-summary.md",
+        "type": "md"
+      },
+      {
+        "name": "lux-ethfalcon-post-quantum",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-ethfalcon-post-quantum.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-fpc-consensus",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-fpc-consensus.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-fraud-proofs",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-fraud-proofs.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-gchain-graphql",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-gchain-graphql.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-governance-dao",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-governance-dao.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-id-did-specification",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-id-did-specification.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-id-iam",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-id-iam.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-lightspeed-dex",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-lightspeed-dex.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-market-nft",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-market-nft.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-mchain-mpc",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-mchain-mpc.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-ntt-transform",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-ntt-transform.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-oracle-infrastructure",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-oracle-infrastructure.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-perpetuals-derivatives",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-perpetuals-derivatives.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-quantum-consensus",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-quantum-consensus.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-quasar-consensus",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-quasar-consensus.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-tee-computing-mesh",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-tee-computing-mesh.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-universal-threshold-signatures",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-universal-threshold-signatures.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-verkle-trees",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-verkle-trees.tex",
+        "type": "tex"
+      },
+      {
+        "name": "lux-zchain",
+        "url": "https://github.com/luxfi/papers/blob/main/lux-zchain.tex",
+        "type": "tex"
+      }
+    ],
+    "hanzoai/papers": [
+      {
+        "name": "BUILD_INSTRUCTIONS",
+        "url": "https://github.com/hanzoai/papers/blob/main/BUILD_INSTRUCTIONS.md",
+        "type": "md"
+      },
+      {
+        "name": "GITHUB_SETUP",
+        "url": "https://github.com/hanzoai/papers/blob/main/GITHUB_SETUP.md",
+        "type": "md"
+      },
+      {
+        "name": "hanzo-aso",
+        "url": "https://github.com/hanzoai/papers/blob/main/hanzo-aso.tex",
+        "type": "tex"
+      },
+      {
+        "name": "hanzo-dso",
+        "url": "https://github.com/hanzoai/papers/blob/main/hanzo-dso.tex",
+        "type": "tex"
+      },
+      {
+        "name": "hanzo-hmm",
+        "url": "https://github.com/hanzoai/papers/blob/main/hanzo-hmm.tex",
+        "type": "tex"
+      },
+      {
+        "name": "hanzo-network-architecture",
+        "url": "https://github.com/hanzoai/papers/blob/main/hanzo-network-architecture.tex",
+        "type": "tex"
+      },
+      {
+        "name": "hanzo-network-whitepaper",
+        "url": "https://github.com/hanzoai/papers/blob/main/hanzo-network-whitepaper.tex",
+        "type": "tex"
+      },
+      {
+        "name": "zen_reference",
+        "url": "https://github.com/hanzoai/papers/blob/main/zen_reference.md",
+        "type": "md"
+      }
+    ],
+    "zooai/papers": [
+      {
+        "name": "experience-ledger-dso",
+        "url": "https://github.com/zooai/papers/blob/main/pdfs/experience-ledger-dso.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "gym-training-platform",
+        "url": "https://github.com/zooai/papers/blob/main/pdfs/gym-training-platform.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "hllm-training-free-grpo",
+        "url": "https://github.com/zooai/papers/blob/main/pdfs/hllm-training-free-grpo.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "zip-002-zen-reranker",
+        "url": "https://github.com/zooai/papers/blob/main/pdfs/zip-002-zen-reranker.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "zoo-foundation-mission",
+        "url": "https://github.com/zooai/papers/blob/main/pdfs/zoo-foundation-mission.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "zoo-network-architecture",
+        "url": "https://github.com/zooai/papers/blob/main/pdfs/zoo-network-architecture.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "zoo-tokenomics",
+        "url": "https://github.com/zooai/papers/blob/main/pdfs/zoo-tokenomics.pdf",
+        "type": "pdf"
+      },
+      {
+        "name": "CLOUDFLARE_CONFIG",
+        "url": "https://github.com/zooai/papers/blob/main/CLOUDFLARE_CONFIG.md",
+        "type": "md"
+      },
+      {
+        "name": "PAPERS_README",
+        "url": "https://github.com/zooai/papers/blob/main/PAPERS_README.md",
+        "type": "md"
+      },
+      {
+        "name": "PAPERS_REPOS_AUDIT",
+        "url": "https://github.com/zooai/papers/blob/main/PAPERS_REPOS_AUDIT.md",
+        "type": "md"
+      },
+      {
+        "name": "PAPER_TIMELINE",
+        "url": "https://github.com/zooai/papers/blob/main/PAPER_TIMELINE.md",
+        "type": "md"
+      },
+      {
+        "name": "experience-ledger-dso",
+        "url": "https://github.com/zooai/papers/blob/main/experience-ledger-dso.tex",
+        "type": "tex"
+      },
+      {
+        "name": "gym-training-platform",
+        "url": "https://github.com/zooai/papers/blob/main/gym-training-platform.tex",
+        "type": "tex"
+      },
+      {
+        "name": "hllm-training-free-grpo",
+        "url": "https://github.com/zooai/papers/blob/main/hllm-training-free-grpo.tex",
+        "type": "tex"
+      },
+      {
+        "name": "zip-002-zen-reranker",
+        "url": "https://github.com/zooai/papers/blob/main/zip-002-zen-reranker.tex",
+        "type": "tex"
+      },
+      {
+        "name": "zoo-dso",
+        "url": "https://github.com/zooai/papers/blob/main/zoo-dso.tex",
+        "type": "tex"
+      },
+      {
+        "name": "zoo-foundation-mission",
+        "url": "https://github.com/zooai/papers/blob/main/zoo-foundation-mission.tex",
+        "type": "tex"
+      },
+      {
+        "name": "zoo-genesis-whitepaper",
+        "url": "https://github.com/zooai/papers/blob/main/zoo-genesis-whitepaper.md",
+        "type": "md"
+      },
+      {
+        "name": "zoo-network-architecture",
+        "url": "https://github.com/zooai/papers/blob/main/zoo-network-architecture.tex",
+        "type": "tex"
+      },
+      {
+        "name": "zoo-tokenomics",
+        "url": "https://github.com/zooai/papers/blob/main/zoo-tokenomics.tex",
+        "type": "tex"
+      }
+    ],
+    "hanzoai/zen-papers": []
+  },
+  "stats": {
+    "totalRepos": 411,
+    "totalStars": 941,
+    "totalForks": 227,
+    "languages": [
+      "TypeScript",
+      "JavaScript",
+      "MDX",
+      "HTML",
+      "Vim Script",
+      "Shell",
+      "Go",
+      "Perl",
+      "Python",
+      "CoffeeScript",
+      "Solidity",
+      "Ruby",
+      "Swift",
+      "Haskell",
+      "Emacs Lisp",
+      "VimL",
+      "Lua",
+      "Vim script",
+      "CSS",
+      "Kotlin"
+    ]
+  },
+  "fetchedAt": "2026-01-26T23:09:28.256Z"
+}
