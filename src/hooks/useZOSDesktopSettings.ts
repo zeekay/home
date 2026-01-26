@@ -84,7 +84,7 @@ export function useZOSDesktopSettings(): ZOSDesktopSettings & ZOSDesktopSettings
     getStorageValue(ZOS_STORAGE_KEYS.customBgUrl, '')
   );
   const [dockMagnificationSize, setDockMagnificationSizeState] = useState(() =>
-    getStorageValue(ZOS_STORAGE_KEYS.dockMagnificationSize, 128)
+    getStorageValue(ZOS_STORAGE_KEYS.dockMagnificationSize, 72)
   );
   const [fontSize, setFontSizeState] = useState<FontSize>(() =>
     getStorageValue(ZOS_STORAGE_KEYS.fontSize, 'medium') as FontSize

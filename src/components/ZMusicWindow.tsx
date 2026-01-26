@@ -1152,34 +1152,125 @@ const SpotifyView: React.FC<{ userPlaylists: SpotifyPlaylistMinimal[]; loadingPl
   );
 };
 
+type SoundCloudSection = 'stream' | 'tracks' | 'sets';
+
 const SoundCloudView: React.FC = () => {
   const [soundcloudLoaded, setSoundcloudLoaded] = useState(false);
+  const [soundcloudError, setSoundcloudError] = useState(false);
+  const [activeSection, setActiveSection] = useState<SoundCloudSection>('stream');
   const soundcloudProfile = socialProfiles.soundcloud;
+
+  // Build the embed URL based on active section
+  const getEmbedUrl = () => {
+    const baseUrl = `https://soundcloud.com/${soundcloudProfile.handle}`;
+    if (activeSection === 'stream') {
+      // Profile stream includes tracks + reposts
+      return `https://w.soundcloud.com/player/?url=${encodeURIComponent(baseUrl)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=true&show_teaser=true&visual=true`;
+    }
+    const sectionPath = activeSection === 'tracks' ? '/tracks' : '/sets';
+    return `https://w.soundcloud.com/player/?url=${encodeURIComponent(baseUrl + sectionPath)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=true&show_teaser=true&visual=true`;
+  };
+
+  const handleIframeError = () => {
+    console.error('SoundCloud iframe failed to load');
+    setSoundcloudError(true);
+    setSoundcloudLoaded(true);
+  };
+
+  const sections: { id: SoundCloudSection; label: string; icon: React.ReactNode }[] = [
+    { id: 'stream', label: 'Stream', icon: <Radio className="w-4 h-4" /> },
+    { id: 'tracks', label: 'Tracks', icon: <Music className="w-4 h-4" /> },
+    { id: 'sets', label: 'Playlists', icon: <ListMusic className="w-4 h-4" /> },
+  ];
+
+  const quickLinks = [
+    { label: 'Reposts', path: 'reposts', icon: <RefreshCw className="w-4 h-4" /> },
+    { label: 'Likes', path: 'likes', icon: <Heart className="w-4 h-4" /> },
+  ];
 
   return (
     <div className="flex-1 p-4 flex flex-col overflow-hidden">
-      <div className="flex items-center gap-3 mb-4">
-        <a href={`${soundcloudProfile.url}/reposts`} target="_blank" rel="noopener noreferrer" className="flex-1 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-center">
-          <RefreshCw className="w-5 h-5 text-orange-500 mx-auto mb-1" />
-          <p className="text-white text-sm font-medium">Reposts</p>
-        </a>
-        <a href={`${soundcloudProfile.url}/sets`} target="_blank" rel="noopener noreferrer" className="flex-1 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-center">
-          <ListMusic className="w-5 h-5 text-orange-500 mx-auto mb-1" />
-          <p className="text-white text-sm font-medium">Playlists</p>
-        </a>
-        <a href={`${soundcloudProfile.url}/likes`} target="_blank" rel="noopener noreferrer" className="flex-1 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-center">
-          <Heart className="w-5 h-5 text-orange-500 mx-auto mb-1" />
-          <p className="text-white text-sm font-medium">Likes</p>
-        </a>
-        <a href={`${soundcloudProfile.url}/tracks`} target="_blank" rel="noopener noreferrer" className="flex-1 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-center">
-          <Music className="w-5 h-5 text-orange-500 mx-auto mb-1" />
-          <p className="text-white text-sm font-medium">Tracks</p>
+      {/* Quick links to open reposts/likes on SoundCloud */}
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-white/40 text-xs">Open on SoundCloud:</span>
+        {quickLinks.map((link) => (
+          <a
+            key={link.path}
+            href={`${soundcloudProfile.url}/${link.path}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 text-orange-400 text-xs font-medium hover:bg-orange-500/20 transition-colors"
+          >
+            {link.icon}
+            {link.label}
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        ))}
+      </div>
+
+      {/* Embed tabs */}
+      <div className="flex items-center gap-2 mb-4">
+        {sections.map((section) => (
+          <button
+            key={section.id}
+            onClick={() => { setSoundcloudLoaded(false); setSoundcloudError(false); setActiveSection(section.id); }}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 p-3 rounded-xl transition-colors",
+              activeSection === section.id
+                ? "bg-orange-500/20 text-orange-400 border border-orange-500/30"
+                : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white"
+            )}
+          >
+            {section.icon}
+            <span className="text-sm font-medium">{section.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Debug: show embed URL */}
+      <div className="flex items-center gap-2 mb-2 text-xs text-white/30">
+        <span>@{soundcloudProfile.handle}</span>
+        <a
+          href={getEmbedUrl()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-white/50"
+        >
+          Test embed URL
         </a>
       </div>
 
-      <div className="flex-1 relative rounded-xl overflow-hidden bg-black/30 min-h-0">
-        {!soundcloudLoaded && <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10"><Loader2 className="w-8 h-8 text-orange-500 animate-spin" /></div>}
-        <iframe width="100%" height="100%" scrolling="no" frameBorder="no" allow="autoplay" src={`https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/${soundcloudProfile.handle}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=true&show_teaser=true&visual=true`} onLoad={() => setSoundcloudLoaded(true)} className="absolute inset-0" />
+      <div className="flex-1 relative rounded-xl overflow-hidden bg-black/30" style={{ minHeight: '400px' }}>
+        {!soundcloudLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
+            <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
+          </div>
+        )}
+        {soundcloudError && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 z-10 gap-4">
+            <span className="text-red-400">Failed to load SoundCloud embed</span>
+            <a
+              href={soundcloudProfile.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-orange-500 rounded-lg text-white text-sm hover:bg-orange-600"
+            >
+              Open SoundCloud <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
+        )}
+        <iframe
+          key={activeSection}
+          width="100%"
+          height="100%"
+          scrolling="no"
+          frameBorder="no"
+          allow="autoplay"
+          src={getEmbedUrl()}
+          onLoad={() => { setSoundcloudLoaded(true); setSoundcloudError(false); }}
+          onError={handleIframeError}
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+        />
       </div>
     </div>
   );

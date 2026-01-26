@@ -75,7 +75,7 @@ export const categoryGradients: Record<AppCategory, string> = {
 };
 
 /**
- * Fetch available apps from the zos-apps GitHub organization
+ * Fetch available apps from static manifest or GitHub API fallback
  */
 export async function fetchAvailableApps(): Promise<AppManifest[]> {
   // Check cache first
@@ -83,7 +83,19 @@ export async function fetchAvailableApps(): Promise<AppManifest[]> {
   if (cached) return cached;
 
   try {
-    // Fetch all repos from zos-apps org
+    // Try static manifest first (avoids GitHub API rate limits)
+    const staticResponse = await fetch('/data/zos-apps.json');
+    if (staticResponse.ok) {
+      const apps: AppManifest[] = await staticResponse.json();
+      setCachedApps(apps);
+      return apps;
+    }
+  } catch {
+    console.warn('Static app manifest not available, falling back to GitHub API');
+  }
+
+  try {
+    // Fallback: Fetch from GitHub API
     const response = await fetch(
       'https://api.github.com/orgs/zos-apps/repos?per_page=100&sort=updated'
     );

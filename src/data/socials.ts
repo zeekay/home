@@ -53,8 +53,8 @@ export const socialProfiles: Record<string, SocialProfile> = {
   },
   soundcloud: {
     platform: 'SoundCloud',
-    handle: 'zeekay',
-    url: 'https://soundcloud.com/zeekay',
+    handle: 'requite',
+    url: 'https://soundcloud.com/requite',
     color: '#FF5500',
     icon: 'Radio',
   },

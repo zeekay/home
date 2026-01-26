@@ -53,24 +53,26 @@ const HapticFeedback: React.FC = () => {
   const [nextId, setNextId] = useState(0);
 
   useEffect(() => {
+    let localId = 0;
+
     const handleSoundPlayed = (e: CustomEvent<{ type: SoundType; duration: number }>) => {
       // Get mouse position for feedback location
       const mouseX = (window as any).__lastMouseX ?? window.innerWidth / 2;
       const mouseY = (window as any).__lastMouseY ?? window.innerHeight / 2;
 
+      const pulseId = localId++;
       const pulse: HapticPulse = {
-        id: nextId,
+        id: pulseId,
         x: mouseX,
         y: mouseY,
         type: e.detail.type,
       };
 
       setPulses(prev => [...prev, pulse]);
-      setNextId(prev => prev + 1);
 
       // Remove pulse after animation
       setTimeout(() => {
-        setPulses(prev => prev.filter(p => p.id !== pulse.id));
+        setPulses(prev => prev.filter(p => p.id !== pulseId));
       }, 300);
     };
 
@@ -87,7 +89,7 @@ const HapticFeedback: React.FC = () => {
       window.removeEventListener('zos:sound-played', handleSoundPlayed as EventListener);
       window.removeEventListener('mousemove', trackMouse);
     };
-  }, [nextId]);
+  }, []);
 
   if (pulses.length === 0) return null;
 

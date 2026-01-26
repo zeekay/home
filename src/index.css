@@ -606,8 +606,18 @@
      Apply authentic macOS blur effects to UI elements
      ========================================================================== */
 
-  /* Menu Bar vibrancy - top system bar */
+  /* Menu Bar - transparent by default (macOS Sonoma style) */
   .vibrancy-menubar {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: none;
+    box-shadow: none;
+  }
+
+  /* Menu Bar vibrancy - only when fullscreen or content behind */
+  .vibrancy-menubar-fullscreen,
+  .vibrancy-menubar.has-content-behind {
     background: var(--vibrancy-menubar-bg);
     backdrop-filter: blur(var(--vibrancy-menubar-blur)) saturate(var(--vibrancy-menubar-saturate)) brightness(var(--vibrancy-menubar-brightness));
     -webkit-backdrop-filter: blur(var(--vibrancy-menubar-blur)) saturate(var(--vibrancy-menubar-saturate)) brightness(var(--vibrancy-menubar-brightness));
@@ -1141,23 +1151,141 @@
   animation: widget-jiggle 0.15s ease-in-out infinite;
 }
 
-/* Accessibility Styles */
+/* ==========================================================================
+   Accessibility Styles
+   macOS-inspired high contrast and reduced motion modes
+   ========================================================================== */
 
-/* High Contrast Mode */
+/* High Contrast Mode - Enhanced visibility for users with low vision */
 .high-contrast {
   --background: 0 0% 0%;
   --foreground: 0 0% 100%;
   --border: 0 0% 100%;
+  --muted-foreground: 0 0% 100%;
+
+  /* Override glass/vibrancy for solid backgrounds */
+  --glass-bg: rgba(0, 0, 0, 1);
+  --glass-bg-hover: rgba(20, 20, 20, 1);
+  --glass-bg-active: rgba(40, 40, 40, 1);
+  --glass-border: rgba(255, 255, 255, 1);
+
+  /* Disable blur effects */
+  --blur: 0;
+  --blur-sm: 0;
+  --blur-lg: 0;
+  --blur-xl: 0;
 }
 
-.high-contrast * {
-  border-color: white !important;
+/* Solid borders on all elements */
+.high-contrast *:not(svg):not(path) {
+  border-color: rgba(255, 255, 255, 0.8) !important;
 }
 
+/* Interactive elements get visible focus rings */
 .high-contrast button,
-.high-contrast a {
-  outline: 2px solid white;
-  outline-offset: 2px;
+.high-contrast a,
+.high-contrast [role="button"],
+.high-contrast input,
+.high-contrast textarea,
+.high-contrast select {
+  outline: 2px solid white !important;
+  outline-offset: 2px !important;
+}
+
+.high-contrast button:hover,
+.high-contrast a:hover,
+.high-contrast [role="button"]:hover {
+  background: white !important;
+  color: black !important;
+}
+
+/* Windows get solid backgrounds */
+.high-contrast .glass,
+.high-contrast .glass-sm,
+.high-contrast .glass-lg,
+.high-contrast .glass-xl,
+.high-contrast .glass-window {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(0, 0, 0, 0.98) !important;
+  border: 2px solid white !important;
+}
+
+/* Window title bars */
+.high-contrast [class*="titlebar"],
+.high-contrast [class*="header"] {
+  background: rgba(20, 20, 20, 1) !important;
+  border-bottom: 2px solid white !important;
+}
+
+/* Menu bar and dock */
+.high-contrast .vibrancy-menubar,
+.high-contrast .vibrancy-dock {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(0, 0, 0, 0.98) !important;
+  border: 2px solid white !important;
+}
+
+/* Menu items get clear hover states */
+.high-contrast [role="menuitem"]:hover,
+.high-contrast [role="option"]:hover,
+.high-contrast [data-highlighted] {
+  background: white !important;
+  color: black !important;
+}
+
+/* Traffic light buttons visible */
+.high-contrast .traffic-light-close,
+.high-contrast .traffic-light-minimize,
+.high-contrast .traffic-light-maximize {
+  border: 2px solid white !important;
+}
+
+/* Text has maximum contrast */
+.high-contrast p,
+.high-contrast span,
+.high-contrast div,
+.high-contrast h1,
+.high-contrast h2,
+.high-contrast h3,
+.high-contrast h4,
+.high-contrast h5,
+.high-contrast h6,
+.high-contrast label {
+  color: white !important;
+  text-shadow: none !important;
+}
+
+/* Muted text is also visible */
+.high-contrast .text-muted-foreground,
+.high-contrast [class*="text-gray"],
+.high-contrast [class*="text-zinc"],
+.high-contrast [class*="text-neutral"] {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Disabled states still visible */
+.high-contrast :disabled,
+.high-contrast [aria-disabled="true"] {
+  opacity: 0.7 !important;
+  border-style: dashed !important;
+}
+
+/* Selection is visible */
+.high-contrast ::selection {
+  background: white !important;
+  color: black !important;
+}
+
+/* Scrollbars visible */
+.high-contrast ::-webkit-scrollbar-thumb {
+  background: white !important;
+  border: 1px solid black !important;
+}
+
+.high-contrast ::-webkit-scrollbar-track {
+  background: rgba(50, 50, 50, 1) !important;
 }
 
 /* Reduce Motion */
@@ -2375,27 +2503,38 @@ textarea::selection {
   outline: none;
 }
 
-/* Custom focus ring for keyboard navigation */
+/* Custom focus ring for keyboard navigation - subtle and only when needed */
 *:focus-visible {
-  outline: 2px solid var(--focus-ring-color);
-  outline-offset: 2px;
+  outline: 1px solid rgba(59, 130, 246, 0.4);
+  outline-offset: 1px;
 }
 
-/* Buttons with focus ring */
+/* Hide focus ring for text editors and content areas */
+[contenteditable]:focus,
+[contenteditable]:focus-visible,
+.text-editor:focus,
+.text-editor:focus-visible,
+.code-editor:focus,
+.code-editor:focus-visible,
+.no-focus-ring:focus,
+.no-focus-ring:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Buttons with subtle focus ring */
 button:focus-visible,
 [role="button"]:focus-visible {
-  outline: 2px solid var(--selection-color);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.15);
+  outline: 1px solid rgba(59, 130, 246, 0.5);
+  outline-offset: 1px;
 }
 
-/* Input focus ring */
+/* Input focus - clean border transition only */
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
   outline: none;
-  border-color: var(--selection-color);
-  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
 }
 
 /* Link focus ring */

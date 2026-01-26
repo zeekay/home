@@ -40,6 +40,13 @@ export const Calculator = lazy(() => import('../ZCalculatorWindow'));
 export const Weather = lazy(() => import('../ZWeatherWindow'));
 export const Clock = lazy(() => import('../ZClockWindow'));
 export const Stats = lazy(() => import('../ZStatsWindow'));
+export const Grapher = lazy(() => import('../ZGrapherWindow'));
+export const DiskUtility = lazy(() => import('../ZDiskUtilityWindow'));
+export const KeychainAccess = lazy(() => import('../ZKeychainAccessWindow'));
+export const AudioMIDISetup = lazy(() => import('../ZAudioMIDISetupWindow'));
+export const DigitalColorMeter = lazy(() => import('../ZDigitalColorMeterWindow'));
+export const Screenshot = lazy(() => import('../ZScreenshotWindow'));
+export const ScreenTime = lazy(() => import('../ZScreenTimeWindow'));
 
 // AI Apps
 export const HanzoAI = lazy(() => import('../HanzoAIWindow'));
@@ -47,6 +54,27 @@ export const Zoo = lazy(() => import('../ZooAssistantWindow'));
 
 // Finance
 export const LuxWallet = lazy(() => import('../LuxWalletWindow'));
+
+// Social Apps - New
+export const Discord = lazy(() => import('../ZDiscordWindow'));
+export const Twitter = lazy(() => import('../ZTwitterWindow'));
+export const Slack = lazy(() => import('../ZSlackWindow'));
+export const Mastodon = lazy(() => import('../ZMastodonWindow'));
+
+// Developer Tools - New
+export const VSCode = lazy(() => import('../ZVSCodeWindow'));
+export const Console = lazy(() => import('../ZConsoleWindow'));
+
+// Creative/Design Apps
+export const Figma = lazy(() => import('../ZFigmaWindow'));
+export const Sketch = lazy(() => import('../ZSketchWindow'));
+export const AfterEffects = lazy(() => import('../ZAfterEffectsWindow'));
+
+// Music Production
+export const LogicPro = lazy(() => import('../ZLogicProWindow'));
+export const FLStudio = lazy(() => import('../ZFLStudioWindow'));
+export const AbletonLive = lazy(() => import('../ZAbletonLiveWindow'));
+export const Rekordbox = lazy(() => import('../ZRekordboxWindow'));
 
 // App component mapping by ID
 export const appComponents: Record<string, React.LazyExoticComponent<React.ComponentType<unknown>>> = {
@@ -72,9 +100,30 @@ export const appComponents: Record<string, React.LazyExoticComponent<React.Compo
   weather: Weather,
   clock: Clock,
   stats: Stats,
+  grapher: Grapher,
   hanzo: HanzoAI,
   zoo: Zoo,
   lux: LuxWallet,
+  // New apps
+  discord: Discord,
+  twitter: Twitter,
+  slack: Slack,
+  mastodon: Mastodon,
+  vscode: VSCode,
+  console: Console,
+  figma: Figma,
+  sketch: Sketch,
+  aftereffects: AfterEffects,
+  logicpro: LogicPro,
+  flstudio: FLStudio,
+  abletonlive: AbletonLive,
+  rekordbox: Rekordbox,
+  diskutility: DiskUtility,
+  keychainaccess: KeychainAccess,
+  audiomidisetup: AudioMIDISetup,
+  digitalcolormeter: DigitalColorMeter,
+  screenshot: Screenshot,
+  screentime: ScreenTime,
 };
 
 /**

@@ -297,6 +297,18 @@ export const appVersions: AppVersions = {
     ],
   },
 
+  grapher: {
+    version: '1.0.0',
+    build: 100,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Math equation graphing',
+      'Multiple equations with colors',
+      'Pan and zoom controls',
+      'Export as image',
+    ],
+  },
+
   shortcuts: {
     version: '6.0.0',
     build: 2116,
@@ -306,6 +318,220 @@ export const appVersions: AppVersions = {
       'Drag & drop action blocks',
       'Pre-made shortcut gallery',
       'Import/export shortcuts',
+    ],
+  },
+
+  // Social Apps
+  discord: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Server and channel navigation',
+      'Voice and video preview',
+      'Direct messaging',
+    ],
+  },
+
+  twitter: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Timeline view',
+      'Tweet composition',
+      'Profile display',
+    ],
+  },
+
+  slack: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Workspace navigation',
+      'Channel messaging',
+      'Direct messages',
+    ],
+  },
+
+  mastodon: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Federated timeline',
+      'Toot composition',
+      'Instance selection',
+    ],
+  },
+
+  // Developer Tools
+  vscode: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Monaco Editor integration',
+      'File explorer',
+      'Extension support preview',
+    ],
+  },
+
+  console: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'System log viewer',
+      'Filter and search',
+      'Real-time updates',
+    ],
+  },
+
+  // Creative/Design Apps
+  figma: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Design canvas',
+      'Layer management',
+      'Component library',
+    ],
+  },
+
+  sketch: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Vector editing',
+      'Artboard management',
+      'Symbol system',
+    ],
+  },
+
+  aftereffects: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Composition timeline',
+      'Effects library',
+      'Motion graphics',
+    ],
+  },
+
+  // Music Production
+  logicpro: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Multi-track arrangement',
+      'Virtual instruments',
+      'MIDI editing',
+    ],
+  },
+
+  flstudio: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Step sequencer',
+      'Piano roll',
+      'Mixer integration',
+    ],
+  },
+
+  abletonlive: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Session view',
+      'Arrangement view',
+      'Live performance tools',
+    ],
+  },
+
+  rekordbox: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Track library management',
+      'Waveform analysis',
+      'Playlist creation',
+    ],
+  },
+
+  // System Utilities
+  diskutility: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Disk information display',
+      'Volume management',
+      'First aid tools',
+    ],
+  },
+
+  keychainaccess: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Password management',
+      'Certificate storage',
+      'Secure notes',
+    ],
+  },
+
+  audiomidisetup: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Audio device configuration',
+      'MIDI device setup',
+      'Aggregate device creation',
+    ],
+  },
+
+  digitalcolormeter: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Color picking from screen',
+      'Multiple color formats',
+      'Color history',
+    ],
+  },
+
+  screenshot: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'Screen capture',
+      'Window capture',
+      'Selection capture',
+    ],
+  },
+
+  screentime: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2024-12-28',
+    changelog: [
+      'App usage tracking',
+      'Daily statistics',
+      'Usage limits',
     ],
   },
 };

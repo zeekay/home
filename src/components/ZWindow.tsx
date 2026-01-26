@@ -23,6 +23,7 @@ import { getWindowStyle, getNextZIndex, getResponsiveWindowSize, getResponsiveWi
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ANIMATION_DURATIONS } from '@/utils/animationConstants';
 import { getWindowShadow } from '@/lib/windowAnimations';
+import { useWindowTiling, type SnapZone } from '@/contexts/WindowTilingContext';
 
 export interface ZWindowProps {
   title: string;
@@ -176,6 +177,14 @@ const ZWindow: React.FC<ZWindowProps> = ({
     height: defaultHeight ?? 500
   };
   const isMobile = useIsMobile();
+
+  // Window tiling context
+  const { detectSnapZone, showPreview, hidePreview } = useWindowTiling();
+  const pendingSnapZoneRef = useRef<SnapZone | null>(null);
+  const [preTileState, setPreTileState] = useState<{
+    position: { x: number; y: number };
+    size: { width: number; height: number }
+  } | null>(null);
 
   // Framer Motion animation controls
   const controls = useAnimation();
@@ -440,6 +449,16 @@ const ZWindow: React.FC<ZWindowProps> = ({
           x: Math.max(0, Math.min(e.clientX - dragOffset.x, window.innerWidth - size.width / 2)),
           y: Math.max(0, Math.min(e.clientY - dragOffset.y, window.innerHeight - 50)),
         });
+
+        // Detect snap zones during drag
+        const snapZone = detectSnapZone(e.clientX, e.clientY);
+        if (snapZone) {
+          pendingSnapZoneRef.current = snapZone;
+          showPreview(snapZone);
+        } else {
+          pendingSnapZoneRef.current = null;
+          hidePreview();
+        }
       } else if (isResizing) {
         const newWidth = Math.max(300, startSize.width + (e.clientX - resizeStartPos.x));
         const newHeight = Math.max(200, startSize.height + (e.clientY - resizeStartPos.y));
@@ -452,35 +471,61 @@ const ZWindow: React.FC<ZWindowProps> = ({
 
     const handleMouseUp = () => {
       if (isDragging) {
-        // Apply momentum if velocity is significant
-        const velocityMagnitude = Math.sqrt(
-          velocityRef.current.x ** 2 + velocityRef.current.y ** 2
-        );
+        // Check if we should snap to a zone
+        const snapZone = pendingSnapZoneRef.current;
+        if (snapZone) {
+          // Save pre-tile state if not already saved
+          if (!preTileState) {
+            setPreTileState({ position, size });
+          }
 
-        if (velocityMagnitude > 200) {
-          // Calculate projected position with friction
-          const friction = 0.3;
-          const projectedX = position.x + velocityRef.current.x * friction;
-          const projectedY = position.y + velocityRef.current.y * friction;
-
-          // Clamp to bounds
-          const finalX = Math.max(0, Math.min(projectedX, window.innerWidth - size.width / 2));
-          const finalY = Math.max(0, Math.min(projectedY, window.innerHeight - 50));
-
-          // Animate to final position with spring physics
+          // Animate to snap position
           controls.start({
-            x: finalX - position.x,
-            y: finalY - position.y,
+            scale: [1, 1.02, 1],
             transition: {
-              type: 'spring',
-              stiffness: 200,
-              damping: 20,
-              mass: 1,
+              duration: 0.2,
+              ease: [0.23, 1, 0.32, 1],
             },
-          }).then(() => {
-            setPosition({ x: finalX, y: finalY });
-            controls.set({ x: 0, y: 0 });
           });
+
+          // Apply snap position and size
+          setPosition({ x: snapZone.x, y: snapZone.y });
+          setSize({ width: snapZone.width, height: snapZone.height });
+
+          // Clear snap state
+          pendingSnapZoneRef.current = null;
+          hidePreview();
+        } else {
+          // Apply momentum if velocity is significant (no snap zone)
+          const velocityMagnitude = Math.sqrt(
+            velocityRef.current.x ** 2 + velocityRef.current.y ** 2
+          );
+
+          if (velocityMagnitude > 200) {
+            // Calculate projected position with friction
+            const friction = 0.3;
+            const projectedX = position.x + velocityRef.current.x * friction;
+            const projectedY = position.y + velocityRef.current.y * friction;
+
+            // Clamp to bounds
+            const finalX = Math.max(0, Math.min(projectedX, window.innerWidth - size.width / 2));
+            const finalY = Math.max(0, Math.min(projectedY, window.innerHeight - 50));
+
+            // Animate to final position with spring physics
+            controls.start({
+              x: finalX - position.x,
+              y: finalY - position.y,
+              transition: {
+                type: 'spring',
+                stiffness: 200,
+                damping: 20,
+                mass: 1,
+              },
+            }).then(() => {
+              setPosition({ x: finalX, y: finalY });
+              controls.set({ x: 0, y: 0 });
+            });
+          }
         }
       }
 
@@ -498,7 +543,7 @@ const ZWindow: React.FC<ZWindowProps> = ({
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, isResizing, dragOffset, resizeStartPos, startSize, position, size, controls]);
+  }, [isDragging, isResizing, dragOffset, resizeStartPos, startSize, position, size, controls, detectSnapZone, showPreview, hidePreview, preTileState]);
 
   // Bring to front on mobile interaction
   useEffect(() => {

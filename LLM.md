@@ -53,31 +53,70 @@ Located in `src/components/widgets/`:
 - DesktopWidget - Base widget wrapper
 - WidgetGallery - Widget picker
 
-### Applications (20+ apps)
+### Applications (45+ apps)
 
-| App | File Size | Features |
-|-----|-----------|----------|
-| Finder | 66KB | Tabs, column view, tags, Quick Look |
-| Code/Xcode | 30KB | Monaco editor, file tree, themes |
-| Mail | 29KB | Contact form, templates, attachments |
-| Shortcuts | 28KB | Visual automation, triggers, actions |
-| Zoo Assistant | 27KB | AI chat, suggestions |
-| GitHub Stats | 22KB | Profile, repos, contributions |
-| Safari | 20KB | Tab groups, bookmarks, sidebar, start page |
-| Socials | 19KB | Twitter, Instagram, GitHub feeds |
-| Music | 18KB | Spotify integration, SoundCloud |
-| Photos | 18KB | Gallery, albums, slideshows |
-| App Store | 18KB | Catalog, versions, categories |
-| Notes | 17KB | Rich text, folders, search |
-| Weather | 17KB | Forecasts, locations, alerts |
-| Terminal | 13KB | Tabs, profiles, SSH, splits |
-| FaceTime | 10KB | Video calls, contacts |
-| Messages | 10KB | Chat interface, contacts |
-| Clock | 10KB | World clock, alarms, stopwatch |
-| Stickies | 9KB | Sticky notes, colors |
-| iTunes | 9KB | Legacy music player |
-| Calculator | 7KB | Basic + scientific modes |
-| Calendar | 4KB | Cal.com integration |
+#### Productivity & System
+| App | Features |
+|-----|----------|
+| Finder | Tabs, column view, tags, Quick Look |
+| Safari | Tab groups, bookmarks, sidebar, start page |
+| Mail | Contact form, templates, attachments |
+| Notes | Rich text, folders, search |
+| Calendar | Cal.com integration |
+| Messages | Chat interface, contacts |
+| Calculator | Basic + scientific modes |
+| System Preferences | All system settings |
+| App Store | 110+ apps from zos-apps GitHub org |
+
+#### Development & Creative
+| App | Features |
+|-----|----------|
+| Xcode | Monaco editor, file tree, themes |
+| VS Code | Full IDE experience |
+| Terminal | Tabs, profiles, SSH, splits |
+| Console | System logs viewer |
+| Figma | Design tool integration |
+| Sketch | Vector design |
+| After Effects | Motion graphics |
+
+#### Audio Production (DAWs)
+| App | Features |
+|-----|----------|
+| Logic Pro | Full DAW interface |
+| FL Studio | Music production |
+| Ableton Live | Performance & production |
+| rekordbox | DJ software interface |
+| Audio MIDI Setup | Device configuration |
+
+#### Entertainment & Social
+| App | Features |
+|-----|----------|
+| Music | Spotify + SoundCloud (@requite) integration |
+| Photos | Gallery, albums, slideshows |
+| FaceTime | Video calls |
+| Discord | Discord widget |
+| Slack | Slack widget |
+| Twitter/X | Social feed |
+| Mastodon | Decentralized social |
+
+#### AI & Web3
+| App | Features |
+|-----|----------|
+| Hanzo AI | AI chat assistant |
+| Zoo Assistant | AI suggestions |
+| Lux Wallet | Full Web3 wallet, multi-chain, DeFi |
+
+#### Utilities
+| App | Features |
+|-----|----------|
+| Weather | Forecasts, locations, alerts |
+| Clock | World clock, alarms, stopwatch |
+| Screenshot | Screen capture |
+| Screen Time | Usage tracking |
+| Digital Color Meter | Color picker |
+| Disk Utility | Storage management |
+| Keychain Access | Password manager |
+| Grapher | Math visualization |
 
 ### Directory Structure
 ```
@@ -143,6 +182,92 @@ npx tsx scripts/release.ts              # Create release
 - Lucide Icons
 - Monaco Editor (Code)
 - date-fns
+- **Web3**: wagmi v2, viem, @scure/bip39, @scure/bip32
+- **DeFi**: @uniswap/v3-sdk, @uniswap/sdk-core
+
+## Web3 Wallet Architecture
+
+### Services Structure
+```
+src/services/
+├── wallet/
+│   ├── encryptionService.ts   # AES-256-GCM via Web Crypto API
+│   ├── keyringService.ts      # BIP39/BIP32 HD key derivation
+│   ├── storageService.ts      # Encrypted localStorage vault
+│   ├── walletService.ts       # Core wallet management
+│   └── index.ts
+├── chain/
+│   ├── chainConfigs.ts        # Lux + all EVM chains
+│   ├── chainService.ts        # Multi-chain clients
+│   └── index.ts
+└── defi/
+    ├── priceService.ts        # CoinGecko prices
+    ├── oneInchService.ts      # 1inch DEX aggregator
+    ├── uniswapService.ts      # Uniswap V3 SDK
+    ├── defiService.ts         # Unified swap interface
+    └── index.ts
+```
+
+### Encryption (encryptionService.ts)
+- **Algorithm**: AES-256-GCM via Web Crypto API
+- **Key Derivation**: PBKDF2 with 310,000 iterations + SHA-256
+- **Salt/IV**: 16-byte salt, 12-byte IV per encryption
+- **Pattern**: `salt:iv:ciphertext` Base64-encoded
+
+### Key Management (keyringService.ts)
+- **Mnemonic**: BIP39 with @scure/bip39 (12/24 words)
+- **HD Derivation**: BIP32 with @scure/bip32
+- **EVM Path**: `m/44'/60'/0'/0/{index}`
+- **Lux Path**: `m/44'/9369'/0'/0/{index}`
+
+### Storage (storageService.ts)
+- **Key**: `lux_wallet_encrypted` in localStorage
+- **Verifier**: `lux_wallet_verifier` for quick password check
+- **Vault Schema**:
+  ```typescript
+  interface EncryptedVault {
+    version: 1;
+    encryptedMnemonic?: string;
+    accounts: { id, name, address, type, hdPath?, encryptedPrivateKey? }[];
+    settings: { autoLockTimeout, biometricEnabled, lastActivity };
+  }
+  ```
+
+### Chain Support (chainConfigs.ts)
+- **Lux Network**: Mainnet (96369), Testnet (96370)
+- **EVM Chains**: Ethereum, Arbitrum, Optimism, Base, Polygon, BSC, Avalanche, + 30 more
+- All chains from viem/chains automatically included
+
+### DeFi Integration
+- **1inch**: DEX aggregator API for best swap rates
+- **Uniswap V3**: Direct pool access via SDK
+- **Prices**: CoinGecko API with 1-minute cache
+
+### WalletContext
+```typescript
+interface WalletContextType {
+  isInitialized: boolean;
+  isLocked: boolean;
+  accounts: WalletAccount[];
+  activeAccount: WalletAccount | null;
+  balances: Map<number, TokenBalance[]>;
+
+  createWallet: (password: string, wordCount?: 12 | 24) => Promise<string>;
+  importFromMnemonic: (mnemonic: string, password: string) => Promise<void>;
+  unlock: (password: string) => Promise<boolean>;
+  lock: () => void;
+  signAndSendTransaction: (tx: TransactionRequest) => Promise<`0x${string}`>;
+}
+```
+
+### Lux Wallet Window
+- **Onboarding**: Create/import wallet with password encryption
+- **Lock Screen**: Password unlock with auto-lock timer
+- **Dashboard**: Portfolio value, chain selection, token balances
+- **Send/Receive**: Transaction building with gas estimation
+- **DeFi**: Swap UI with 1inch + Uniswap integration
+- **Staking**: Validator delegation (Lux P-Chain)
+- **Security**: Export mnemonic, change password, reset
 
 ### Build Output
 - Main bundle: ~633KB (gzipped: 167KB)
@@ -160,3 +285,28 @@ npx tsx scripts/release.ts              # Create release
 8. Added Focus Modes with scheduling
 9. Created comprehensive app deep dives
 10. All apps individually versioned
+
+## Recent Session Updates
+### SoundCloud Integration
+- Music app now embeds SoundCloud player for @requite profile
+- Tabs: Stream, Tracks, Playlists with embedded player
+- Quick links for Reposts/Likes (open in new tab)
+- Debug info shows current profile handle
+
+### App Store Optimization
+- Static manifest at `/data/zos-apps.json` (110 apps)
+- Avoids GitHub API rate limits (was 112 API calls per load)
+- Falls back to GitHub API if static file unavailable
+- Apps fetched from `zos-apps` GitHub organization
+
+### New Window Components (45 total)
+- DAWs: Logic Pro, FL Studio, Ableton Live, rekordbox
+- Social: Discord, Slack, Twitter/X, Mastodon
+- Dev: VS Code, Console, Figma, Sketch, After Effects
+- Utils: Screenshot, Screen Time, Digital Color Meter, Disk Utility
+- All lazy-loaded for code splitting
+
+### Test Status
+- 260 tests passing
+- TypeScript: No errors
+- Build: ~633KB main bundle

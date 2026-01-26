@@ -41,9 +41,16 @@ import {
   EyeOff,
   Clock,
   Keyboard,
+  Mic,
+  MicOff,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { HanzoLogo } from './dock/logos';
 import { cn } from '@/lib/utils';
+import { hanzoGateway, HANZO_SYSTEM_PROMPT, HANZO_DEV_SYSTEM_PROMPT, type Model as GatewayModel } from '@/services/hanzoGateway';
+import { hanzoDev } from '@/services/hanzoDev';
+import { voiceService, type VoiceState, type TranscriptionResult } from '@/services/voice';
 
 // ============================================================================
 // Types
@@ -72,11 +79,15 @@ interface Conversation {
 }
 
 interface Settings {
-  apiKey: string;
+  apiKey: string; // Kept for backwards compat, not needed with gateway
   model: string;
   temperature: number;
   maxTokens: number;
   streamResponses: boolean;
+  useGateway: boolean; // Use Hanzo Gateway (free tier)
+  devMode: boolean; // Enable Hanzo Dev coding assistant mode
+  voiceEnabled: boolean; // Enable voice input
+  ttsEnabled: boolean; // Enable text-to-speech for responses
 }
 
 type QuickAction = {
@@ -95,22 +106,47 @@ const STORAGE_KEYS = {
   CONVERSATIONS: 'hanzo-ai-conversations',
   SETTINGS: 'hanzo-ai-settings',
   CURRENT_CONVERSATION: 'hanzo-ai-current-conversation',
+  FREE_QUERIES_USED: 'hanzo-ai-free-queries',
+  FREE_QUERIES_DATE: 'hanzo-ai-free-queries-date',
 };
+
+// Free tier limits - 10 per day with daily reset
+const FREE_QUERY_LIMIT = 10;
+const HANZO_SIGNUP_URL = 'https://hanzo.ai/signup?ref=zos';
+
+// Get today's date string for daily reset
+const getTodayString = () => new Date().toISOString().split('T')[0];
 
 const DEFAULT_SETTINGS: Settings = {
   apiKey: '',
-  model: 'claude-sonnet-4-20250514',
+  model: 'deepseek-chat', // Default free model via gateway
   temperature: 0.7,
   maxTokens: 4096,
   streamResponses: true,
+  useGateway: true, // Use free Hanzo Gateway by default
+  devMode: false, // Dev mode for coding assistance
+  voiceEnabled: false, // Enable voice input
+  ttsEnabled: false, // Enable text-to-speech for responses
 };
 
-const MODELS = [
+// Gateway models (free tier)
+const GATEWAY_MODELS = [
+  { id: 'deepseek-chat', name: 'DeepSeek Chat', provider: 'DeepSeek (Free)' },
+  { id: 'deepseek-coder', name: 'DeepSeek Coder', provider: 'DeepSeek (Free)' },
+  { id: 'qwen3-32b', name: 'Qwen 3 32B', provider: 'Local (Free)' },
+  { id: 'zen-coder-30b', name: 'Zen Coder 30B', provider: 'Local (Free)' },
+];
+
+// Direct API models (requires API key)
+const DIRECT_MODELS = [
   { id: 'claude-sonnet-4-20250514', name: 'Claude Sonnet 4', provider: 'Anthropic' },
   { id: 'claude-opus-4-20250514', name: 'Claude Opus 4', provider: 'Anthropic' },
   { id: 'gpt-4o', name: 'GPT-4o', provider: 'OpenAI' },
   { id: 'gpt-4-turbo', name: 'GPT-4 Turbo', provider: 'OpenAI' },
 ];
+
+// Combined models for UI
+const ALL_MODELS = [...GATEWAY_MODELS, ...DIRECT_MODELS];
 
 const QUICK_ACTIONS: QuickAction[] = [
   {
@@ -157,7 +193,9 @@ const QUICK_ACTIONS: QuickAction[] = [
   },
 ];
 
-const DEFAULT_SYSTEM_PROMPT = `You are Hanzo AI, a helpful, intelligent assistant. You provide clear, accurate, and thoughtful responses. When writing code, use proper formatting with language-specific syntax highlighting. Be concise but thorough.`;
+// System prompt based on mode
+const getSystemPrompt = (devMode: boolean) => devMode ? HANZO_DEV_SYSTEM_PROMPT : HANZO_SYSTEM_PROMPT;
+const DEFAULT_SYSTEM_PROMPT = HANZO_SYSTEM_PROMPT;
 
 // ============================================================================
 // Utility Functions
@@ -650,6 +688,18 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
   const [showApiKey, setShowApiKey] = useState(false);
   const [selectedAction, setSelectedAction] = useState<QuickAction | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [gatewayConnected, setGatewayConnected] = useState(false);
+  const [gatewayModels, setGatewayModels] = useState<GatewayModel[]>([]);
+  const [freeQueriesUsed, setFreeQueriesUsed] = useState(0);
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false);
+
+  // Voice state
+  const [voiceState, setVoiceState] = useState<VoiceState>({
+    isListening: false,
+    isSpeaking: false,
+    isModelLoaded: false,
+    error: null,
+  });
 
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -759,6 +809,55 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
     scrollToBottom();
   }, [currentConversation?.messages, streamingContent]);
 
+  // Check gateway connection and load models
+  useEffect(() => {
+    const checkGateway = async () => {
+      try {
+        const isAvailable = await hanzoGateway.isAvailable();
+        setGatewayConnected(isAvailable);
+
+        if (isAvailable) {
+          const models = await hanzoGateway.getModels();
+          setGatewayModels(models);
+        }
+      } catch (error) {
+        console.error('Gateway check failed:', error);
+        setGatewayConnected(false);
+      }
+    };
+
+    checkGateway();
+    // Re-check every 30 seconds
+    const interval = setInterval(checkGateway, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Load free queries count from localStorage with daily reset
+  useEffect(() => {
+    try {
+      const storedDate = localStorage.getItem(STORAGE_KEYS.FREE_QUERIES_DATE);
+      const today = getTodayString();
+
+      // Reset if it's a new day
+      if (storedDate !== today) {
+        setFreeQueriesUsed(0);
+        localStorage.setItem(STORAGE_KEYS.FREE_QUERIES_USED, '0');
+        localStorage.setItem(STORAGE_KEYS.FREE_QUERIES_DATE, today);
+      } else {
+        const stored = localStorage.getItem(STORAGE_KEYS.FREE_QUERIES_USED);
+        if (stored) {
+          setFreeQueriesUsed(parseInt(stored, 10));
+        }
+      }
+    } catch {
+      // Ignore errors
+    }
+  }, []);
+
+  // Check if user has exceeded free limit (and doesn't have API key)
+  const isFreeTierExhausted = !settings.apiKey && freeQueriesUsed >= FREE_QUERY_LIMIT;
+  const freeQueriesRemaining = Math.max(0, FREE_QUERY_LIMIT - freeQueriesUsed);
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -782,6 +881,40 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isGenerating]);
+
+  // Voice service setup
+  useEffect(() => {
+    // Subscribe to voice state changes
+    const unsubscribeState = voiceService.onStateChange(setVoiceState);
+
+    // Subscribe to transcriptions
+    const unsubscribeTranscription = voiceService.onTranscription((result: TranscriptionResult) => {
+      if (result.text) {
+        setInput(prev => prev + (prev ? ' ' : '') + result.text);
+      }
+    });
+
+    return () => {
+      unsubscribeState();
+      unsubscribeTranscription();
+    };
+  }, []);
+
+  // Voice input handlers
+  const handleVoiceToggle = useCallback(async () => {
+    if (voiceState.isListening) {
+      await voiceService.stopListening();
+    } else {
+      await voiceService.startListening();
+    }
+  }, [voiceState.isListening]);
+
+  // TTS for AI responses
+  const speakResponse = useCallback(async (text: string) => {
+    if (settings.ttsEnabled) {
+      await voiceService.speak(text);
+    }
+  }, [settings.ttsEnabled]);
 
   // Functions
   const scrollToBottom = () => {
@@ -892,11 +1025,115 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim() || isGenerating) return;
 
-    // Create new conversation if none exists
-    if (!currentConversationId) {
-      handleNewConversation();
-      // Wait for state update
-      setTimeout(() => sendMessage(content), 100);
+    // Check if free tier is exhausted (only for gateway mode without API key)
+    if (settings.useGateway && !settings.apiKey && freeQueriesUsed >= FREE_QUERY_LIMIT) {
+      setShowSignupPrompt(true);
+      return;
+    }
+
+    // Create new conversation if none exists - do it inline to avoid closure issues
+    let targetConversationId = currentConversationId;
+    let targetConversation: Conversation | undefined = conversations.find((c) => c.id === currentConversationId);
+
+    if (!targetConversationId) {
+      const newConversation: Conversation = {
+        id: generateId(),
+        title: 'New Conversation',
+        messages: [
+          {
+            id: generateId(),
+            role: 'assistant',
+            content: "Hello! I'm Hanzo AI. How can I help you today?",
+            timestamp: new Date(),
+          },
+        ],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        pinned: false,
+        systemPrompt: DEFAULT_SYSTEM_PROMPT,
+      };
+      setConversations((prev) => [newConversation, ...prev]);
+      setCurrentConversationId(newConversation.id);
+      targetConversationId = newConversation.id;
+      targetConversation = newConversation;
+    }
+
+    // Handle slash commands in Dev Mode
+    if (settings.devMode && content.trim().startsWith('/')) {
+      const userMessage: Message = {
+        id: generateId(),
+        role: 'user',
+        content: content.trim(),
+        timestamp: new Date(),
+      };
+
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === targetConversationId
+            ? {
+                ...c,
+                messages: [...c.messages, userMessage],
+                updatedAt: new Date(),
+              }
+            : c
+        )
+      );
+
+      setInput('');
+      setIsTyping(true);
+      setIsGenerating(true);
+
+      try {
+        const result = await hanzoDev.processInput(content.trim());
+        const responseContent = result.error
+          ? `❌ Error: ${result.error}`
+          : result.output;
+
+        const assistantMessage: Message = {
+          id: generateId(),
+          role: 'assistant',
+          content: responseContent,
+          timestamp: new Date(),
+        };
+
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === targetConversationId
+              ? { ...c, messages: [...c.messages, assistantMessage], updatedAt: new Date() }
+              : c
+          )
+        );
+
+        // Speak response if TTS enabled
+        if (settings.ttsEnabled) {
+          speakResponse(responseContent);
+        }
+
+        // Count as query for free tier
+        if (settings.useGateway && !settings.apiKey && !content.trim().match(/^\/(ls|cat|rm|help|file)/)) {
+          const newCount = freeQueriesUsed + 1;
+          setFreeQueriesUsed(newCount);
+          localStorage.setItem(STORAGE_KEYS.FREE_QUERIES_USED, newCount.toString());
+        }
+      } catch (error) {
+        const errorMessage: Message = {
+          id: generateId(),
+          role: 'assistant',
+          content: `❌ Error: ${(error as Error).message}`,
+          timestamp: new Date(),
+        };
+
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === targetConversationId
+              ? { ...c, messages: [...c.messages, errorMessage], updatedAt: new Date() }
+              : c
+          )
+        );
+      } finally {
+        setIsTyping(false);
+        setIsGenerating(false);
+      }
       return;
     }
 
@@ -910,7 +1147,7 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
     // Update conversation with user message
     setConversations((prev) =>
       prev.map((c) =>
-        c.id === currentConversationId
+        c.id === targetConversationId
           ? {
               ...c,
               messages: [...c.messages, userMessage],
@@ -929,147 +1166,193 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
     setIsTyping(true);
     setIsGenerating(true);
 
-    // Check for API key
-    if (!settings.apiKey) {
-      const errorMessage: Message = {
-        id: generateId(),
-        role: 'assistant',
-        content: 'Please set your API key in the Settings tab to use Hanzo AI.',
-        timestamp: new Date(),
-      };
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.id === currentConversationId
-            ? { ...c, messages: [...c.messages, errorMessage], updatedAt: new Date() }
-            : c
-        )
-      );
-      setIsTyping(false);
-      setIsGenerating(false);
-      return;
-    }
-
     // Prepare API call
     abortControllerRef.current = new AbortController();
-    const conv = conversations.find((c) => c.id === currentConversationId);
-    const messages = conv?.messages.map((m) => ({
-      role: m.role,
-      content: m.content,
-    })) || [];
+    const conv = targetConversation;
+    const chatMessages = conv?.messages
+      .filter((m) => m.role !== 'system')
+      .map((m) => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content,
+      })) || [];
 
     try {
-      // Determine API endpoint based on model
-      const isAnthropic = settings.model.startsWith('claude');
-      const apiUrl = isAnthropic
-        ? 'https://api.anthropic.com/v1/messages'
-        : 'https://api.openai.com/v1/chat/completions';
+      // Use Hanzo Gateway if enabled and connected
+      if (settings.useGateway && gatewayConnected) {
+        let assistantContent = '';
 
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
+        if (settings.streamResponses) {
+          setIsTyping(false);
 
-      if (isAnthropic) {
-        headers['x-api-key'] = settings.apiKey;
-        headers['anthropic-version'] = '2023-06-01';
-      } else {
-        headers['Authorization'] = `Bearer ${settings.apiKey}`;
-      }
-
-      const body = isAnthropic
-        ? {
+          for await (const chunk of hanzoGateway.chatStream(content.trim(), {
             model: settings.model,
-            max_tokens: settings.maxTokens,
-            system: conv?.systemPrompt || DEFAULT_SYSTEM_PROMPT,
-            messages: [...messages, { role: 'user', content: content.trim() }].filter(
-              (m) => m.role !== 'system'
-            ),
-            stream: settings.streamResponses,
-          }
-        : {
-            model: settings.model,
-            messages: [
-              { role: 'system', content: conv?.systemPrompt || DEFAULT_SYSTEM_PROMPT },
-              ...messages,
-              { role: 'user', content: content.trim() },
-            ],
+            systemPrompt: conv?.systemPrompt || getSystemPrompt(settings.devMode),
             temperature: settings.temperature,
-            max_tokens: settings.maxTokens,
-            stream: settings.streamResponses,
-          };
+            maxTokens: settings.maxTokens,
+            signal: abortControllerRef.current.signal,
+          })) {
+            assistantContent += chunk;
+            setStreamingContent(assistantContent);
+          }
+        } else {
+          assistantContent = await hanzoGateway.chat(content.trim(), {
+            model: settings.model,
+            systemPrompt: conv?.systemPrompt || getSystemPrompt(settings.devMode),
+            temperature: settings.temperature,
+            maxTokens: settings.maxTokens,
+          });
+        }
 
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(body),
-        signal: abortControllerRef.current.signal,
-      });
+        // Add assistant message
+        const assistantMessage: Message = {
+          id: generateId(),
+          role: 'assistant',
+          content: assistantContent,
+          timestamp: new Date(),
+        };
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status} ${response.statusText}`);
-      }
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === targetConversationId
+              ? { ...c, messages: [...c.messages, assistantMessage], updatedAt: new Date() }
+              : c
+          )
+        );
 
-      let assistantContent = '';
+        // Speak response if TTS enabled
+        if (settings.ttsEnabled) {
+          speakResponse(assistantContent);
+        }
 
-      if (settings.streamResponses && response.body) {
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
+        // Increment free query counter (only if using gateway without API key)
+        if (!settings.apiKey) {
+          const newCount = freeQueriesUsed + 1;
+          setFreeQueriesUsed(newCount);
+          localStorage.setItem(STORAGE_KEYS.FREE_QUERIES_USED, newCount.toString());
+        }
+      } else if (!settings.useGateway && settings.apiKey) {
+        // Fallback to direct API if not using gateway
+        const isAnthropic = settings.model.startsWith('claude');
+        const apiUrl = isAnthropic
+          ? 'https://api.anthropic.com/v1/messages'
+          : 'https://api.openai.com/v1/chat/completions';
 
-        setIsTyping(false);
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+        if (isAnthropic) {
+          headers['x-api-key'] = settings.apiKey;
+          headers['anthropic-version'] = '2023-06-01';
+        } else {
+          headers['Authorization'] = `Bearer ${settings.apiKey}`;
+        }
 
-          const chunk = decoder.decode(value);
-          const lines = chunk.split('\n').filter((line) => line.startsWith('data: '));
+        const body = isAnthropic
+          ? {
+              model: settings.model,
+              max_tokens: settings.maxTokens,
+              system: conv?.systemPrompt || DEFAULT_SYSTEM_PROMPT,
+              messages: [...chatMessages, { role: 'user', content: content.trim() }],
+              stream: settings.streamResponses,
+            }
+          : {
+              model: settings.model,
+              messages: [
+                { role: 'system', content: conv?.systemPrompt || DEFAULT_SYSTEM_PROMPT },
+                ...chatMessages,
+                { role: 'user', content: content.trim() },
+              ],
+              temperature: settings.temperature,
+              max_tokens: settings.maxTokens,
+              stream: settings.streamResponses,
+            };
 
-          for (const line of lines) {
-            const data = line.slice(6);
-            if (data === '[DONE]') continue;
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(body),
+          signal: abortControllerRef.current.signal,
+        });
 
-            try {
-              const parsed = JSON.parse(data);
-              let delta = '';
+        if (!response.ok) {
+          throw new Error(`API error: ${response.status} ${response.statusText}`);
+        }
 
-              if (isAnthropic) {
-                if (parsed.type === 'content_block_delta') {
-                  delta = parsed.delta?.text || '';
+        let assistantContent = '';
+
+        if (settings.streamResponses && response.body) {
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+
+          setIsTyping(false);
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n').filter((line) => line.startsWith('data: '));
+
+            for (const line of lines) {
+              const data = line.slice(6);
+              if (data === '[DONE]') continue;
+
+              try {
+                const parsed = JSON.parse(data);
+                let delta = '';
+
+                if (isAnthropic) {
+                  if (parsed.type === 'content_block_delta') {
+                    delta = parsed.delta?.text || '';
+                  }
+                } else {
+                  delta = parsed.choices?.[0]?.delta?.content || '';
                 }
-              } else {
-                delta = parsed.choices?.[0]?.delta?.content || '';
-              }
 
-              if (delta) {
-                assistantContent += delta;
-                setStreamingContent(assistantContent);
+                if (delta) {
+                  assistantContent += delta;
+                  setStreamingContent(assistantContent);
+                }
+              } catch {
+                // Skip invalid JSON
               }
-            } catch {
-              // Skip invalid JSON
             }
           }
+        } else {
+          const data = await response.json();
+          assistantContent = isAnthropic
+            ? data.content[0].text
+            : data.choices[0].message.content;
+        }
+
+        // Add assistant message
+        const assistantMessage: Message = {
+          id: generateId(),
+          role: 'assistant',
+          content: assistantContent,
+          timestamp: new Date(),
+        };
+
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === targetConversationId
+              ? { ...c, messages: [...c.messages, assistantMessage], updatedAt: new Date() }
+              : c
+          )
+        );
+
+        // Speak response if TTS enabled
+        if (settings.ttsEnabled) {
+          speakResponse(assistantContent);
         }
       } else {
-        const data = await response.json();
-        assistantContent = isAnthropic
-          ? data.content[0].text
-          : data.choices[0].message.content;
+        // No gateway and no API key
+        throw new Error(settings.useGateway
+          ? 'Hanzo Gateway is not available. Please start the gateway or use Direct API mode.'
+          : 'Please set your API key in the Settings tab to use Hanzo AI.'
+        );
       }
-
-      // Add assistant message
-      const assistantMessage: Message = {
-        id: generateId(),
-        role: 'assistant',
-        content: assistantContent,
-        timestamp: new Date(),
-      };
-
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.id === currentConversationId
-            ? { ...c, messages: [...c.messages, assistantMessage], updatedAt: new Date() }
-            : c
-        )
-      );
     } catch (error) {
       if ((error as Error).name === 'AbortError') {
         // User cancelled
@@ -1079,13 +1362,13 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
       const errorMessage: Message = {
         id: generateId(),
         role: 'assistant',
-        content: `Error: ${(error as Error).message}. Please check your API key and try again.`,
+        content: `Error: ${(error as Error).message}`,
         timestamp: new Date(),
       };
 
       setConversations((prev) =>
         prev.map((c) =>
-          c.id === currentConversationId
+          c.id === targetConversationId
             ? { ...c, messages: [...c.messages, errorMessage], updatedAt: new Date() }
             : c
         )
@@ -1096,7 +1379,7 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
       setStreamingContent('');
       abortControllerRef.current = null;
     }
-  }, [currentConversationId, conversations, settings, handleNewConversation, isGenerating]);
+  }, [currentConversationId, conversations, settings, handleNewConversation, isGenerating, gatewayConnected, freeQueriesUsed]);
 
   const handleSend = useCallback(() => {
     if (selectedAction) {
@@ -1147,6 +1430,109 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
         </p>
       </div>
 
+      {/* Gateway Toggle */}
+      <div className="flex items-center justify-between">
+        <div>
+          <label className="text-sm font-medium text-white/80">Use Hanzo Gateway</label>
+          <p className="text-xs text-white/40">Free AI with rate limits (no API key needed)</p>
+        </div>
+        <button
+          onClick={() => setSettings({ ...settings, useGateway: !settings.useGateway })}
+          className={cn(
+            'w-12 h-6 rounded-full transition-colors',
+            settings.useGateway ? 'bg-orange-500' : 'bg-white/20'
+          )}
+        >
+          <div
+            className={cn(
+              'w-5 h-5 bg-white rounded-full transition-transform',
+              settings.useGateway ? 'translate-x-6' : 'translate-x-0.5'
+            )}
+          />
+        </button>
+      </div>
+
+      {/* Dev Mode Toggle */}
+      <div className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20">
+        <div>
+          <label className="text-sm font-medium text-white/90 flex items-center gap-2">
+            <Code className="w-4 h-4 text-purple-400" />
+            Hanzo Dev Mode
+          </label>
+          <p className="text-xs text-white/50">
+            Expert coding assistant with /plan, /code, /debug commands
+          </p>
+        </div>
+        <button
+          onClick={() => setSettings({ ...settings, devMode: !settings.devMode })}
+          className={cn(
+            'w-12 h-6 rounded-full transition-colors',
+            settings.devMode ? 'bg-purple-500' : 'bg-white/20'
+          )}
+        >
+          <div
+            className={cn(
+              'w-5 h-5 bg-white rounded-full transition-transform',
+              settings.devMode ? 'translate-x-6' : 'translate-x-0.5'
+            )}
+          />
+        </button>
+      </div>
+
+      {/* Voice Input Toggle */}
+      <div className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-green-500/10 to-teal-500/10 border border-green-500/20">
+        <div>
+          <label className="text-sm font-medium text-white/90 flex items-center gap-2">
+            <Mic className="w-4 h-4 text-green-400" />
+            Voice Input
+          </label>
+          <p className="text-xs text-white/50">
+            Talk to Hanzo AI using your microphone
+          </p>
+        </div>
+        <button
+          onClick={() => setSettings({ ...settings, voiceEnabled: !settings.voiceEnabled })}
+          className={cn(
+            'w-12 h-6 rounded-full transition-colors',
+            settings.voiceEnabled ? 'bg-green-500' : 'bg-white/20'
+          )}
+        >
+          <div
+            className={cn(
+              'w-5 h-5 bg-white rounded-full transition-transform',
+              settings.voiceEnabled ? 'translate-x-6' : 'translate-x-0.5'
+            )}
+          />
+        </button>
+      </div>
+
+      {/* Text-to-Speech Toggle */}
+      <div className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border border-blue-500/20">
+        <div>
+          <label className="text-sm font-medium text-white/90 flex items-center gap-2">
+            <Volume2 className="w-4 h-4 text-blue-400" />
+            Text-to-Speech
+          </label>
+          <p className="text-xs text-white/50">
+            Have Hanzo AI speak responses aloud
+          </p>
+        </div>
+        <button
+          onClick={() => setSettings({ ...settings, ttsEnabled: !settings.ttsEnabled })}
+          className={cn(
+            'w-12 h-6 rounded-full transition-colors',
+            settings.ttsEnabled ? 'bg-blue-500' : 'bg-white/20'
+          )}
+        >
+          <div
+            className={cn(
+              'w-5 h-5 bg-white rounded-full transition-transform',
+              settings.ttsEnabled ? 'translate-x-6' : 'translate-x-0.5'
+            )}
+          />
+        </button>
+      </div>
+
       {/* Model Selection */}
       <div className="space-y-2">
         <label className="text-sm font-medium text-white/80">Model</label>
@@ -1155,11 +1541,27 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
           onChange={(e) => setSettings({ ...settings, model: e.target.value })}
           className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-orange-500/50"
         >
-          {MODELS.map((model) => (
-            <option key={model.id} value={model.id} className="bg-zinc-900">
-              {model.name} ({model.provider})
-            </option>
-          ))}
+          {settings.useGateway ? (
+            <>
+              <optgroup label="Free Models (Gateway)">
+                {GATEWAY_MODELS.map((model) => (
+                  <option key={model.id} value={model.id} className="bg-zinc-900">
+                    {model.name} ({model.provider})
+                  </option>
+                ))}
+              </optgroup>
+            </>
+          ) : (
+            <>
+              <optgroup label="Direct API (Requires Key)">
+                {DIRECT_MODELS.map((model) => (
+                  <option key={model.id} value={model.id} className="bg-zinc-900">
+                    {model.name} ({model.provider})
+                  </option>
+                ))}
+              </optgroup>
+            </>
+          )}
         </select>
       </div>
 
@@ -1269,6 +1671,87 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
     </div>
   );
 
+  // Signup prompt modal component
+  const SignupPromptModal = () => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="w-[400px] bg-gradient-to-b from-zinc-800 to-zinc-900 rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="relative bg-gradient-to-r from-orange-500 via-red-500 to-purple-600 p-6 text-center">
+          <button
+            onClick={() => setShowSignupPrompt(false)}
+            className="absolute top-3 right-3 p-1 rounded-full hover:bg-white/20 transition-colors"
+          >
+            <X className="w-4 h-4 text-white/80" />
+          </button>
+          <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+            <HanzoLogo className="w-10 h-10 text-white" />
+          </div>
+          <h2 className="text-xl font-bold text-white">Upgrade to Hanzo Pro</h2>
+          <p className="text-white/80 text-sm mt-1">Unlock unlimited AI power</p>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          <div className="text-center mb-6">
+            <p className="text-white/70 text-sm">
+              You've used all <span className="font-semibold text-orange-400">{FREE_QUERY_LIMIT} free queries</span> for today.
+              Upgrade for unlimited access or come back tomorrow!
+            </p>
+          </div>
+
+          {/* Features */}
+          <div className="space-y-3 mb-6">
+            {[
+              { icon: <Zap className="w-4 h-4" />, text: 'Unlimited AI conversations' },
+              { icon: <Sparkles className="w-4 h-4" />, text: 'Access to all premium models' },
+              { icon: <Code className="w-4 h-4" />, text: 'Advanced code generation & @hanzo/dev' },
+              { icon: <Settings className="w-4 h-4" />, text: 'Priority support & features' },
+            ].map((feature, i) => (
+              <div key={i} className="flex items-center gap-3 text-white/70 text-sm">
+                <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center text-orange-400">
+                  {feature.icon}
+                </div>
+                {feature.text}
+              </div>
+            ))}
+          </div>
+
+          {/* CTA Button */}
+          <a
+            href={HANZO_SIGNUP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full py-3 px-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl text-white font-semibold text-center hover:opacity-90 transition-opacity"
+          >
+            Get Hanzo Pro
+          </a>
+
+          {/* Alternative */}
+          <div className="mt-4 pt-4 border-t border-white/10">
+            <div className="flex items-center justify-center gap-4 text-sm">
+              <button
+                onClick={() => {
+                  setShowSignupPrompt(false);
+                  setActiveTab('settings');
+                }}
+                className="text-orange-400 hover:underline"
+              >
+                Use API Key
+              </button>
+              <span className="text-white/20">•</span>
+              <button
+                onClick={() => setShowSignupPrompt(false)}
+                className="text-white/50 hover:text-white/70"
+              >
+                Come back tomorrow
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <ZWindow
       title="Hanzo AI"
@@ -1354,11 +1837,16 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
 
               <div className="flex-1">
                 <h3 className="font-semibold text-white flex items-center gap-2">
-                  {currentConversation?.title || 'Hanzo AI'}
-                  <Sparkles className="w-4 h-4 text-yellow-400" />
+                  {currentConversation?.title || (settings.devMode ? 'Hanzo Dev' : 'Hanzo AI')}
+                  {settings.devMode ? (
+                    <Code className="w-4 h-4 text-purple-400" />
+                  ) : (
+                    <Sparkles className="w-4 h-4 text-yellow-400" />
+                  )}
                 </h3>
                 <p className="text-xs text-white/50">
-                  {MODELS.find((m) => m.id === settings.model)?.name || 'Frontier Model'} - {tokenCount} tokens
+                  {settings.devMode && <span className="text-purple-400 mr-1">Dev Mode</span>}
+                  {ALL_MODELS.find((m) => m.id === settings.model)?.name || settings.model} - {tokenCount} tokens
                 </p>
               </div>
 
@@ -1397,10 +1885,24 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
                   <TooltipContent>Export as Markdown</TooltipContent>
                 </Tooltip>
 
-                <div className="px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs flex items-center gap-1">
-                  <Zap className="w-3 h-3" />
-                  <span>Ready</span>
-                </div>
+                {settings.useGateway ? (
+                  gatewayConnected ? (
+                    <div className="px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs flex items-center gap-1">
+                      <Zap className="w-3 h-3" />
+                      <span>{settings.apiKey ? 'Pro' : `${freeQueriesRemaining} free`}</span>
+                    </div>
+                  ) : (
+                    <div className="px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400 text-xs flex items-center gap-1">
+                      <Zap className="w-3 h-3" />
+                      <span>Connecting...</span>
+                    </div>
+                  )
+                ) : (
+                  <div className="px-2 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs flex items-center gap-1">
+                    <Zap className="w-3 h-3" />
+                    <span>Direct API</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1486,7 +1988,7 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={handleKeyPress}
-                      placeholder={selectedAction?.placeholder || 'Message Hanzo AI...'}
+                      placeholder={selectedAction?.placeholder || (settings.devMode ? 'Message or /help for commands...' : 'Message Hanzo AI...')}
                       className="flex-1 bg-transparent border-none outline-none text-white placeholder-white/40 text-sm resize-none max-h-32"
                       rows={1}
                       style={{
@@ -1499,6 +2001,55 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
                         target.style.height = Math.min(target.scrollHeight, 128) + 'px';
                       }}
                     />
+                    {/* Voice input button */}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={handleVoiceToggle}
+                          disabled={isGenerating}
+                          className={cn(
+                            "w-8 h-8 rounded-lg flex items-center justify-center transition-all flex-shrink-0",
+                            voiceState.isListening
+                              ? "bg-red-500 animate-pulse"
+                              : "bg-white/10 hover:bg-white/20"
+                          )}
+                        >
+                          {voiceState.isListening ? (
+                            <MicOff className="w-4 h-4 text-white" />
+                          ) : (
+                            <Mic className="w-4 h-4 text-white/70" />
+                          )}
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        <p>{voiceState.isListening ? 'Stop listening' : 'Voice input'}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    {/* TTS toggle */}
+                    {settings.ttsEnabled && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => voiceState.isSpeaking ? voiceService.stopSpeaking() : null}
+                            className={cn(
+                              "w-8 h-8 rounded-lg flex items-center justify-center transition-all flex-shrink-0",
+                              voiceState.isSpeaking
+                                ? "bg-blue-500 animate-pulse"
+                                : "bg-white/10"
+                            )}
+                          >
+                            {voiceState.isSpeaking ? (
+                              <VolumeX className="w-4 h-4 text-white" />
+                            ) : (
+                              <Volume2 className="w-4 h-4 text-white/70" />
+                            )}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                          <p>{voiceState.isSpeaking ? 'Stop speaking' : 'TTS enabled'}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
                     <button
                       onClick={handleSend}
                       disabled={!input.trim() || isGenerating}
@@ -1508,7 +2059,7 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
                     </button>
                   </div>
                   <p className="text-[10px] text-white/30 mt-2 text-center">
-                    Cmd+Enter to send - Powered by Hanzo AI
+                    {voiceState.isListening ? 'Listening... Click mic to stop' : 'Cmd+Enter to send - Click mic for voice input'}
                   </p>
                 </div>
               </TabsContent>
@@ -1564,6 +2115,9 @@ const HanzoAIWindow: React.FC<HanzoAIWindowProps> = ({ onClose }) => {
             </Tabs>
           </div>
         </div>
+
+        {/* Signup Prompt Modal */}
+        {showSignupPrompt && <SignupPromptModal />}
       </TooltipProvider>
     </ZWindow>
   );

@@ -265,27 +265,26 @@ const NotificationCenter: React.FC = () => {
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop - subtle for floating widgets look */}
       <div
         className={cn(
-          "fixed inset-0 bg-black/20 transition-opacity z-40",
+          "fixed inset-0 transition-opacity z-40",
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
       />
 
-      {/* Panel */}
+      {/* Panel - transparent with floating widgets */}
       <div
         ref={panelRef}
         className={cn(
-          "fixed top-[25px] right-0 bottom-0 w-[350px] z-50",
-          "vibrancy-notification",
+          "fixed top-[38px] right-2 bottom-[90px] w-[340px] z-50",
           "transform transition-transform duration-300 ease-out",
           "flex flex-col",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-white/10">
+        {/* Header - floating glass card */}
+        <div className="flex items-center justify-between p-4 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 mb-3">
           <div className="flex items-center gap-3">
             <Moon className={cn(
               "w-5 h-5",

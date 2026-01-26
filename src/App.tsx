@@ -25,7 +25,10 @@ import { UserProvider } from "./contexts/UserContext";
 import { FileTagsProvider } from "./contexts/FileTagsContext";
 import { SelectionProvider } from "./contexts/SelectionContext";
 import { SoundProvider } from "./contexts/SoundContext";
+import { RecentsProvider } from "./contexts/RecentsContext";
+import { WindowTilingProvider } from "./contexts/WindowTilingContext";
 import { ScreenRecorderProvider } from "./components/ScreenRecorder";
+import { WalletProvider } from "./contexts/WalletContext";
 import NotificationCenter from "./components/NotificationCenter";
 import BootSequence from "./components/BootSequence";
 import LockScreen from "./components/LockScreen";
@@ -122,8 +125,9 @@ const App = () => {
       <TooltipProvider>
         <AccessibilityProvider>
           <UserProvider>
-            <SystemContext.Provider value={systemContextValue}>
-              <TerminalProvider>
+            <WalletProvider>
+              <SystemContext.Provider value={systemContextValue}>
+                <TerminalProvider>
                 <DockProvider>
                   <WidgetProvider>
                     <SpacesProvider>
@@ -132,11 +136,13 @@ const App = () => {
                           <FocusModeProvider>
                             <ShortcutsProvider>
                               <GlobalShortcutsProvider>
-                              <DragDropProvider>
-                                <SelectionProvider>
-                                <FileTagsProvider>
-                                <SoundProvider>
-                                <ScreenRecorderProvider>
+                                <DragDropProvider>
+                                  <SelectionProvider>
+                                    <SoundProvider>
+                                      <FileTagsProvider>
+                                        <RecentsProvider>
+                                          <WindowTilingProvider>
+                                            <ScreenRecorderProvider>
                                   {/* Boot sequence */}
                                   {systemState === 'booting' && (
                                     <BootSequence onComplete={handleBootComplete} />
@@ -159,29 +165,34 @@ const App = () => {
 
                                   <Toaster />
                                   <Sonner />
-                                  <BrowserRouter>
-                                    <Routes>
-                                      <Route path="/" element={
-                                        <>
-                                          <ZDesktop>
-                                            <Routes>
-                                              <Route path="/" element={<Index />} />
-                                            </Routes>
-                                          </ZDesktop>
-                                          <NotificationCenter />
-                                        </>
-                                      } />
-                                      <Route path="/terminal-content" element={<TerminalContent />} />
-                                      <Route path="/spotify/callback" element={<SpotifyCallback />} />
-                                      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                                      <Route path="*" element={<NotFound />} />
-                                    </Routes>
-                                  </BrowserRouter>
-                                </ScreenRecorderProvider>
-                                </SoundProvider>
-                                </FileTagsProvider>
-                                </SelectionProvider>
-                              </DragDropProvider>
+                                  {/* Only render desktop when system is running (not booting/locked/etc) */}
+                                  {systemState === 'running' && (
+                                    <BrowserRouter>
+                                      <Routes>
+                                        <Route path="/" element={
+                                          <>
+                                            <ZDesktop>
+                                              <Routes>
+                                                <Route path="/" element={<Index />} />
+                                              </Routes>
+                                            </ZDesktop>
+                                            <NotificationCenter />
+                                          </>
+                                        } />
+                                        <Route path="/terminal-content" element={<TerminalContent />} />
+                                        <Route path="/spotify/callback" element={<SpotifyCallback />} />
+                                        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                                        <Route path="*" element={<NotFound />} />
+                                      </Routes>
+                                    </BrowserRouter>
+                                  )}
+                                            </ScreenRecorderProvider>
+                                          </WindowTilingProvider>
+                                        </RecentsProvider>
+                                      </FileTagsProvider>
+                                    </SoundProvider>
+                                  </SelectionProvider>
+                                </DragDropProvider>
                               </GlobalShortcutsProvider>
                             </ShortcutsProvider>
                           </FocusModeProvider>
@@ -191,7 +202,8 @@ const App = () => {
                   </WidgetProvider>
                 </DockProvider>
               </TerminalProvider>
-            </SystemContext.Provider>
+              </SystemContext.Provider>
+            </WalletProvider>
           </UserProvider>
         </AccessibilityProvider>
       </TooltipProvider>
