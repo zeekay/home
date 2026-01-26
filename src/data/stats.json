@@ -1,11 +1,11 @@
 {
   "github": {
     "totalCommits": 37106,
-    "repos": 895,
+    "repos": 373,
     "additions": 113357271,
     "deletions": 59027050,
     "netLoc": 54330221,
-    "yearsCoding": 15,
+    "yearsCoding": 16,
     "firstCommit": "2010-07-05",
     "monthlyCommits": [
       {
@@ -711,6 +711,10 @@
       {
         "month": "2025-12",
         "commits": 1321
+      },
+      {
+        "month": "2026-01",
+        "commits": 74
       }
     ],
     "byDayOfWeek": [
@@ -1520,5 +1524,5 @@
     "byModel": [],
     "daily": []
   },
-  "lastUpdated": "2025-12-19"
+  "lastUpdated": "2026-01-26"
 }
