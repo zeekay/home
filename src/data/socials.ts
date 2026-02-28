@@ -88,16 +88,17 @@ export const professionalInfo = {
   name: 'Z',
   fullName: 'Zach Kelling',
   title: 'Open Sourceror',
-  tagline: 'Cypherpunk building decentralized intelligence',
+  tagline: 'Cypherpunk building decentralized intelligence to free 1B people from economic slavery',
   roles: [
-    { title: 'CEO', company: 'Hanzo AI', description: 'Techstars-backed applied AI cloud and frontier AI', icon: '🥷' },
+    { title: 'CEO', company: 'Hanzo AI', description: 'Applied AI cloud, 94+ frontier models, OSS compute dividends', icon: '🥷' },
     { title: 'Chairman', company: 'LUX', description: 'Quantum-safe blockchain accelerating economic freedom', icon: '▼' },
-    { title: 'Architect', company: 'ZOO', description: 'Protecting endangered life through regenerative finance', icon: '🧬' },
+    { title: 'Architect', company: 'ZOO', description: 'Open AI research network — decentralized training, PoAI consensus', icon: '🧬' },
   ],
   location: 'San Francisco, CA',
-  bio: 'Leading teams and research in decentralized intelligence across AI, Robotics and Quantum. Passionate about frontier AI, confidential compute, decentralized networks, robotics, and protocols for autonomous systems.',
+  bio: 'Grew up in Topeka, KS. Left for computers at 13. Spent a decade as a professional musician. Came back to tech in the 2000s and never stopped. Cypherpunk since the 90s. Built commerce.js, shop.js, checkout.js, coin.js. Founded Hanzo (Techstars \'17). Building applied cryptography (CGGMP21, ML-KEM, Poseidon2), Lux blockchain, Zen models, and the infrastructure to give 1 billion people economic sovereignty through AI and crypto.',
   email: 'z@hanzo.ai',
-  website: 'https://zeekay.ai',
+  website: 'https://zeekay.io',
+  blog: 'https://blog.hanzo.ai',
   chat: 'curl -sL zeekay.chat | sh',
 };
 
