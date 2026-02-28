@@ -19,7 +19,7 @@ export const TerminalProvider: React.FC<TerminalProviderProps> = ({ children }) 
     {
       command: '',
       output: `zOS v4.2.0 — z@zeekay.io
-Move in shadow. Build in silence. Ship what matters.
+The supreme art of war is to subdue the enemy without fighting.
 Type 'help' for commands, 'neofetch' for system info`,
       id: 0
     }

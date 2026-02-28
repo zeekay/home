@@ -215,7 +215,7 @@ export const executeNeofetch = (
        ████████████           Theme: Dracula / Muon
 
    ███ ███ ███ ███ ███        Role: Open Sourceror
-                              Ethos: Move in shadow. Ship in lightning.
+                              Ethos: The supreme art of war.
    ◦◦◦ ellipsis.sh ◦◦◦        Craft: 1000+ OSS repos · cypherpunk since 90s
 
 GitHub: github.com/zeekay       Blog: zeekay.blog

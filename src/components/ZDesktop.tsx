@@ -183,7 +183,7 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
           addNotification({
             type: 'app',
             title: 'zOS 4.2.0',
-            body: 'Move in shadow. Build in silence. Ship what matters.',
+            body: 'The supreme art of war is to subdue the enemy without fighting.',
             appName: 'System',
           });
           setTimeout(() => {
