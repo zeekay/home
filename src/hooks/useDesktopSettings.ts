@@ -154,8 +154,8 @@ export function useDesktopSettings(): DesktopSettings & DesktopSettingsActions {
   const [dockMagnification, setDockMagnificationState] = useState(() => 
     getStorageValue(STORAGE_KEYS.dockMagnification, true)
   );
-  const [dockMagnificationSize, setDockMagnificationSizeState] = useState(() => 
-    getStorageValue(STORAGE_KEYS.dockMagnificationSize, 88)
+  const [dockMagnificationSize, setDockMagnificationSizeState] = useState(() =>
+    getStorageValue(STORAGE_KEYS.dockMagnificationSize, 64)
   );
   const [dockAutoHide, setDockAutoHideState] = useState(() => 
     getStorageValue(STORAGE_KEYS.dockAutoHide, false)

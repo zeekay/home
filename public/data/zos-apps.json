@@ -1,0 +1,1102 @@
+[
+  {
+    "identifier": "apps.zos.zpaint",
+    "name": "zPaint",
+    "version": "1.0.0",
+    "description": "Professional raster graphics editor with layers, blend modes, and filters",
+    "category": "creative",
+    "icon": "🎨",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/zpaint"
+  },
+  {
+    "identifier": "apps.zos.zoom",
+    "name": "Zoom",
+    "version": "1.0.0",
+    "description": "Video conferencing and meetings",
+    "category": "communication",
+    "icon": "📹",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/zoom"
+  },
+  {
+    "identifier": "apps.zos.zoo",
+    "name": "Zoo",
+    "version": "1.0.0",
+    "description": "Zoo Labs Foundation DeFi platform",
+    "category": "finance",
+    "icon": "🦁",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/zoo"
+  },
+  {
+    "identifier": "apps.zos.zmodel",
+    "name": "zModel",
+    "version": "1.0.0",
+    "description": "Professional 3D modeling application",
+    "category": "creative",
+    "icon": "🧊",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/zmodel"
+  },
+  {
+    "identifier": "apps.zos.zdraw",
+    "name": "zDraw",
+    "version": "1.0.0",
+    "description": "Professional vector graphics editor",
+    "category": "graphics",
+    "icon": "✏️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/zdraw"
+  },
+  {
+    "identifier": "apps.zos.zdaw",
+    "name": "zDAW",
+    "version": "1.0.0",
+    "description": "Professional digital audio workstation",
+    "category": "audio",
+    "icon": "🎹",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/zdaw"
+  },
+  {
+    "identifier": "apps.zos.youtube",
+    "name": "YouTube",
+    "version": "1.0.0",
+    "description": "Video streaming platform",
+    "category": "media",
+    "icon": "📺",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/youtube"
+  },
+  {
+    "identifier": "apps.zos.whatsapp",
+    "name": "WhatsApp",
+    "version": "1.0.0",
+    "description": "Secure messaging and calls",
+    "category": "social",
+    "icon": "📱",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/whatsapp"
+  },
+  {
+    "identifier": "apps.zos.weather",
+    "name": "Weather",
+    "version": "1.0.0",
+    "description": "Weather forecast and conditions",
+    "category": "utilities",
+    "icon": "🌤️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/weather"
+  },
+  {
+    "identifier": "apps.zos.vscode",
+    "name": "VS Code",
+    "version": "1.0.0",
+    "description": "Code editor",
+    "category": "creative",
+    "icon": "💻",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/vscode"
+  },
+  {
+    "identifier": "apps.zos.twitter",
+    "name": "X",
+    "version": "1.0.0",
+    "description": "Real-time social media and news",
+    "category": "social",
+    "icon": "𝕏",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/twitter"
+  },
+  {
+    "identifier": "apps.zos.twitch",
+    "name": "Twitch",
+    "version": "1.0.0",
+    "description": "Watch live streams and gaming content",
+    "category": "entertainment",
+    "icon": "📺",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/twitch"
+  },
+  {
+    "identifier": "apps.zos.todo",
+    "name": "Reminders",
+    "version": "1.0.0",
+    "description": "Task list and reminders",
+    "category": "productivity",
+    "icon": "✅",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/todo"
+  },
+  {
+    "identifier": "apps.zos.tldraw",
+    "name": "tldraw",
+    "version": "1.0.0",
+    "description": "A tiny little drawing app",
+    "category": "creative",
+    "icon": "🖌️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/tldraw"
+  },
+  {
+    "identifier": "apps.zos.time-machine",
+    "name": "Time Machine",
+    "version": "1.0.0",
+    "description": "Backup and restore your data",
+    "category": "utilities",
+    "icon": "⏰",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/time-machine"
+  },
+  {
+    "identifier": "apps.zos.textedit",
+    "name": "TextEdit",
+    "version": "1.0.0",
+    "description": "Simple text editor",
+    "category": "productivity",
+    "icon": "📄",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/textedit"
+  },
+  {
+    "identifier": "apps.zos.tetris",
+    "name": "Tetris",
+    "version": "1.0.0",
+    "description": "Classic block-stacking puzzle game",
+    "category": "games",
+    "icon": "🧱",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/tetris"
+  },
+  {
+    "identifier": "apps.zos.terminal",
+    "name": "Terminal",
+    "version": "1.0.0",
+    "description": "Command line interface",
+    "category": "system",
+    "icon": "💻",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/terminal"
+  },
+  {
+    "identifier": "apps.zos.telegram",
+    "name": "Telegram",
+    "version": "1.0.0",
+    "description": "Fast and secure messaging",
+    "category": "communication",
+    "icon": "✈️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/telegram"
+  },
+  {
+    "identifier": "apps.zos.teams",
+    "name": "Microsoft Teams",
+    "version": "1.0.0",
+    "description": "Chat, meet, and collaborate",
+    "category": "communication",
+    "icon": "👥",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/teams"
+  },
+  {
+    "identifier": "apps.zos.sudoku",
+    "name": "Sudoku",
+    "version": "1.0.0",
+    "description": "Classic number puzzle",
+    "category": "games",
+    "icon": "🔢",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/sudoku"
+  },
+  {
+    "identifier": "apps.zos.stocks",
+    "name": "Stocks",
+    "version": "1.0.0",
+    "description": "Track stocks and market data",
+    "category": "finance",
+    "icon": "📈",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/stocks"
+  },
+  {
+    "identifier": "apps.zos.stickies",
+    "name": "Stickies",
+    "version": "1.0.0",
+    "description": "Sticky notes for quick reminders",
+    "category": "productivity",
+    "icon": "📌",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/stickies"
+  },
+  {
+    "identifier": "apps.zos.spotlight",
+    "name": "Spotlight",
+    "version": "1.0.0",
+    "description": "Universal search and command launcher (⌘K)",
+    "category": "system",
+    "icon": "🔍",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/spotlight"
+  },
+  {
+    "identifier": "apps.zos.spotify",
+    "name": "Spotify",
+    "version": "1.0.0",
+    "description": "Music streaming service",
+    "category": "media",
+    "icon": "🎵",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/spotify"
+  },
+  {
+    "identifier": "apps.zos.solitaire",
+    "name": "Solitaire",
+    "version": "1.0.0",
+    "description": "Classic Klondike solitaire card game",
+    "category": "games",
+    "icon": "🃏",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/solitaire"
+  },
+  {
+    "identifier": "apps.zos.snes",
+    "name": "SNES",
+    "version": "1.0.0",
+    "description": "Super Nintendo emulator - relive the classics",
+    "category": "games",
+    "icon": "🎮",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/snes"
+  },
+  {
+    "identifier": "apps.zos.snake",
+    "name": "Snake",
+    "version": "1.0.0",
+    "description": "Classic snake game",
+    "category": "games",
+    "icon": "🐍",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/snake"
+  },
+  {
+    "identifier": "apps.zos.slack",
+    "name": "Slack",
+    "version": "1.0.0",
+    "description": "Business communication and collaboration",
+    "category": "social",
+    "icon": "💼",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/slack"
+  },
+  {
+    "identifier": "apps.zos.sketch",
+    "name": "Sketch",
+    "version": "1.0.0",
+    "description": "Digital design toolkit",
+    "category": "creative",
+    "icon": "💎",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/sketch"
+  },
+  {
+    "identifier": "apps.zos.signal",
+    "name": "Signal",
+    "version": "1.0.0",
+    "description": "Private, encrypted messaging",
+    "category": "communication",
+    "icon": "🔒",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/signal"
+  },
+  {
+    "identifier": "apps.zos.settings",
+    "name": "System Preferences",
+    "version": "1.0.0",
+    "description": "System settings and preferences",
+    "category": "system",
+    "icon": "⚙️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/settings"
+  },
+  {
+    "identifier": "apps.zos.screenshot",
+    "name": "Screenshot",
+    "version": "1.0.0",
+    "description": "Capture and annotate screenshots",
+    "category": "system",
+    "icon": "📷",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/screenshot"
+  },
+  {
+    "identifier": "apps.zos.screen-time",
+    "name": "Screen Time",
+    "version": "1.0.0",
+    "description": "Monitor and manage screen usage",
+    "category": "system",
+    "icon": "⏰",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/screen-time"
+  },
+  {
+    "identifier": "apps.zos.safari",
+    "name": "Safari",
+    "version": "1.0.0",
+    "description": "Web browser",
+    "category": "utilities",
+    "icon": "🧭",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/safari"
+  },
+  {
+    "identifier": "apps.zos.reminders",
+    "name": "Reminders",
+    "version": "1.0.0",
+    "description": "Task reminders",
+    "category": "productivity",
+    "icon": "✅",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/reminders"
+  },
+  {
+    "identifier": "apps.zos.rekordbox",
+    "name": "Rekordbox",
+    "version": "1.0.0",
+    "description": "DJ performance and music management",
+    "category": "audio",
+    "icon": "🎧",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/rekordbox"
+  },
+  {
+    "identifier": "apps.zos.prime-video",
+    "name": "Prime Video",
+    "version": "1.0.0",
+    "description": "Stream movies and TV with Amazon Prime",
+    "category": "entertainment",
+    "icon": "▶️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/prime-video"
+  },
+  {
+    "identifier": "apps.zos.preview",
+    "name": "Preview",
+    "version": "1.0.0",
+    "description": "Quick Look file preview",
+    "category": "system",
+    "icon": "👁️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/preview"
+  },
+  {
+    "identifier": "apps.zos.postman",
+    "name": "Postman",
+    "version": "1.0.0",
+    "description": "API development and testing platform",
+    "category": "developer",
+    "icon": "🚀",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/postman"
+  },
+  {
+    "identifier": "apps.zos.podcasts",
+    "name": "Podcasts",
+    "version": "1.0.0",
+    "description": "Listen to podcasts",
+    "category": "media",
+    "icon": "🎙️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/podcasts"
+  },
+  {
+    "identifier": "apps.zos.pixelmator",
+    "name": "Pixelmator",
+    "version": "1.0.0",
+    "description": "Professional image editing",
+    "category": "creative",
+    "icon": "🎨",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/pixelmator"
+  },
+  {
+    "identifier": "apps.zos.photos",
+    "name": "Photos",
+    "version": "1.0.0",
+    "description": "View and organize your photos",
+    "category": "media",
+    "icon": "📷",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/photos"
+  },
+  {
+    "identifier": "apps.zos.pages",
+    "name": "Pages",
+    "version": "1.0.0",
+    "description": "Create beautiful documents",
+    "category": "productivity",
+    "icon": "📄",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/pages"
+  },
+  {
+    "identifier": "apps.zos.observable",
+    "name": "Observable",
+    "version": "1.0.0",
+    "description": "Interactive data notebooks",
+    "category": "creative",
+    "icon": "📊",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/observable"
+  },
+  {
+    "identifier": "apps.zos.numbers",
+    "name": "Numbers",
+    "version": "1.0.0",
+    "description": "Create powerful spreadsheets",
+    "category": "productivity",
+    "icon": "📊",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/numbers"
+  },
+  {
+    "identifier": "apps.zos.notion",
+    "name": "Notion",
+    "version": "1.0.0",
+    "description": "All-in-one workspace for notes, docs, and wikis",
+    "category": "productivity",
+    "icon": "📝",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/notion"
+  },
+  {
+    "identifier": "apps.zos.notes",
+    "name": "Notes",
+    "version": "1.0.0",
+    "description": "Quick notes and markdown editor",
+    "category": "productivity",
+    "icon": "📝",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/notes"
+  },
+  {
+    "identifier": "apps.zos.netflix",
+    "name": "Netflix",
+    "version": "1.0.0",
+    "description": "Streaming movies and TV shows",
+    "category": "media",
+    "icon": "🎬",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/netflix"
+  },
+  {
+    "identifier": "apps.zos.myst",
+    "name": "Myst",
+    "version": "1.0.0",
+    "description": "A mysterious island appears in the fog...",
+    "category": "hidden",
+    "icon": "🌫️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/myst"
+  },
+  {
+    "identifier": "apps.zos.music",
+    "name": "Music",
+    "version": "1.0.0",
+    "description": "Music player",
+    "category": "media",
+    "icon": "🎵",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/music"
+  },
+  {
+    "identifier": "apps.zos.mud",
+    "name": "MUD",
+    "version": "1.0.0",
+    "description": "Multiplayer text adventure with AI dungeon master",
+    "category": "games",
+    "icon": "🏰",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/mud"
+  },
+  {
+    "identifier": "apps.zos.minesweeper",
+    "name": "Minesweeper",
+    "version": "1.0.0",
+    "description": "Classic mine-sweeping puzzle game",
+    "category": "games",
+    "icon": "💣",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/minesweeper"
+  },
+  {
+    "identifier": "apps.zos.messages",
+    "name": "Messages",
+    "version": "1.0.0",
+    "description": "Messaging application",
+    "category": "communication",
+    "icon": "💬",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/messages"
+  },
+  {
+    "identifier": "apps.zos.maps",
+    "name": "Maps",
+    "version": "1.0.0",
+    "description": "Navigate the world",
+    "category": "utilities",
+    "icon": "🗺️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/maps"
+  },
+  {
+    "identifier": "apps.zos.lux",
+    "name": "Lux Wallet",
+    "version": "1.0.0",
+    "description": "Cryptocurrency wallet for Lux Network",
+    "category": "finance",
+    "icon": "💎",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/lux"
+  },
+  {
+    "identifier": "apps.zos.logic-pro",
+    "name": "Logic Pro",
+    "version": "1.0.0",
+    "description": "Professional music production",
+    "category": "creative",
+    "icon": "🎵",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/logic-pro"
+  },
+  {
+    "identifier": "apps.zos.linkedin",
+    "name": "LinkedIn",
+    "version": "1.0.0",
+    "description": "Professional networking and career development",
+    "category": "social",
+    "icon": "💼",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/linkedin"
+  },
+  {
+    "identifier": "apps.zos.keynote",
+    "name": "Keynote",
+    "version": "1.0.0",
+    "description": "Create stunning presentations",
+    "category": "productivity",
+    "icon": "🎬",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/keynote"
+  },
+  {
+    "identifier": "apps.zos.keychain-access",
+    "name": "Keychain Access",
+    "version": "1.0.0",
+    "description": "Manage passwords and secure notes",
+    "category": "system",
+    "icon": "🔐",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/keychain-access"
+  },
+  {
+    "identifier": "apps.zos.hulu",
+    "name": "Hulu",
+    "version": "1.0.0",
+    "description": "Stream TV shows and movies",
+    "category": "entertainment",
+    "icon": "📺",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/hulu"
+  },
+  {
+    "identifier": "apps.zos.hanzo-ai",
+    "name": "Hanzo AI",
+    "version": "1.0.0",
+    "description": "AI assistant powered by Hanzo",
+    "category": "productivity",
+    "icon": "🤖",
+    "author": "",
+    "repository": "https://github.com/zos-apps/hanzo-ai"
+  },
+  {
+    "identifier": "apps.zos.handbrake",
+    "name": "HandBrake",
+    "version": "1.0.0",
+    "description": "Video transcoder and converter",
+    "category": "utilities",
+    "icon": "🍹",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/handbrake"
+  },
+  {
+    "identifier": "apps.zos.grapher",
+    "name": "Grapher",
+    "version": "1.0.0",
+    "description": "2D and 3D equation graphing calculator",
+    "category": "system",
+    "icon": "📈",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/grapher"
+  },
+  {
+    "identifier": "apps.zos.gmail",
+    "name": "Gmail",
+    "version": "1.0.0",
+    "description": "Email by Google",
+    "category": "productivity",
+    "icon": "📧",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/gmail"
+  },
+  {
+    "identifier": "apps.zos.github-desktop",
+    "name": "GitHub Desktop",
+    "version": "1.0.0",
+    "description": "Visual Git client for GitHub",
+    "category": "developer",
+    "icon": "🐙",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/github-desktop"
+  },
+  {
+    "identifier": "apps.zos.garage-band",
+    "name": "GarageBand",
+    "version": "1.0.0",
+    "description": "Create music with virtual instruments",
+    "category": "creative",
+    "icon": "🎸",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/garage-band"
+  },
+  {
+    "identifier": "apps.zos.font-book",
+    "name": "Font Book",
+    "version": "1.0.0",
+    "description": "Preview and manage system fonts",
+    "category": "utilities",
+    "icon": "🔤",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/font-book"
+  },
+  {
+    "identifier": "apps.zos.finder",
+    "name": "Finder",
+    "version": "1.0.0",
+    "description": "File manager and browser",
+    "category": "system",
+    "icon": "📁",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/finder"
+  },
+  {
+    "identifier": "apps.zos.final-cut-pro",
+    "name": "Final Cut Pro",
+    "version": "1.0.0",
+    "description": "Professional video editing",
+    "category": "creative",
+    "icon": "🎬",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/final-cut-pro"
+  },
+  {
+    "identifier": "apps.zos.files",
+    "name": "Files",
+    "version": "1.0.0",
+    "description": "File manager",
+    "category": "system",
+    "icon": "📁",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/files"
+  },
+  {
+    "identifier": "apps.zos.figma",
+    "name": "Figma",
+    "version": "1.0.0",
+    "description": "Collaborative design and prototyping",
+    "category": "creative",
+    "icon": "🎨",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/figma"
+  },
+  {
+    "identifier": "apps.zos.facetime",
+    "name": "FaceTime",
+    "version": "1.0.0",
+    "description": "Video calling application",
+    "category": "communication",
+    "icon": "📹",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/facetime"
+  },
+  {
+    "identifier": "apps.zos.excalidraw",
+    "name": "Excalidraw",
+    "version": "1.0.0",
+    "description": "Virtual whiteboard for sketching hand-drawn diagrams",
+    "category": "creative",
+    "icon": "🎨",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/excalidraw"
+  },
+  {
+    "identifier": "apps.zos.doom",
+    "name": "DOOM",
+    "version": "1.0.0",
+    "description": "Rip and tear, until it is done.",
+    "category": "games",
+    "icon": "👹",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/doom"
+  },
+  {
+    "identifier": "apps.zos.docker",
+    "name": "Docker Desktop",
+    "version": "1.0.0",
+    "description": "Manage Docker containers and images",
+    "category": "developer",
+    "icon": "🐳",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/docker"
+  },
+  {
+    "identifier": "apps.zos.disney-plus",
+    "name": "Disney+",
+    "version": "1.0.0",
+    "description": "Stream Disney, Pixar, Marvel, Star Wars, and more",
+    "category": "entertainment",
+    "icon": "🏰",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/disney-plus"
+  },
+  {
+    "identifier": "apps.zos.disk-utility",
+    "name": "Disk Utility",
+    "version": "1.0.0",
+    "description": "Manage disks, partitions, and volumes",
+    "category": "system",
+    "icon": "💾",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/disk-utility"
+  },
+  {
+    "identifier": "apps.zos.discord",
+    "name": "Discord",
+    "version": "1.0.0",
+    "description": "Voice, video, and text chat for communities",
+    "category": "social",
+    "icon": "💬",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/discord"
+  },
+  {
+    "identifier": "apps.zos.digital-color-meter",
+    "name": "Digital Color Meter",
+    "version": "1.0.0",
+    "description": "Pick and analyze colors from anywhere on screen",
+    "category": "system",
+    "icon": "🎨",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/digital-color-meter"
+  },
+  {
+    "identifier": "apps.zos.crypto",
+    "name": "Crypto",
+    "version": "1.0.0",
+    "description": "Track cryptocurrency prices and portfolio",
+    "category": "finance",
+    "icon": "₿",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/crypto"
+  },
+  {
+    "identifier": "apps.zos.contacts",
+    "name": "Contacts",
+    "version": "1.0.0",
+    "description": "Manage your contacts",
+    "category": "productivity",
+    "icon": "👥",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/contacts"
+  },
+  {
+    "identifier": "apps.zos.console",
+    "name": "Console",
+    "version": "1.0.0",
+    "description": "View system logs and diagnostics",
+    "category": "system",
+    "icon": "📋",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/console"
+  },
+  {
+    "identifier": "apps.zos.config",
+    "name": "@zos-apps/config",
+    "version": "1.1.0",
+    "description": "Shared configuration, types, and hooks for zOS apps",
+    "category": "other",
+    "icon": "",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/config"
+  },
+  {
+    "identifier": "apps.zos.codepen",
+    "name": "CodePen",
+    "version": "1.0.0",
+    "description": "Social development environment for front-end designers and developers",
+    "category": "creative",
+    "icon": "✏️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/codepen"
+  },
+  {
+    "identifier": "apps.zos.clock",
+    "name": "Clock",
+    "version": "1.0.0",
+    "description": "World clock, timer, and stopwatch",
+    "category": "utilities",
+    "icon": "🕐",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/clock"
+  },
+  {
+    "identifier": "apps.zos.chess",
+    "name": "Chess",
+    "version": "1.0.0",
+    "description": "Classic chess with AI opponent",
+    "category": "games",
+    "icon": "♟️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/chess"
+  },
+  {
+    "identifier": "apps.zos.calendar",
+    "name": "Calendar",
+    "version": "1.0.0",
+    "description": "Manage your schedule",
+    "category": "productivity",
+    "icon": "📅",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/calendar"
+  },
+  {
+    "identifier": "apps.zos.calculator",
+    "name": "Calculator",
+    "version": "1.0.0",
+    "description": "A simple calculator for basic math operations",
+    "category": "utilities",
+    "icon": "🧮",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/calculator"
+  },
+  {
+    "identifier": "apps.zos.books",
+    "name": "Books",
+    "version": "1.0.0",
+    "description": "Read ebooks",
+    "category": "media",
+    "icon": "📚",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/books"
+  },
+  {
+    "identifier": "apps.zos.blender",
+    "name": "Blender",
+    "version": "1.0.0",
+    "description": "3D modeling, animation, and rendering",
+    "category": "creative",
+    "icon": "🎨",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/blender"
+  },
+  {
+    "identifier": "apps.zos.automator",
+    "name": "Automator",
+    "version": "1.0.0",
+    "description": "Create automated workflows and scripts",
+    "category": "utilities",
+    "icon": "🤖",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/automator"
+  },
+  {
+    "identifier": "apps.zos.audio-midi-setup",
+    "name": "Audio MIDI Setup",
+    "version": "1.0.0",
+    "description": "Configure audio devices and MIDI settings",
+    "category": "system",
+    "icon": "🎛️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/audio-midi-setup"
+  },
+  {
+    "identifier": "apps.zos.audacity",
+    "name": "Audacity",
+    "version": "1.0.0",
+    "description": "Audio editing and recording",
+    "category": "creative",
+    "icon": "🎙️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/audacity"
+  },
+  {
+    "identifier": "apps.zos.arcade",
+    "name": "Arcade",
+    "version": "1.0.0",
+    "description": "Retro gaming arcade - NES, SNES, Genesis, GBA and more",
+    "category": "games",
+    "icon": "🕹️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/arcade"
+  },
+  {
+    "identifier": "apps.zos.appstore",
+    "name": "App Store",
+    "version": "1.0.0",
+    "description": "Discover and install apps",
+    "category": "system",
+    "icon": "🏪",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/appstore"
+  },
+  {
+    "identifier": "apps.zos.apple-tv",
+    "name": "Apple TV",
+    "version": "1.0.0",
+    "description": "Apple streaming service",
+    "category": "entertainment",
+    "icon": "📺",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/apple-tv"
+  },
+  {
+    "identifier": "apps.zos.app-template",
+    "name": "My App",
+    "version": "1.0.0",
+    "description": "A zOS application template",
+    "category": "utilities",
+    "icon": "🚀",
+    "author": "Your Name",
+    "repository": "https://github.com/zos-apps/app-template"
+  },
+  {
+    "identifier": "apps.zos.airdrop",
+    "name": "AirDrop",
+    "version": "1.0.0",
+    "description": "Share files wirelessly with nearby devices",
+    "category": "utilities",
+    "icon": "📡",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/airdrop"
+  },
+  {
+    "identifier": "apps.zos.activity-monitor",
+    "name": "Activity Monitor",
+    "version": "1.0.0",
+    "description": "Monitor system processes and resource usage",
+    "category": "system",
+    "icon": "📊",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/activity-monitor"
+  },
+  {
+    "identifier": "apps.zos.ableton-live",
+    "name": "Ableton Live",
+    "version": "1.0.0",
+    "description": "Music production and performance",
+    "category": "audio",
+    "icon": "🎹",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/ableton-live"
+  },
+  {
+    "identifier": "apps.zos.2048",
+    "name": "2048",
+    "version": "1.0.0",
+    "description": "Join the numbers and get to 2048!",
+    "category": "games",
+    "icon": "🔢",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/2048"
+  },
+  {
+    "identifier": "apps.zos.xcode",
+    "name": "Xcode",
+    "version": "4.2.0",
+    "description": "Xcode - Code editor and IDE for zOS development",
+    "category": "developer",
+    "icon": "🔨",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/xcode"
+  },
+  {
+    "identifier": "apps.zos.lux-wallet",
+    "name": "Lux Wallet",
+    "version": "4.2.0",
+    "description": "Lux Wallet - Multi-consensus blockchain wallet with post-quantum security",
+    "category": "finance",
+    "icon": "💎",
+    "author": "Lux Network",
+    "repository": "https://github.com/zos-apps/lux-wallet"
+  },
+  {
+    "identifier": "apps.zos.template",
+    "name": "My App",
+    "version": "1.0.0",
+    "description": "My awesome zOS application",
+    "category": "utilities",
+    "icon": "📦",
+    "author": "Your Name",
+    "repository": "https://github.com/zos-apps/template"
+  },
+  {
+    "identifier": "apps.zos.assistant",
+    "name": "AI Assistant",
+    "version": "4.2.0",
+    "description": "AI-powered chat assistant",
+    "category": "productivity",
+    "icon": "🤖",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/assistant"
+  },
+  {
+    "identifier": "apps.zos.github-stats",
+    "name": "GitHub Stats",
+    "version": "4.2.0",
+    "description": "View GitHub contribution statistics",
+    "category": "developer",
+    "icon": "📊",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/github-stats"
+  },
+  {
+    "identifier": "apps.zos.mail",
+    "name": "Mail",
+    "version": "4.2.0",
+    "description": "Email composer with rich formatting",
+    "category": "productivity",
+    "icon": "✉️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/mail"
+  },
+  {
+    "identifier": "apps.zos.system-preferences",
+    "name": "System Preferences",
+    "version": "4.2.0",
+    "description": "Customize your zOS experience",
+    "category": "system",
+    "icon": "⚙️",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/system-preferences"
+  },
+  {
+    "identifier": "apps.zos.textpad",
+    "name": "TextPad",
+    "version": "4.2.0",
+    "description": "Simple text editor for quick edits",
+    "category": "productivity",
+    "icon": "📄",
+    "author": "Hanzo AI",
+    "repository": "https://github.com/zos-apps/textpad"
+  }
+]

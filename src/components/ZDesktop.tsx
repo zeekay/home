@@ -31,6 +31,7 @@ import {
   LazyZAppStoreWindow,
   LazyZMessagesWindow,
   LazyZShortcutsWindow,
+  LazyZBlogWindow,
 } from './LazyWindows';
 import ApplicationsPopover from './dock/ApplicationsPopover';
 import DownloadsPopover from './dock/DownloadsPopover';
@@ -94,6 +95,7 @@ const APP_TO_DOCK_ID: Partial<Record<AppType, string>> = {
   'Xcode': 'xcode',
   'App Store': 'appstore',
   'Shortcuts': 'shortcuts',
+  'Blog': 'blog',
 };
 
 const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
@@ -180,8 +182,8 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
         const timer = setTimeout(() => {
           addNotification({
             type: 'app',
-            title: 'Welcome to zOS',
-            body: 'Click the bell icon in the menu bar to view notifications and today widgets.',
+            title: 'zOS 4.2.0',
+            body: 'Move in shadow. Build in silence. Ship what matters.',
             appName: 'System',
           });
           setTimeout(() => {
@@ -657,6 +659,9 @@ const ZDesktop: React.FC<ZDesktopProps> = ({ children }) => {
       )}
       {windows.isOpen('Shortcuts') && (
         <LazyZShortcutsWindow onClose={() => windows.closeWindow('Shortcuts')} onFocus={() => windows.focusWindow('Shortcuts')} />
+      )}
+      {windows.isOpen('Blog') && (
+        <LazyZBlogWindow onClose={() => windows.closeWindow('Blog')} onFocus={() => windows.focusWindow('Blog')} />
       )}
 
       {/* Dock Popovers */}

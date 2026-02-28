@@ -10,6 +10,7 @@ export interface Notification {
   body?: string;
   appIcon?: string;
   appName?: string;
+  appId?: string;  // App ID to open when notification is clicked
   timestamp: number;
   read: boolean;
   actions?: { id: string; label: string }[];
@@ -126,7 +127,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
   // Listen for SDK notification events
   useEffect(() => {
     const handleNotification = (e: CustomEvent) => {
-      const { id, title, body, type, icon, appName } = e.detail;
+      const { id, title, body, type, icon, appName, appId } = e.detail;
       if (!doNotDisturb) {
         setNotifications(prev => [{
           id: id || generateId(),
@@ -135,6 +136,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
           body,
           appIcon: icon,
           appName,
+          appId,
           timestamp: Date.now(),
           read: false,
         }, ...prev]);

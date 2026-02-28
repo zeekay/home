@@ -53,7 +53,7 @@ type AppType = 'Finder' | 'Terminal' | 'Safari' | 'Music' | 'Mail' | 'Calendar' 
                'System Preferences' | 'Photos' | 'FaceTime' | 'TextEdit' | 'Notes' |
                'GitHub Stats' | 'Messages' | 'Activity Monitor' | 'Hanzo AI' |
                'Lux Wallet' | 'Zoo' | 'Calculator' | 'Clock' | 'Weather' | 'Stickies' |
-               'App Store' | 'Xcode';
+               'App Store' | 'Xcode' | 'Blog';
 
 type ResultCategory = 'top' | 'apps' | 'documents' | 'actions' | 'web' | 'suggestions';
 
@@ -100,6 +100,7 @@ const appList: { name: AppType; icon: React.ReactNode; keywords: string[] }[] = 
   { name: 'Stickies', icon: <StickyNote className="w-5 h-5" />, keywords: ['notes', 'sticky', 'reminder', 'todo'] },
   { name: 'Xcode', icon: <Command className="w-5 h-5" />, keywords: ['code', 'editor', 'dev', 'programming', 'ide'] },
   { name: 'App Store', icon: <Command className="w-5 h-5" />, keywords: ['store', 'apps', 'download', 'install'] },
+  { name: 'Blog', icon: <FileText className="w-5 h-5" />, keywords: ['blog', 'posts', 'writing', 'journal', 'articles', 'thoughts'] },
 ];
 
 // Virtual documents/files that can be searched

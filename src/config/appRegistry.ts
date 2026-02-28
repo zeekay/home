@@ -362,6 +362,20 @@ export const appRegistry: AppRegistryEntry[] = [
     component: 'LuxWalletWindow',
   },
 
+  // Blog
+  {
+    id: 'blog',
+    name: 'Blog',
+    bundleId: 'io.zeekay.blog',
+    category: 'Productivity',
+    icon: 'BookOpen',
+    description: 'Personal blog - thoughts on AI, blockchain, and building companies',
+    dependencies: [],
+    systemApp: false,
+    featured: true,
+    component: 'ZBlogWindow',
+  },
+
   // Social Apps - New
   {
     id: 'discord',
