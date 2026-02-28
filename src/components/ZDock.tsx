@@ -421,18 +421,6 @@ const ZDock: React.FC<ZDockProps> = ({
         onBlur={handleBlur}
         onFocus={handleFocus}
       >
-        {/* Reflection effect - subtle gradient overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none rounded-2xl overflow-hidden"
-          style={{
-            background: dockPosition === 'bottom'
-              ? 'linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 40%, rgba(0,0,0,0.05) 100%)'
-              : dockPosition === 'left'
-              ? 'linear-gradient(90deg, rgba(255,255,255,0.08) 0%, transparent 40%, rgba(0,0,0,0.05) 100%)'
-              : 'linear-gradient(270deg, rgba(255,255,255,0.08) 0%, transparent 40%, rgba(0,0,0,0.05) 100%)',
-          }}
-        />
-
         <div className={cn(
           "flex items-end py-0.5 relative",
           getFlexDirection(),

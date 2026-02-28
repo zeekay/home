@@ -534,6 +534,19 @@ export const appVersions: AppVersions = {
       'Usage limits',
     ],
   },
+
+  blog: {
+    version: '1.0.0',
+    build: 1001,
+    releaseDate: '2025-01-26',
+    changelog: [
+      'Personal blog with 15+ years of content',
+      'Posts from 2010-2025',
+      'Search and filter by year, tag',
+      'Featured posts',
+      'Markdown rendering',
+    ],
+  },
 };
 
 /**

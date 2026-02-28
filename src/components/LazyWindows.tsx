@@ -300,3 +300,9 @@ export const LazyZMastodonWindow = createLazyWindow(
   () => import('./ZMastodonWindow'),
   'Mastodon'
 );
+
+// Blog - Personal blog viewer
+export const LazyZBlogWindow = createLazyWindow(
+  () => import('./ZBlogWindow'),
+  'Blog'
+);

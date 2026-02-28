@@ -67,17 +67,38 @@ const formatRelativeTime = (timestamp: number): string => {
 const NotificationItem: React.FC<{
   notification: Notification;
   onDismiss: (id: string) => void;
-}> = ({ notification, onDismiss }) => {
+  onOpenApp: (appId: string, notificationId: string) => void;
+}> = ({ notification, onDismiss, onOpenApp }) => {
   const appIcon = APP_ICONS[notification.appName || ''] || <Bell className="w-4 h-4" />;
 
+  // Determine app ID to open - use explicit appId or infer from appName
+  const targetAppId = notification.appId || notification.appName;
+  const isClickable = Boolean(targetAppId);
+
+  const handleClick = () => {
+    if (targetAppId) {
+      onOpenApp(targetAppId, notification.id);
+    }
+  };
+
   return (
-    <div className={cn(
-      "group relative p-3 rounded-xl transition-all",
-      "bg-white/5 hover:bg-white/10 backdrop-blur-sm",
-      !notification.read && "ring-1 ring-white/20"
-    )}>
+    <div
+      className={cn(
+        "group relative p-3 rounded-xl transition-all",
+        "bg-white/5 hover:bg-white/10 backdrop-blur-sm",
+        !notification.read && "ring-1 ring-white/20",
+        isClickable && "cursor-pointer"
+      )}
+      onClick={handleClick}
+      role={isClickable ? "button" : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      onKeyDown={isClickable ? (e) => e.key === 'Enter' && handleClick() : undefined}
+    >
       <button
-        onClick={() => onDismiss(notification.id)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDismiss(notification.id);
+        }}
         className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-white/10 transition-opacity"
         aria-label="Dismiss notification"
       >
@@ -234,9 +255,20 @@ const NotificationCenter: React.FC = () => {
     dismissNotification,
     dismissAll,
     toggleDoNotDisturb,
+    markAsRead,
   } = useNotifications();
 
   const panelRef = useRef<HTMLDivElement>(null);
+
+  // Handle opening an app from a notification click
+  const handleOpenApp = (appId: string, notificationId: string) => {
+    // Mark notification as read
+    markAsRead(notificationId);
+    // Dispatch custom event to open the app (handled by window manager)
+    window.dispatchEvent(new CustomEvent('zos:open-app', { detail: { app: appId } }));
+    // Close notification center
+    closeNotificationCenter();
+  };
 
   // Close on escape key
   useEffect(() => {
@@ -334,6 +366,7 @@ const NotificationCenter: React.FC = () => {
                     key={notification.id}
                     notification={notification}
                     onDismiss={dismissNotification}
+                    onOpenApp={handleOpenApp}
                   />
                 ))}
               </div>

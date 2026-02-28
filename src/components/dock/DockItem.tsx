@@ -314,7 +314,7 @@ const DockItem: React.FC<DockItemProps> = ({
     >
       <div
         className={cn(
-          "flex items-center justify-center rounded-xl overflow-hidden relative",
+          "flex items-center justify-center rounded-xl overflow-hidden",
           getIconSize(),
           !magnificationEnabled && "transition-transform duration-150 ease-out group-hover:scale-110",
           magnificationEnabled && "transition-transform duration-150 ease-out origin-bottom",
@@ -335,15 +335,6 @@ const DockItem: React.FC<DockItemProps> = ({
         ) : Icon ? (
           <Icon className={`w-6 h-6 ${color || 'text-white'}`} />
         ) : null}
-
-        {/* Subtle reflection effect */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-          style={{
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 50%)',
-            borderRadius: 'inherit',
-          }}
-        />
       </div>
 
       {/* Active indicator dot - macOS style */}

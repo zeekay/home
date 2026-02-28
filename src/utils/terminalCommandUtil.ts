@@ -204,25 +204,25 @@ export const executeNeofetch = (
   addEntry({
     command,
     output: `
-       ████████████           z@zeekay.ai
+       ████████████           z@zeekay.io
      ██            ██         ──────────────────────────
-    ██   ██    ██   ██        OS: zOS 4.2.0 (WebContainer)
-   ██                 ██      Host: zeekay.ai
+    ██   ██    ██   ██        OS: zOS 4.2.0
+   ██                 ██      Host: zeekay.io
    ██   Z   A   C   H ██      Kernel: WebContainer 1.0
    ██                 ██      Uptime: ${uptimeStr}
     ██   ██    ██   ██        Shell: zsh 5.9 + starship
      ██            ██         Terminal: zOS Terminal
        ████████████           Theme: Dracula / Muon
 
-   ███ ███ ███ ███ ███        Dotfiles: ellipsis.sh
-                              Packages: dot-zsh, dot-vim
-   ◦◦◦ ellipsis.sh ◦◦◦        Editor: Neovim + Vice
+   ███ ███ ███ ███ ███        Role: Open Sourceror
+                              Ethos: Move in shadow. Ship in lightning.
+   ◦◦◦ ellipsis.sh ◦◦◦        Craft: 1000+ OSS repos · cypherpunk since 90s
 
-GitHub: @zeekay                Twitter: @zeekay
-Hanzo: hanzo.ai                Lux: lux.network
-Zoo: zoo.ngo
+GitHub: github.com/zeekay       Blog: zeekay.blog
+Hanzo: hanzo.ai                 Lux: lux.network
+Zoo: zoo.ngo                    Chat: curl -sL zeekay.chat | sh
 
-                              © 1983-2025 Zach Kelling`,
+                              © Zach Kelling`,
     id: Date.now()
   });
 };

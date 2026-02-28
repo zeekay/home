@@ -6,7 +6,7 @@ export type AppType =
   | 'System Preferences' | 'Photos' | 'FaceTime' | 'TextEdit' | 'Notes'
   | 'GitHub Stats' | 'Messages' | 'Activity Monitor' | 'Hanzo AI'
   | 'Lux Wallet' | 'Zoo' | 'Calculator' | 'Clock' | 'Weather' | 'Stickies'
-  | 'App Store' | 'Xcode' | 'VSCode' | 'Shortcuts';
+  | 'App Store' | 'Xcode' | 'VSCode' | 'Shortcuts' | 'Blog';
 
 // All app types as array for iteration
 export const ALL_APPS: AppType[] = [
@@ -14,7 +14,7 @@ export const ALL_APPS: AppType[] = [
   'System Preferences', 'Photos', 'FaceTime', 'TextEdit', 'Notes',
   'GitHub Stats', 'Messages', 'Activity Monitor', 'Hanzo AI',
   'Lux Wallet', 'Zoo', 'Calculator', 'Clock', 'Weather', 'Stickies',
-  'App Store', 'Xcode', 'VSCode', 'Shortcuts'
+  'App Store', 'Xcode', 'VSCode', 'Shortcuts', 'Blog'
 ];
 
 // Window state - which windows are open
@@ -488,6 +488,13 @@ export function useWindowManager(): WindowManager {
 
   // Event listeners for custom events
   useEffect(() => {
+    const handleOpenApp = (e: CustomEvent<{ app?: string }>) => {
+      const appName = e.detail?.app;
+      if (appName && ALL_APPS.includes(appName as AppType)) {
+        openWindow(appName as AppType);
+      }
+    };
+
     const handleTileLeft = (e: CustomEvent<{ app?: AppType }>) => {
       const app = e.detail?.app || state.activeApp;
       if (app) tileWindowLeft(app);
@@ -513,6 +520,7 @@ export function useWindowManager(): WindowManager {
     };
 
     // Add event listeners
+    window.addEventListener('zos:open-app', handleOpenApp as EventListener);
     window.addEventListener('zos:window-left', handleTileLeft as EventListener);
     window.addEventListener('zos:window-right', handleTileRight as EventListener);
     window.addEventListener('zos:window-zoom', handleZoom as EventListener);
@@ -520,13 +528,14 @@ export function useWindowManager(): WindowManager {
     window.addEventListener('zos:show-all', handleShowAll);
 
     return () => {
+      window.removeEventListener('zos:open-app', handleOpenApp as EventListener);
       window.removeEventListener('zos:window-left', handleTileLeft as EventListener);
       window.removeEventListener('zos:window-right', handleTileRight as EventListener);
       window.removeEventListener('zos:window-zoom', handleZoom as EventListener);
       window.removeEventListener('zos:hide-app', handleHideApp as EventListener);
       window.removeEventListener('zos:show-all', handleShowAll);
     };
-  }, [state.activeApp, tileWindowLeft, tileWindowRight, maximizeWindow, minimizeWindow, showAllWindows]);
+  }, [state.activeApp, openWindow, tileWindowLeft, tileWindowRight, maximizeWindow, minimizeWindow, showAllWindows]);
 
   return {
     // State
