@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Github, Twitter, Terminal as TerminalIcon, Code, GitCommit, BarChart3, Flame, ExternalLink, Linkedin, Star, Users, Bot } from 'lucide-react';
+import { Github, Twitter, Terminal as TerminalIcon, Code, GitCommit, BarChart3, Flame, ExternalLink, Linkedin, Star, Users, Bot, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useGitHubStats } from '@/hooks/useGitHubStats';
 import { formatNumber } from '@/types/stats';
@@ -74,8 +74,30 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
           <span className="px-3 py-1 text-sm bg-cyan-500/20 text-cyan-300 rounded-full border border-cyan-500/30">Cypherpunk</span>
         </div>
 
+        {/* Primary CTAs */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mt-8 animate-slide-up" style={{ animationDelay: '280ms' }}>
+          <a
+            href={professionalInfo.cal}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold text-base hover:from-purple-500 hover:to-pink-500 transition-all hover:scale-105 shadow-lg shadow-purple-500/25"
+          >
+            <CalendarDays size={20} />
+            Schedule a Call
+          </a>
+          <a
+            href={professionalInfo.zos}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-7 py-3.5 rounded-xl bg-white/10 text-white font-semibold text-base hover:bg-white/20 transition-all hover:scale-105 border border-white/20"
+          >
+            <span className="text-lg">⌘</span>
+            Launch zOS
+          </a>
+        </div>
+
         {/* Social Links */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mt-8 animate-slide-up" style={{ animationDelay: '300ms' }}>
+        <div className="flex flex-wrap items-center justify-center gap-3 mt-5 animate-slide-up" style={{ animationDelay: '320ms' }}>
           <a
             href={socialProfiles.github.url}
             target="_blank"
@@ -113,7 +135,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
         </div>
 
         {/* Chat command */}
-        <div className="mt-6 animate-slide-up" style={{ animationDelay: '350ms' }}>
+        <div className="mt-5 animate-slide-up" style={{ animationDelay: '370ms' }}>
           <code className="px-4 py-2 bg-black/50 border border-green-500/30 rounded-lg text-green-400 text-sm font-mono">
             {professionalInfo.chat}
           </code>

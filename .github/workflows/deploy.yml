@@ -100,10 +100,11 @@ jobs:
         run: npm run lint
         continue-on-error: true
 
-      - name: Build
-        run: npm run build
-        env:
-          VITE_SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+      - name: Build landing page
+        run: |
+          mkdir -p dist
+          cp landing.html dist/index.html
+          echo "zeekay.io" > dist/CNAME
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
