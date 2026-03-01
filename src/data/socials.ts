@@ -85,26 +85,28 @@ export const socialProfiles: Record<string, SocialProfile> = {
 
 // Professional info
 export const professionalInfo = {
-  name: 'Z',
+  name: 'Zach Kelling',
   fullName: 'Zach Kelling',
-  title: 'Open Sourceror',
-  tagline: 'The supreme art of war is to subdue the enemy without fighting.',
+  title: 'Builder',
+  tagline: 'Computation should not be owned by any single entity.',
   roles: [
-    { title: 'CEO', company: 'Hanzo AI', description: 'Applied AI cloud. Sovereign compute. OSS dividends.', icon: '🥷' },
-    { title: 'Chairman', company: 'LUX', description: 'Post-quantum blockchain. Censorship-resistant settlement.', icon: '▼' },
-    { title: 'Architect', company: 'ZOO', description: 'Decentralized AI. PoAI consensus. Training-free optimization.', icon: '🧬' },
+    { title: 'CEO', company: 'Hanzo AI', description: 'Applied AI cloud. Open models. MCP infra.', icon: '🥷' },
+    { title: 'Chairman', company: 'Lux', description: 'Post-quantum L1. Censorship-resistant settlement.', icon: '▼' },
+    { title: 'Architect', company: 'Zoo Labs', description: 'Open AI research. Decentralized training.', icon: '🧬' },
   ],
   location: 'San Francisco, CA',
-  bio: 'Left Topeka at 13 for computers. Spent a decade as a musician. Cypherpunk since the dial-up era. 1000+ OSS repos. Founded Hanzo (Techstars \'17). Post-quantum cryptography, decentralized AI, sovereign infrastructure.',
+  bio: 'Left Topeka at 13 for computers. Spent a decade as a musician. Cypherpunk since the dial-up era. 547+ public repos. Founded Hanzo (Techstars \'17). Post-quantum cryptography, open-weight AI, decentralized infrastructure.',
   email: 'z@hanzo.ai',
   website: 'https://zeekay.io',
-  blog: 'https://blog.hanzo.ai',
+  blog: 'https://zeekay.blog',
+  cal: 'https://cal.com/zeekay',
+  zos: 'https://app.zeekay.io',
   chat: 'curl -sL zeekay.chat | sh',
 };
 
 // GitHub stats (from profile)
 export const githubStats = {
-  repos: 326,
+  repos: 547,
   stars: 2700,
   followers: 562,
   following: 490,
