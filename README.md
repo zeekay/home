@@ -2,7 +2,7 @@
 
 Personal website for Zach Kelling (Z) - a macOS-inspired portfolio and desktop environment.
 
-**Live**: [zeekay.ai](https://zeekay.ai)
+**Live**: [zeekay.io](https://zeekay.io)
 
 ## Features
 
@@ -116,7 +116,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## Links
 
-- Website: [zeekay.ai](https://zeekay.ai)
+- Website: [zeekay.io](https://zeekay.io)
 - GitHub: [github.com/zeekay](https://github.com/zeekay)
 - Twitter: [twitter.com/zeekay](https://twitter.com/zeekay)
 

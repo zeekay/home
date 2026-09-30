@@ -100,10 +100,14 @@ jobs:
         run: npm run lint
         continue-on-error: true
 
-      - name: Build landing page
+      - name: Build zOS
+        run: npm run build
+        env:
+          VITE_SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+
+      - name: Keep landing page at /about
         run: |
-          mkdir -p dist
-          cp landing.html dist/index.html
+          cp landing.html dist/about.html
           echo "zeekay.io" > dist/CNAME
 
       - name: Setup Pages
